@@ -3,9 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jizz</title>
+    <title>College Social Network</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1877f2;
+            --secondary-color: #65676b;
+        }
+        body {
+            background-color: #f0f2f5;
+            font-family: Arial, sans-serif;
+        }
+        .profile-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .stats-number {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        .confession-box {
+            background: #f0f2f5;
+            border-radius: 20px;
+            padding: 12px 16px;
+            cursor: text;
+        }
+        .post-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .community-tag {
+            background: #f0f2f5;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.9rem;
+        }
+        .time-stamp {
+            color: #65676b;
+            font-size: 0.875rem;
+        }
+        .action-buttons button {
+            border-radius: 20px;
+            padding: 6px 15px;
+        }
+    </style>
 </head>
 <body>
-    
+    <div class="container py-3">
+        <div class="row g-3">
+            <!-- Left Column -->
+            <div class="col-lg-4">
+                <div class="profile-section p-3 mb-3">
+                    <h2 class="h5 fw-bold mb-1">John Doe</h2>
+                    <p class="text-muted mb-3">Computer Science</p>
+                    
+                    <div class="d-flex gap-4 mb-4">
+                        <div>
+                            <div class="stats-number">245</div>
+                            <div class="text-muted small">Posts</div>
+                        </div>
+                        <div>
+                            <div class="stats-number">1.2k</div>
+                            <div class="text-muted small">Friends</div>
+                        </div>
+                        <div>
+                            <div class="stats-number">15</div>
+                            <div class="text-muted small">Badges</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h4 class="h6 fw-bold mb-3">Achievements</h4>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="savedPosts">
+                            <label class="form-check-label text-muted" for="savedPosts">
+                                Saved Posts
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="events-section">
+                        <h4 class="h6 fw-bold mb-3">Confessions</h4>
+                        <div class="confession-box mb-2 text-muted">
+                            Share something with your college mates...
+                        </div>
+                        <div class="d-flex gap-2 action-buttons">
+                            <button class="btn btn-light d-flex align-items-center">
+                                <i class="bi bi-camera-fill me-1 text-primary"></i>
+                                Photo
+                            </button>
+                            <button class="btn btn-light d-flex align-items-center">
+                                <i class="bi bi-camera-reels-fill me-1 text-success"></i>
+                                Video
+                            </button>
+                            <button class="btn btn-light d-flex align-items-center">
+                                <i class="bi bi-calendar-event-fill me-1 text-danger"></i>
+                                Event
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-lg-8">
+                <!-- Post from Sarah -->
+                <div class="post-card p-3 mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="flex-grow-1">
+                            <h5 class="mb-0 fw-bold">Sarah Johnson</h5>
+                            <div class="time-stamp">15 minutes ago</div>
+                        </div>
+                    </div>
+                    <p class="mb-3">Just finished my final project presentation! Thanks everyone for the support!</p>
+                    
+                    <div class="d-flex gap-2">
+                        <span class="community-tag">
+                            <span class="fw-medium">Coding Club</span>
+                            <span class="text-muted">2.5k</span>
+                        </span>
+                        <span class="community-tag">
+                            <span class="fw-medium">Green Campus</span>
+                            <span class="text-muted">1.8k</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Upcoming Events -->
+                <div class="post-card p-3 mb-3">
+                    <h5 class="fw-bold mb-3">Upcoming Events</h5>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <div>
+                                <div class="fw-medium">Tech Hackathon 2025</div>
+                                <div class="time-stamp">Mar 15, 9:00 AM</div>
+                            </div>
+                            <button class="btn btn-primary btn-sm">RSVP</button>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <div class="fw-medium">Spring Concert</div>
+                                <div class="time-stamp">Mar 20, 6:00 PM</div>
+                            </div>
+                            <button class="btn btn-primary btn-sm">RSVP</button>
+                        </div>
+                    </div>
+                    <a href="#" class="text-decoration-none text-primary">View All Events</a>
+                </div>
+
+                <!-- Trending Communities -->
+                <div class="post-card p-3 mb-3">
+                    <h5 class="fw-bold mb-3">Trending Communities</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="community-tag">
+                            <span class="fw-medium">Coding Club</span>
+                            <span class="text-muted">2.5k</span>
+                        </span>
+                        <span class="community-tag">
+                            <span class="fw-medium">Green Campus</span>
+                            <span class="text-muted">1.8k</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Post from Mike -->
+                <div class="post-card p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="flex-grow-1">
+                            <h5 class="mb-0 fw-bold">Mike Chen</h5>
+                            <div class="time-stamp">2 hours ago</div>
+                        </div>
+                    </div>
+                    <p class="mb-0">Anyone interested in joining the hackathon this weekend? Looking for team members! 🚀</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
