@@ -18,6 +18,7 @@ app.use(cors());
 
 // Import Routes
 const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
 const postRoutes = require("./routes/postRoutes");
 const confessionRoutes = require("./routes/confessionRoutes");
 const messageRoutes = require("./routes/messageRoutes");
@@ -26,6 +27,7 @@ const eventRoutes = require("./routes/eventRoutes");
 
 // Use Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/confessions", confessionRoutes);
 app.use("/api/messages", messageRoutes);
