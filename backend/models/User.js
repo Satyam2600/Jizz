@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const UserSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
+    rollNo: { type: String, required: true, unique: true }, // Added Roll No. (UID)
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     branch: { type: String, required: true },
