@@ -41,4 +41,6 @@ router.get("/user", authMiddleware, async (req, res) => {
   }
 });
 
-module.exports = { router, assignBadge };
+module.exports = router;  // ✅ Correct for Express routes
+module.exports.assignBadge = assignBadge; // ✅ Export the function separately
+
