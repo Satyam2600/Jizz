@@ -11,7 +11,7 @@ router.post("/", authMiddleware, async (req, res) => {
 
     if (!reportType || !reason) return res.status(400).json({ message: "Report type and reason are required" });
 
-    const newReport = new Report({
+    const newReport = await Report.create({
       reportedBy: req.user.id,
       reportType,
       reportedPost,
@@ -19,7 +19,6 @@ router.post("/", authMiddleware, async (req, res) => {
       reason,
     });
 
-    await newReport.save();
     res.status(201).json({ message: "Report submitted successfully", report: newReport });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error });

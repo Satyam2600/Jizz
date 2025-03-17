@@ -7,7 +7,6 @@ const UserSchema = new mongoose.Schema({
   profilePic: { type: String, default: "" },
   bio: { type: String, default: "" },
   collegeUID: { type: String, required: true },
-  friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   badges: [{ type: String }], // For gamification
   createdAt: { type: Date, default: Date.now },
 });

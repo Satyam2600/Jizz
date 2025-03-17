@@ -1,19 +1,36 @@
 const express = require("express");
 const Message = require("../models/Message");
 const authMiddleware = require("../middleware/authMiddleware");
+const upload = require("../middleware/uploadMiddleware"); // Multer middleware for media uploads
 
 const router = express.Router();
 
-// 📌 Send a Message
-router.post("/", authMiddleware, async (req, res) => {
+// 📌 Send a Message (Text or Media)
+router.post("/", authMiddleware, upload.single("media"), async (req, res) => {
   try {
     const { receiver, content } = req.body;
-    if (!receiver || !content) return res.status(400).json({ message: "Receiver and content are required" });
+    let mediaUrl = null;
+    let mediaType = null;
+
+    if (req.file) {
+      mediaUrl = req.file.path; // Store Cloudinary URL or local path
+      mediaType = req.file.mimetype.startsWith("image")
+        ? "image"
+        : req.file.mimetype.startsWith("video")
+        ? "video"
+        : "document";
+    }
+
+    if (!receiver || (!content && !mediaUrl)) {
+      return res.status(400).json({ message: "Message must contain text or media" });
+    }
 
     const message = new Message({
       sender: req.user.id,
       receiver,
       content,
+      media: mediaUrl,
+      mediaType,
     });
 
     await message.save();

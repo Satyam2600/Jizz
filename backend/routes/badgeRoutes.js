@@ -2,6 +2,7 @@ const express = require("express");
 const authMiddleware = require("../middleware/authMiddleware");
 const Badge = require("../models/Badge");
 const User = require("../models/User");
+const { StatusCodes } = require("http-status-codes");
 
 const router = express.Router();
 
@@ -9,9 +10,9 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const badges = await Badge.find();
-    res.status(200).json(badges);
+    res.status(StatusCodes.OK).json(badges);
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server Error", error });
   }
 });
 
