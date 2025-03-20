@@ -3,187 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>College Social Network</title>
+    <title>JIZZ - Campus Social Network</title>
+    
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700;900&display=swap">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         :root {
-            --primary-color: #1877f2;
-            --secondary-color: #65676b;
+            --primary-green: #019863;
+            --light-beige: #F4EFE6;
+            --dark-text: #1C160C;
+            --accent-gold: #A18249;
         }
+
         body {
-            background-color: #f0f2f5;
-            font-family: Arial, sans-serif;
+            font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;
         }
-        .profile-section {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+
+        .gradient-overlay {
+            background: linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%);
         }
-        .stats-number {
-            font-size: 1.25rem;
-            font-weight: 600;
+
+        .feature-card {
+            transition: transform 0.3s ease;
         }
-        .confession-box {
-            background: #f0f2f5;
-            border-radius: 20px;
-            padding: 12px 16px;
-            cursor: text;
-        }
-        .post-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-        .community-tag {
-            background: #f0f2f5;
-            border-radius: 6px;
-            padding: 4px 10px;
-            font-size: 0.9rem;
-        }
-        .time-stamp {
-            color: #65676b;
-            font-size: 0.875rem;
-        }
-        .action-buttons button {
-            border-radius: 20px;
-            padding: 6px 15px;
+
+        .feature-card:hover {
+            transform: translateY(-5px);
         }
     </style>
 </head>
+
 <body>
-    <div class="container py-3">
-        <div class="row g-3">
-            <!-- Left Column -->
-            <div class="col-lg-4">
-                <div class="profile-section p-3 mb-3">
-                    <h2 class="h5 fw-bold mb-1">John Doe</h2>
-                    <p class="text-muted mb-3">Computer Science</p>
-                    
-                    <div class="d-flex gap-4 mb-4">
-                        <div>
-                            <div class="stats-number">245</div>
-                            <div class="text-muted small">Posts</div>
-                        </div>
-                        <div>
-                            <div class="stats-number">1.2k</div>
-                            <div class="text-muted small">Friends</div>
-                        </div>
-                        <div>
-                            <div class="stats-number">15</div>
-                            <div class="text-muted small">Badges</div>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <h4 class="h6 fw-bold mb-3">Achievements</h4>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="savedPosts">
-                            <label class="form-check-label text-muted" for="savedPosts">
-                                Saved Posts
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="events-section">
-                        <h4 class="h6 fw-bold mb-3">Confessions</h4>
-                        <div class="confession-box mb-2 text-muted">
-                            Share something with your college mates...
-                        </div>
-                        <div class="d-flex gap-2 action-buttons">
-                            <button class="btn btn-light d-flex align-items-center">
-                                <i class="bi bi-camera-fill me-1 text-primary"></i>
-                                Photo
-                            </button>
-                            <button class="btn btn-light d-flex align-items-center">
-                                <i class="bi bi-camera-reels-fill me-1 text-success"></i>
-                                Video
-                            </button>
-                            <button class="btn btn-light d-flex align-items-center">
-                                <i class="bi bi-calendar-event-fill me-1 text-danger"></i>
-                                Event
-                            </button>
-                        </div>
-                    </div>
-                </div>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg py-3 border-bottom fixed-top bg-white">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="logo.svg" alt="JIZZ Logo" width="40" class="me-2">
+                <span class="fw-bold fs-5">JIZZ</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center gap-4">
+                    <li class="nav-item"><a href="#home" class="nav-link">Home</a></li>
+                    <li class="nav-item"><a href="#features" class="nav-link">Features</a></li>
+                    <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
+                    <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-success rounded-pill px-4 ms-2">Log In</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-success rounded-pill px-4">Sign Up</button>
+                    </li>
+                </ul>
             </div>
+        </div>
+    </nav>
 
-            <!-- Right Column -->
-            <div class="col-lg-8">
-                <!-- Post from Sarah -->
-                <div class="post-card p-3 mb-3">
-                    <div class="d-flex align-items-center mb-2">
-                        <div class="flex-grow-1">
-                            <h5 class="mb-0 fw-bold">Sarah Johnson</h5>
-                            <div class="time-stamp">15 minutes ago</div>
-                        </div>
+    <!-- Hero Section -->
+    <section id="home" class="py-5 mt-5">
+        <div class="container position-relative rounded-4 overflow-hidden text-white min-vh-75 d-flex align-items-end"
+             style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('hero-bg.jpg');
+                    background-size: cover;">
+            <div class="row w-100 py-5">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h1 class="display-3 fw-bold mb-4">Unleash Your Campus Creativity</h1>
+                    <p class="lead mb-5">Join the social platform made for college students. Share your thoughts, art, and life with classmates.</p>
+                    <div class="d-flex gap-3 justify-content-center">
+                        <button class="btn btn-success rounded-pill px-5 py-3">Get Started</button>
+                        <button class="btn btn-outline-light rounded-pill px-5 py-3">Learn More</button>
                     </div>
-                    <p class="mb-3">Just finished my final project presentation! Thanks everyone for the support!</p>
-                    
-                    <div class="d-flex gap-2">
-                        <span class="community-tag">
-                            <span class="fw-medium">Coding Club</span>
-                            <span class="text-muted">2.5k</span>
-                        </span>
-                        <span class="community-tag">
-                            <span class="fw-medium">Green Campus</span>
-                            <span class="text-muted">1.8k</span>
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Upcoming Events -->
-                <div class="post-card p-3 mb-3">
-                    <h5 class="fw-bold mb-3">Upcoming Events</h5>
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between mb-2">
-                            <div>
-                                <div class="fw-medium">Tech Hackathon 2025</div>
-                                <div class="time-stamp">Mar 15, 9:00 AM</div>
-                            </div>
-                            <button class="btn btn-primary btn-sm">RSVP</button>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <div class="fw-medium">Spring Concert</div>
-                                <div class="time-stamp">Mar 20, 6:00 PM</div>
-                            </div>
-                            <button class="btn btn-primary btn-sm">RSVP</button>
-                        </div>
-                    </div>
-                    <a href="#" class="text-decoration-none text-primary">View All Events</a>
-                </div>
-
-                <!-- Trending Communities -->
-                <div class="post-card p-3 mb-3">
-                    <h5 class="fw-bold mb-3">Trending Communities</h5>
-                    <div class="d-flex flex-wrap gap-2">
-                        <span class="community-tag">
-                            <span class="fw-medium">Coding Club</span>
-                            <span class="text-muted">2.5k</span>
-                        </span>
-                        <span class="community-tag">
-                            <span class="fw-medium">Green Campus</span>
-                            <span class="text-muted">1.8k</span>
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Post from Mike -->
-                <div class="post-card p-3">
-                    <div class="d-flex align-items-center mb-2">
-                        <div class="flex-grow-1">
-                            <h5 class="mb-0 fw-bold">Mike Chen</h5>
-                            <div class="time-stamp">2 hours ago</div>
-                        </div>
-                    </div>
-                    <p class="mb-0">Anyone interested in joining the hackathon this weekend? Looking for team members! 🚀</p>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Features Section -->
+    <section id="features" class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold mb-3">Explore JIZZ Features</h2>
+                <p class="lead text-muted">Designed to help you connect and engage with your college community</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 feature-card">
+                        <img src="chat-feature.jpg" class="card-img-top rounded-3" alt="Chat Feature">
+                        <div class="card-body">
+                            <h5 class="card-title">Chat</h5>
+                            <p class="card-text text-muted">Message classmates or join groups to discuss assignments.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Repeat for other features -->
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-5">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-md-6">
+                    <img src="about-image.jpg" alt="About JIZZ" class="img-fluid rounded-4">
+                </div>
+                <div class="col-md-6">
+                    <h2 class="display-5 fw-bold mb-4">About JIZZ</h2>
+                    <p class="lead text-muted mb-4">Born in the dorm rooms and shaped by campus life, JIZZ is the ultimate social platform created by students for students.</p>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-success rounded-pill px-4">Our Story</button>
+                        <button class="btn btn-outline-secondary rounded-pill px-4">The Team</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-5 bg-light">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-6">
+                    <h2 class="display-5 fw-bold mb-4">Get In Touch</h2>
+                    <form>
+                        <div class="mb-3">
+                            <input type="text" class="form-control rounded-pill py-3" placeholder="Your Name">
+                        </div>
+                        <div class="mb-3">
+                            <input type="email" class="form-control rounded-pill py-3" placeholder="Your Email">
+                        </div>
+                        <div class="mb-3">
+                            <textarea class="form-control rounded-3 py-3" rows="4" placeholder="Your Message"></textarea>
+                        </div>
+                        <button class="btn btn-success rounded-pill px-5 py-3">Send Message</button>
+                    </form>
+                </div>
+                <div class="col-lg-6">
+                    <div class="bg-white p-5 rounded-4 shadow">
+                        <h4 class="fw-bold mb-4">Contact Info</h4>
+                        <ul class="list-unstyled">
+                            <li class="mb-3">
+                                <i class="fas fa-map-marker-alt me-2 text-success"></i>
+                                123 Campus Street, University Town
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-phone me-2 text-success"></i>
+                                +1 (555) 123-4567
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-envelope me-2 text-success"></i>
+                                hello@jizz.social
+                            </li>
+                        </ul>
+                        <div class="social-links mt-4">
+                            <a href="#" class="text-dark me-3"><i class="fab fa-facebook"></i></a>
+                            <a href="#" class="text-dark me-3"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="text-dark me-3"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-3">JIZZ</h5>
+                    <p>Connecting campus communities through authentic social experiences.</p>
+                </div>
+                <div class="col-md-2">
+                    <h6 class="fw-bold mb-3">Company</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">About</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Careers</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2">
+                    <h6 class="fw-bold mb-3">Legal</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Privacy</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Terms</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Security</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="fw-bold mb-3">Stay Updated</h6>
+                    <div class="input-group">
+                        <input type="email" class="form-control rounded-start-pill" placeholder="Enter your email">
+                        <button class="btn btn-success rounded-end-pill">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-5">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2023 JIZZ. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -5,18 +5,34 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Password visibility toggle
     passwordToggle.addEventListener("click", function () {
-        if (passwordInput.type === "password") {
-            passwordInput.type = "text";
-        } else {
-            passwordInput.type = "password";
-        }
+        passwordInput.type = passwordInput.type === "password" ? "text" : "password";
     });
 
-    // Handle registration form submission
+    // Function to validate email
+    function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    // Function to validate UID (assuming UID is numeric)
+    function isValidUID(uid) {
+        return /^\d+$/.test(uid);
+    }
+
+    // Function to validate year (1-4)
+    function isValidYear(year) {
+        return /^[1-4]$/.test(year);
+    }
+
+    // Function to validate semester (1-8)
+    function isValidSemester(semester) {
+        return /^[1-8]$/.test(semester);
+    }
+
+    // Handle form submission
     registerForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
-        // Collect form data
+        // Collect form values
         const fullName = document.querySelector("input[placeholder='Enter your full name']").value.trim();
         const uid = document.querySelector("input[placeholder='Enter your unique UID']").value.trim();
         const email = document.querySelector("input[placeholder='Enter your  email']").value.trim();
@@ -25,53 +41,58 @@ document.addEventListener("DOMContentLoaded", function () {
         const semester = document.querySelector("input[placeholder='Enter your semester']").value.trim();
         const password = passwordInput.value.trim();
 
-        // Validate input fields
+        // Validate inputs
         if (!fullName || !uid || !email || !branch || !year || !semester || !password) {
-            alert("Please fill in all fields.");
+            alert("⚠ Please fill in all fields.");
             return;
         }
 
-        if (!email.includes("@")) {
-            alert("Enter a valid email address.");
+        if (!isValidEmail(email)) {
+            alert("⚠ Enter a valid email address.");
+            return;
+        }
+
+        if (!isValidUID(uid)) {
+            alert("⚠ UID should be numeric.");
+            return;
+        }
+
+        if (!isValidYear(year)) {
+            alert("⚠ Year should be between 1 to 3.");
+            return;
+        }
+
+        if (!isValidSemester(semester)) {
+            alert("⚠ Semester should be between 1 to 6.");
             return;
         }
 
         if (password.length < 6) {
-            alert("Password must be at least 6 characters long.");
+            alert("⚠ Password must be at least 6 characters long.");
             return;
         }
 
-        // Prepare request payload
-        const userData = {
-            fullName,
-            uid,
-            email,
-            branch,
-            year,
-            semester,
-            password,
-        };
+        // Prepare user data
+        const userData = { fullName, uid, email, branch, year, semester, password };
 
         try {
             const response = await fetch("/api/register", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(userData),
             });
 
             const result = await response.json();
 
             if (response.ok) {
-                alert("Registration successful! Redirecting to login page...");
-                window.location.href = "login.html"; // Redirect to login page
+                alert("✅ Registration successful! Redirecting to login page...");
+                window.location.href = "login.html";
             } else {
-                alert(result.message || "Registration failed. Try again.");
+                alert(`⚠ ${result.message || "Registration failed. Try again."}`);
             }
         } catch (error) {
-            console.error("Error registering user:", error);
-            alert("Something went wrong. Please try again later.");
+            console.error("❌ Registration error:", error);
+            alert("⚠ Something went wrong. Please try again later.");
         }
     });
 });
