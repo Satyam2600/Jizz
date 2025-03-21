@@ -1,48 +1,33 @@
 const express = require("express");
 const router = express.Router();
 const SibApiV3Sdk = require("sib-api-v3-sdk");
-const dotenv = require("dotenv");
-const Newsletter = require("../models/Newsletter"); // Import the model
+require("dotenv").config();
 
-dotenv.config();
+// Initialize Brevo (SendinBlue) API Client
+const client = SibApiV3Sdk.ApiClient.instance;
+const apiKey = client.authentications["api-key"];
+apiKey.apiKey = process.env.BREVO_API_KEY; // Ensure this is set in .env
 
-// Configure Brevo API
-const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-const apiKey = apiInstance.authentications["apiKey"];
-apiKey.apiKey = process.env.BREVO_API_KEY;
+const emailAPI = new SibApiV3Sdk.TransactionalEmailsApi();
 
+// Newsletter Subscription Route
 router.post("/subscribe", async (req, res) => {
-    const { email } = req.body;
-
-    if (!email) {
-        return res.status(400).json({ error: "Email is required" });
-    }
-
     try {
-        // Check if the email already exists
-        const existingSubscriber = await Newsletter.findOne({ email });
-        if (existingSubscriber) {
-            return res.status(400).json({ error: "Email is already subscribed" });
-        }
+        const { email } = req.body;
+        if (!email) return res.status(400).json({ error: "Email is required" });
 
-        // Save to the database
-        const newSubscriber = new Newsletter({ email });
-        await newSubscriber.save();
+        const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+        sendSmtpEmail.to = [{ email }];
+        sendSmtpEmail.sender = { email: process.env.EMAIL_FROM, name: process.env.EMAIL_NAME };
+        sendSmtpEmail.subject = "Welcome to Our Newsletter!";
+        sendSmtpEmail.htmlContent = `<p>Thank you for subscribing to our newsletter! 🎉</p>`;
 
-        // Send a welcome email
-        const emailContent = {
-            sender: { email: process.env.BREVO_SENDER_EMAIL, name: process.env.BREVO_SENDER_NAME },
-            to: [{ email }],
-            subject: "Welcome to Our Newsletter!",
-            htmlContent: "<h2>Thank you for subscribing!</h2><p>Stay tuned for updates.</p>",
-        };
-
-        await apiInstance.sendTransacEmail(emailContent);
-
+        await emailAPI.sendTransacEmail(sendSmtpEmail);
         res.status(200).json({ success: true, message: "Subscription successful!" });
+
     } catch (error) {
-        console.error("Error:", error);
-        res.status(500).json({ error: "Something went wrong" });
+        console.error("Brevo API Error:", error);
+        res.status(500).json({ error: "Failed to send email" });
     }
 });
 
