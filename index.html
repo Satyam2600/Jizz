@@ -80,10 +80,10 @@
              style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/frontend/assets/images/hero-bg.jpg');
                     background-size: cover; background-position: center;">
             <div class="row w-100 py-5">
-                <div class="col-lg-8 mx-auto text-center">
+                <div class="col-lg-8 ">
                     <h1 class="display-3 fw-bold mb-4 text-capitalize">Unleash Your Campus Creativity</h1>
                     <p class="lead mb-4">Join the social platform made for college students. Share your thoughts, art, and life with classmates.</p>
-                    <div class="d-flex gap-3 justify-content-center">
+                    <div class="d-flex gap-3 justify-content-flex-start">
                         <button class="btn btn-success rounded-pill px-4 py-2">Sign Up</button>
                         <button class="btn btn-light rounded-pill px-4 py-2">Log In</button>
                     </div>
@@ -239,13 +239,14 @@
                         <li class="mb-2"><a href="#" class="text-white text-decoration-none">Security</a></li>
                     </ul>
                 </div>
-                <div class="col-md-4">
-                    <h6 class="fw-bold mb-3">Stay Updated</h6>
-                    <div class="input-group">
-                        <input type="email" class="form-control rounded-start-pill" placeholder="Enter your email">
-                        <button class="btn btn-success rounded-end-pill">Subscribe</button>
-                    </div>
-                </div>
+               <div class="col-md-4">
+    <h6 class="fw-bold mb-3">Stay Updated</h6>
+    <div class="input-group">
+        <input type="email" id="newsletter-email" class="form-control rounded-start-pill" placeholder="Enter your email">
+        <button id="subscribe-btn" class="btn btn-success rounded-end-pill">Subscribe</button>
+    </div>
+</div>
+
             </div>
             <hr class="my-5">
             <div class="text-center">
@@ -257,6 +258,7 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
    <script src="/frontend/assets/js/contactForm.js"></script>
+<script src="/frontend/assets/js/newsletter.js"></script>
     
 </body>
 </html>
