@@ -26,6 +26,7 @@ const badgeRoutes = require("./routes/badgeRoutes");
 const eventRoutes = require("./routes/eventRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 const contactRoutes = require("./routes/contactRoutes");
+const newsletterRoutes = require("./routes/newsletterRoutes");
 
 // Use Routes
 app.use("/api/auth", authRoutes);
@@ -37,6 +38,7 @@ app.use("/api/badges", badgeRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/newsletter", newsletterRoutes);
 
 // Contact Form Route
 app.post("/api/contact", async (req, res) => {
