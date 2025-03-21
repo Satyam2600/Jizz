@@ -6,11 +6,11 @@ const NewsletterSchema = new mongoose.Schema({
         required: true,
         unique: true,
         lowercase: true,
-        trim: true,
+        trim: true
     },
     subscribedAt: {
         type: Date,
-        default: Date.now,
+        default: Date.now
     }
 });
 
