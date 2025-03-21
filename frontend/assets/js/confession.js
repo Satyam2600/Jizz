@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const token = localStorage.getItem("token");
     if (!token) return (window.location.href = "index.html");
 
-    // Fetch Confessions
+    
     const confessions = await apiRequest("/confessions", "GET", null, token);
     confessions.forEach(confession => {
         const confessionElement = document.createElement("div");
