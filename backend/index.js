@@ -27,6 +27,7 @@ const eventRoutes = require("./routes/eventRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const newsletterRoutes = require("./routes/newsletterRoutes");
+const passwordresetRoutes = require("./routes/passwordresetRoutes");
 
 // Use Routes
 app.use("/api/auth", authRoutes);
@@ -39,6 +40,7 @@ app.use("/api/events", eventRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/newsletter", newsletterRoutes);
+app.use("/api/password-reset", passwordresetRoutes);
 
 // Contact Form Route
 app.post("/api/contact", async (req, res) => {
