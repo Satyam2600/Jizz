@@ -16,9 +16,6 @@
     <nav class="navbar py-3 border-bottom border-2 border-light">
       <div class="container-fluid">
         <div class="d-flex align-items-center gap-3">
-          <svg width="24" height="24" viewBox="0 0 48 48" fill="currentColor">
-            <!-- Your SVG path here -->
-          </svg>
           <span class="navbar-brand mb-0 h5 fw-bold text-dark">JIZZ</span>
         </div>
       </div>
@@ -45,66 +42,34 @@
             </div>
           </div>
 
-          <form class="mb-4">
+          <!-- ✅ Updated Registration Form -->
+          <form id="registerForm" class="mb-4">
             <div class="mb-4">
               <label class="form-label fw-medium">Full Name</label>
-              <input type="text" 
-                     class="form-control custom-input" 
-                     placeholder="Enter your full name">
+              <input type="text" id="fullName" class="form-control custom-input" placeholder="Enter your full name" required>
             </div>
 
             <div class="mb-4">
               <label class="form-label fw-medium">UID (Roll No.)</label>
-              <input type="text" 
-                     class="form-control custom-input" 
-                     placeholder="Enter your unique UID">
+              <input type="text" id="uid" class="form-control custom-input" placeholder="Enter your unique UID" required>
             </div>
 
             <div class="mb-4">
               <label class="form-label fw-medium">Email</label>
-              <input type="email" 
-                     class="form-control custom-input" 
-                     placeholder="Enter your  email">
-            </div>
-
-            <div class="mb-4">
-              <label class="form-label fw-medium">Branch</label>
-              <input type="text" 
-                     class="form-control custom-input" 
-                     placeholder="Enter your branch">
-            </div>
-
-            <div class="mb-4">
-              <label class="form-label fw-medium">Year</label>
-              <input type="text" 
-                     class="form-control custom-input" 
-                     placeholder="Enter your year of study">
-            </div>
-
-            <div class="mb-4">
-              <label class="form-label fw-medium">Semester</label>
-              <input type="text" 
-                     class="form-control custom-input" 
-                     placeholder="Enter your semester">
+              <input type="email" id="email" class="form-control custom-input" placeholder="Enter your email" autocomplete="username" required>
             </div>
 
             <div class="mb-4">
               <label class="form-label fw-medium">Password</label>
               <div class="input-group">
-                <input type="password" 
-                       class="form-control custom-input" 
-                       placeholder="Create a secure password">
-                <button class="btn btn-light password-toggle" type="button">
-                  <svg width="24" height="24" fill="currentColor">
-                    <!-- Password toggle SVG -->
-                  </svg>
+                <input type="password" id="password" class="form-control custom-input" placeholder="Create a secure password" autocomplete="new-password" required>
+                <button type="button" class="btn btn-light password-toggle">
+                  👁️
                 </button>
               </div>
             </div>
 
-            <button class="btn btn-success w-100 py-3 fw-bold">
-              Register
-            </button>
+            <button type="submit" class="btn btn-success w-100 py-3 fw-bold">Register</button>
           </form>
 
           <p class="text-center text-warning small">
@@ -115,6 +80,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/frontend/assets/js/register.js"></script>
+    <script src="/frontend/assets/js/register.js"></script>
   </body>
 </html>
