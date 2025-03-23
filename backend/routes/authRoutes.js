@@ -8,35 +8,28 @@ const router = express.Router();
 // 📌 Register a New User
 router.post("/register", async (req, res) => {
   try {
-    // Destructure fields sent from the frontend
     const { fullName, uid, email, password } = req.body;
 
-    // Validate Input
     if (!fullName || !uid || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({ message: "Invalid email format" });
     }
 
-    // Password length check
     if (password.length < 6) {
       return res.status(400).json({ message: "Password must be at least 6 characters" });
     }
 
-    // Check if Email or UID already exists (Assuming your User model uses field 'rollNo' for UID)
     const existingUser = await User.findOne({ $or: [{ email }, { rollNo: uid }] });
     if (existingUser) {
       return res.status(400).json({ message: "Email or UID already exists" });
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user (mapping fullName to name and uid to rollNo)
     const newUser = new User({
       name: fullName,
       rollNo: uid,
@@ -46,7 +39,6 @@ router.post("/register", async (req, res) => {
 
     await newUser.save();
 
-    // Generate JWT Token
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
     res.status(201).json({
@@ -70,24 +62,20 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validate Input
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password are required" });
     }
 
-    // Check if User Exists
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    // Verify Password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    // Generate JWT Token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
     res.json({
@@ -106,4 +94,45 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// 📌 Reset Password Route
+router.post("/reset-password", async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: "Token and new password are required" });
+    }
+
+    console.log("Received token:", token); // Log token received
+
+    // Verify and decode the JWT token
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log("Decoded token:", decoded);
+    } catch (err) {
+      console.error("Token verification error:", err);
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
+
+    // Find user by decoded id
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    // Hash new password and update user
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    // Optionally clear reset token fields if stored:
+    // user.resetToken = null;
+    // user.tokenExpiry = null;
+    await user.save();
+
+    res.json({ message: "Password updated successfully!" });
+  } catch (error) {
+    console.error("❌ Error in /reset-password:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
 module.exports = router;
