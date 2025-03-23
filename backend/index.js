@@ -42,8 +42,6 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/newsletter", newsletterRoutes);
 app.use("/api/password-reset", passwordresetRoutes);
 
-
-
 // Health Check Route
 app.get("/", (req, res) => res.send("🚀 JIZZ Social Media API Running..."));
 

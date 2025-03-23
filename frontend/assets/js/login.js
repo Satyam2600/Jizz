@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
             sessionStorage.setItem("token", data.token);
           }
           alert("Login successful!");
-          window.location.href = "dashboard.html";
+          window.location.href = "/frontend/pages/dashboard.html";
         } else {
           alert("Login failed: " + data.error);
         }

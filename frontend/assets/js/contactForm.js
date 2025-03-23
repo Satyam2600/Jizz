@@ -1,27 +1,39 @@
-document.querySelector("form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const name = document.querySelector('input[placeholder="Your Name"]').value;
-    const email = document.querySelector('input[placeholder="Your Email"]').value;
-    const message = document.querySelector('textarea[placeholder="Your Message"]').value;
-
-    try {
-        const response = await fetch("http://localhost:5000/api/contact", {  
-
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, email, message }),
+document.addEventListener("DOMContentLoaded", function () {
+    const contactForm = document.getElementById("contactForm");
+    const responseMessage = document.getElementById("responseMessage");
+  
+    contactForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+  
+      // Get form values from inputs by their IDs
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const message = document.getElementById("message").value.trim();
+  
+      // Validate inputs
+      if (!name || !email || !message) {
+        responseMessage.textContent = "Please fill in all required fields.";
+        return;
+      }
+  
+      try {
+        const res = await fetch("http://localhost:5000/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, message }),
         });
-
-        const data = await response.json();
-        if (response.ok) {
-            alert("Message sent successfully!");
-            document.querySelector("form").reset();
+  
+        const data = await res.json();
+        if (res.ok) {
+          responseMessage.textContent = data.message || "Message sent successfully!";
+          contactForm.reset();
         } else {
-            alert("Error: " + data.error);
+          responseMessage.textContent = data.message || "An error occurred. Please try again.";
         }
-    } catch (error) {
-        alert("Something went wrong! Check console for details.");
-        console.error(error);
-    }
-});
+      } catch (error) {
+        console.error("Error during form submission:", error);
+        responseMessage.textContent = "Something went wrong! Please check your connection.";
+      }
+    });
+  });
+  
