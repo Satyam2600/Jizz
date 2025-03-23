@@ -18,6 +18,16 @@ document.addEventListener("DOMContentLoaded", function () {
         registerForm.addEventListener("submit", async function (event) {
             event.preventDefault();
 
+            // Get input values and trim spaces
+            const fullName = fullNameInput.value.trim();
+            const uid = uidInput.value.trim();
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            console.log("Entered Full Name:", fullName);
+            console.log("Entered UID:", uid);
+            console.log("Entered Email:", email);
+
             // Validate required fields
             if (!fullName || !uid || !email || !password) {
                 alert("⚠ Please fill in all required fields.");
@@ -25,12 +35,13 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             // Email validation
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(email)) {
                 alert("⚠ Enter a valid email address.");
                 return;
             }
 
-            // UID validation
+            // UID validation (numeric only)
             if (!/^\d+$/.test(uid)) {
                 alert("⚠ UID should be numeric.");
                 return;
@@ -42,25 +53,37 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // Prepare data
+            // Prepare data for API
             const userData = { fullName, uid, email, password };
 
             try {
-                // Updated fetch URL with port 5000
-                const response = await fetch("http://localhost:5000/api/register", {
+                console.log("Sending request to API...");
+
+                // Ensure the correct API route
+                const response = await fetch("http://localhost:5000/api/auth/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(userData),
                 });
 
-                // Handle empty response
+                console.log("Response Status:", response.status);
+
+                // Ensure response is JSON
                 const text = await response.text();
                 if (!text.trim()) {
                     throw new Error("Empty server response");
                 }
 
-                // Parse JSON safely
-                const result = JSON.parse(text);
+                // Debug: Log raw response
+                console.log("Raw Response:", text);
+
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (jsonError) {
+                    console.error("JSON Parsing Error:", jsonError);
+                    throw new Error("Invalid JSON response from server.");
+                }
 
                 if (response.ok) {
                     alert("✅ Registration successful! Redirecting...");

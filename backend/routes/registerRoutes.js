@@ -9,10 +9,7 @@ router.post("/register", async (req, res) => {
             return res.status(400).json({ message: "All fields are required!" });
         }
 
-        // Save user to database (example, replace with actual DB logic)
-        const newUser = { fullName, uid, email, password }; // ⚠ Hash password in real apps
-
-        console.log("✅ User Registered:", newUser);
+        console.log("✅ User Registered:", { fullName, uid, email, password });
         return res.status(201).json({ message: "User registered successfully!" });
 
     } catch (error) {
@@ -21,4 +18,4 @@ router.post("/register", async (req, res) => {
     }
 });
 
-module.exports = router; // ✅ Export routes
+module.exports = router; // ✅ Export the router

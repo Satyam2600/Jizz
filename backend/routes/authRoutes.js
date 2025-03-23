@@ -8,10 +8,11 @@ const router = express.Router();
 // 📌 Register a New User
 router.post("/register", async (req, res) => {
   try {
-    const { name, email, rollNo, password } = req.body;
+    // Destructure fields sent from the frontend
+    const { fullName, uid, email, password } = req.body;
 
     // Validate Input
-    if (!name || !email || !rollNo || !password) {
+    if (!fullName || !uid || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -26,20 +27,20 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "Password must be at least 6 characters" });
     }
 
-    // Check if Email or Roll No. already exists
-    const existingUser = await User.findOne({ $or: [{ email }, { rollNo }] });
+    // Check if Email or UID already exists (Assuming your User model uses field 'rollNo' for UID)
+    const existingUser = await User.findOne({ $or: [{ email }, { rollNo: uid }] });
     if (existingUser) {
-      return res.status(400).json({ message: "Email or Roll No. already exists" });
+      return res.status(400).json({ message: "Email or UID already exists" });
     }
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user
+    // Create new user (mapping fullName to name and uid to rollNo)
     const newUser = new User({
-      name,
+      name: fullName,
+      rollNo: uid,
       email,
-      rollNo,
       password: hashedPassword,
     });
 

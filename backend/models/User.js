@@ -6,10 +6,6 @@ const UserSchema = new mongoose.Schema(
     rollNo: { type: String, required: true, unique: true }, // Added Roll No. (UID)
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    branch: { type: String, required: true },
-    year: { type: Number, required: true },
-    semester: { type: Number, required: true },
-    bio: { type: String, default: "" },
     profilePic: { type: String, default: "" },
     badges: [{ type: String }], // Gamification badges
     savedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
