@@ -8,21 +8,17 @@ const sendEmail = require("../utils/emailService");
 const router = express.Router();
 
 // POST /api/password-reset/request-reset
-// This endpoint accepts a UID (rollNo), validates if a user exists,
-// generates a new random password, hashes it, updates the user record,
-// and sends the new password to the user's registered email.
+// Accepts a UID, checks if a user exists, generates a new random password, updates the user record, and sends the new password via email.
 router.post("/request-reset", async (req, res) => {
   try {
     const { uid } = req.body;
-    if (!uid) {
-      return res.status(400).json({ message: "UID is required" });
-    }
+    if (!uid) return res.status(400).json({ message: "UID is required" });
 
-    // Find user by UID (assuming your User model stores it as rollNo)
+    // Find the user by rollNo (assuming you store UID as rollNo)
     const user = await User.findOne({ rollNo: uid });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const email = user.email; // Get the registered email
 
     // Generate a new random password (e.g., 10-character hex string)
     const newPassword = crypto.randomBytes(5).toString("hex");
@@ -37,11 +33,11 @@ router.post("/request-reset", async (req, res) => {
     const htmlContent = `
       <h2>Password Reset</h2>
       <p>Your new password is: <strong>${newPassword}</strong></p>
-      <p>Please log in with this password and change it immediately for security.</p>
+      <p>Please log in using this password and change it immediately for security.</p>
     `;
 
-    // Send email to the user's registered email using Brevo
-    await sendEmail(user.email, "Your New Password", htmlContent);
+    // Send email with the new password using Brevo
+    await sendEmail(email, "Your New Password", htmlContent);
 
     res.status(200).json({ message: "A new password has been sent to your registered email." });
   } catch (error) {
