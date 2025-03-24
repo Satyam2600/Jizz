@@ -1,3 +1,4 @@
+// backend/utils/emailService.js
 const SibApiV3Sdk = require("sib-api-v3-sdk");
 require("dotenv").config();
 
