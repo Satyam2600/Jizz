@@ -3,9 +3,403 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jizz-Dashboard</title>
+    <title>Jizz - Campus Network</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-bg: #ffffff;
+            --secondary-bg: #f8f9fa;
+            --text-primary: #1C160C;
+            --text-secondary: #6c757d;
+            --accent-color: #019863;
+            --border-color: #e9ecef;
+            --card-radius: 1rem;
+        }
+
+        [data-bs-theme="dark"] {
+            --primary-bg: #1a1a1a;
+            --secondary-bg: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #adb5bd;
+            --border-color: #343a40;
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            padding-top: 72px;
+        }
+
+        .navbar {
+            background-color: var(--primary-bg) !important;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            z-index: 1030;
+        }
+
+        .sidebar {
+            width: 280px;
+            height: calc(100vh - 72px);
+            position: sticky;
+            top: 72px;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .main-feed {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .post-card {
+            background-color: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--card-radius);
+            transition: all 0.2s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .post-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+        }
+
+        .engagement-buttons .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            transition: all 0.2s ease;
+        }
+
+        .comment-section {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+        }
+
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                position: fixed;
+                z-index: 1020;
+                top: 72px;
+                bottom: 0;
+                width: 280px;
+                transform: translateX(-100%);
+                background: var(--primary-bg);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-feed {
+                width: 100%;
+                padding: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>welcome to the jizz Jizz-Dashboard  </h1>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top border-bottom">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="#">jizz</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="bi bi-house-door me-2"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="bi bi-people me-2"></i>Communities</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="bi bi-calendar-event me-2"></i>Events</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-3">
+                    <div class="theme-toggle" id="themeToggle">
+                        <i class="bi bi-moon"></i>
+                    </div>
+                    
+                    <div class="dropdown">
+                        <button class="btn btn-link text-dark position-relative" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-bell"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                3
+                            </span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end p-2" style="min-width: 300px;">
+                            <h6 class="dropdown-header">Notifications</h6>
+                            <div class="list-group border-0">
+                                <a href="#" class="list-group-item list-group-item-action border-0">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-person-check fs-5 me-3"></i>
+                                        <div>
+                                            <p class="mb-0 small">New connection request</p>
+                                            <small class="text-muted">2m ago</small>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="btn rounded-circle border-0" 
+                                style="width: 40px; height: 40px; background-image: url('https://cdn.usegalileo.ai/sdxl10/a196840d-9ef7-4710-9854-038a9dd29703.png');">
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a>
+                            <a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Left Sidebar -->
+            <aside class="sidebar col-lg-3 p-3 border-end">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <img src="https://cdn.usegalileo.ai/sdxl10/9b359708-1440-4781-a786-3bdf8ba6b191.png" 
+                         class="user-avatar rounded-circle shadow-sm">
+                    <div>
+                        <h6 class="mb-0 fw-bold">John Doe</h6>
+                        <small class="text-muted">@johndoe_cs</small>
+                    </div>
+                </div>
+
+                <nav class="nav flex-column gap-2">
+                    <a class="nav-link d-flex align-items-center gap-3 py-2 rounded-3" href="#">
+                        <i class="bi bi-person fs-5"></i>
+                        My Profile
+                    </a>
+                    <a class="nav-link d-flex align-items-center gap-3 py-2 rounded-3" href="#">
+                        <i class="bi bi-trophy fs-5"></i>
+                        Achievements
+                    </a>
+                    <a class="nav-link d-flex align-items-center gap-3 py-2 rounded-3" href="#">
+                        <i class="bi bi-bookmark fs-5"></i>
+                        Saved Posts
+                    </a>
+                    <button class="btn btn-success mt-3 rounded-pill fw-bold">
+                        <i class="bi bi-pencil-square me-2"></i>Edit Profile
+                    </button>
+                </nav>
+            </aside>
+
+            <!-- Main Feed -->
+            <main class="col-lg-6 main-feed">
+                <!-- Create Post -->
+                <div class="card post-card mb-4">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start gap-3">
+                            <img src="https://cdn.usegalileo.ai/sdxl10/fb528de0-f0c5-4cca-9782-834f68da0615.png" 
+                                 class="user-avatar rounded-circle shadow-sm">
+                            <div class="w-100">
+                                <textarea class="form-control border-0 mb-3 fs-6" 
+                                          rows="3" 
+                                          placeholder="What's happening?"
+                                          style="resize: none; background: var(--secondary-bg)"></textarea>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-outline-secondary rounded-pill">
+                                            <i class="bi bi-image"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary rounded-pill">
+                                            <i class="bi bi-camera-video"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary rounded-pill">
+                                            <i class="bi bi-emoji-smile"></i>
+                                        </button>
+                                    </div>
+                                    <button class="btn btn-success rounded-pill px-4 fw-bold">
+                                        Post
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample Post -->
+                <div class="card post-card mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="https://via.placeholder.com/48" 
+                                     class="user-avatar rounded-circle shadow-sm">
+                                <div>
+                                    <h6 class="mb-0 fw-bold">Sarah Johnson</h6>
+                                    <small class="text-muted">Computer Science · 15m ago</small>
+                                </div>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-link text-dark" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#"><i class="bi bi-bookmark me-2"></i>Save Post</a></li>
+                                    <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-flag me-2"></i>Report Post</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <p class="mb-3">Just launched our new campus networking platform! 🚀 Check it out and let us know your feedback!</p>
+                        
+                        <div class="post-media mb-3 rounded-3 overflow-hidden">
+                            <img src="https://cdn.usegalileo.ai/sdxl10/23c2b772-9e47-42df-adea-b44b6151e46a.png" 
+                                 class="img-fluid w-100" 
+                                 style="max-height: 480px; object-fit: cover;">
+                        </div>
+
+                        <div class="engagement-buttons d-flex gap-3">
+                            <button class="btn btn-outline-secondary rounded-pill">
+                                <i class="bi bi-heart me-2"></i>245
+                            </button>
+                            <button class="btn btn-outline-secondary rounded-pill">
+                                <i class="bi bi-chat me-2"></i>48
+                            </button>
+                            <button class="btn btn-outline-secondary rounded-pill">
+                                <i class="bi bi-share me-2"></i>Share
+                            </button>
+                        </div>
+
+                        <div class="comment-section mt-3 pt-3">
+                            <div class="d-flex gap-2 mb-3">
+                                <img src="https://via.placeholder.com/36" 
+                                     class="rounded-circle" 
+                                     width="36" 
+                                     height="36">
+                                <div class="flex-grow-1">
+                                    <input type="text" 
+                                           class="form-control rounded-pill" 
+                                           placeholder="Write a comment...">
+                                </div>
+                            </div>
+                            <div class="comment-list">
+                                <div class="d-flex gap-2 mb-3">
+                                    <img src="https://via.placeholder.com/36" 
+                                         class="rounded-circle" 
+                                         width="36" 
+                                         height="36">
+                                    <div class="flex-grow-1">
+                                        <div class="bg-light rounded-3 p-3">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <strong>Mike Chen</strong>
+                                                <small class="text-muted">2m ago</small>
+                                            </div>
+                                            <p class="mb-0">This is amazing! Great work team! 👏</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Sidebar -->
+            <aside class="sidebar col-lg-3 p-3 border-start">
+                <h5 class="fw-bold mb-4">Upcoming Events</h5>
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="d-flex gap-3 align-items-start mb-3">
+                            <div class="bg-success rounded-2 p-2 text-white">
+                                <i class="bi bi-calendar-event fs-4"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1 fw-semibold">Tech Symposium 2024</h6>
+                                <small class="text-muted">March 15 · 10:00 AM</small>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline-success w-100 rounded-pill">
+                            RSVP Now
+                        </button>
+                    </div>
+                </div>
+
+                <h5 class="fw-bold mt-4 mb-4">Trending Communities</h5>
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="d-flex gap-3 align-items-center mb-3">
+                            <div class="bg-primary rounded-2 p-2 text-white">
+                                <i class="bi bi-people fs-4"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-semibold">Code Masters</h6>
+                                <small class="text-muted">2.4k members</small>
+                            </div>
+                        </div>
+                        <button class="btn btn-success w-100 rounded-pill">
+                            Join Community
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            const isDark = document.body.getAttribute('data-bs-theme') === 'dark';
+            document.body.setAttribute('data-bs-theme', isDark ? 'light' : 'dark');
+            themeToggle.innerHTML = isDark ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon"></i>';
+        });
+
+        // Mobile Sidebar Toggle
+        document.querySelector('.navbar-toggler').addEventListener('click', () => {
+            document.querySelectorAll('.sidebar').forEach(sidebar => {
+                sidebar.classList.toggle('active');
+            });
+        });
+
+        // Infinite Scroll Simulation
+        let loading = false;
+        window.addEventListener('scroll', () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500 && !loading) {
+                loading = true;
+                // Simulate loading
+                setTimeout(() => {
+                    // Add new posts
+                    loading = false;
+                }, 1000);
+            }
+        });
+
+        // Initialize tooltips
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    </script>
 </body>
 </html>
