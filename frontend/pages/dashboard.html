@@ -32,7 +32,7 @@
         }
 
         .navbar {
-            background-color: var(--primary-bg)  important;
+            background-color: var(--primary-bg) !important;
             box-shadow: 0 2px 12px rgba(0,0,0,0.08);
             z-index: 1030;
         }
@@ -113,16 +113,13 @@
                 padding: 1rem;
             }
         }
-.navbar{
-    background-color: white;
-}
     </style>
 </head>
 <body>
-   
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg fixed-top border-bottom">
         <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold" href="#">JIZZ</a>
+            <a class="navbar-brand fw-bold" href="#">jizz</a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -185,17 +182,17 @@
         </div>
     </nav>
 
- 
+    <!-- Main Content -->
     <div class="container-fluid">
         <div class="row">
-       
+            <!-- Left Sidebar -->
             <aside class="sidebar col-lg-3 p-3 border-end">
                 <div class="d-flex align-items-center gap-3 mb-4">
                     <img src="https://cdn.usegalileo.ai/sdxl10/9b359708-1440-4781-a786-3bdf8ba6b191.png" 
                          class="user-avatar rounded-circle shadow-sm">
                     <div>
-                        <h6 class="mb-0 fw-bold" id="userFullName">John Doe</h6>
-                        <small class="text-muted" id="userHandle">@johndoe_cs</small>
+                        <h6 class="mb-0 fw-bold">John Doe</h6>
+                        <small class="text-muted">@johndoe_cs</small>
                     </div>
                 </div>
 
@@ -218,9 +215,9 @@
                 </nav>
             </aside>
 
-           
+            <!-- Main Feed -->
             <main class="col-lg-6 main-feed">
-            
+                <!-- Create Post -->
                 <div class="card post-card mb-4">
                     <div class="card-body">
                         <div class="d-flex align-items-start gap-3">
@@ -252,6 +249,7 @@
                     </div>
                 </div>
 
+                <!-- Sample Post -->
                 <div class="card post-card mb-4">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-3">
@@ -274,7 +272,7 @@
                             </div>
                         </div>
                         
-                        <p class="mb-3">Just launched our new campus networking platform  🚀 Check it out and let us know your feedback </p>
+                        <p class="mb-3">Just launched our new campus networking platform! 🚀 Check it out and let us know your feedback!</p>
                         
                         <div class="post-media mb-3 rounded-3 overflow-hidden">
                             <img src="https://cdn.usegalileo.ai/sdxl10/23c2b772-9e47-42df-adea-b44b6151e46a.png" 
@@ -318,7 +316,7 @@
                                                 <strong>Mike Chen</strong>
                                                 <small class="text-muted">2m ago</small>
                                             </div>
-                                            <p class="mb-0">This is amazing  Great work team  👏</p>
+                                            <p class="mb-0">This is amazing! Great work team! 👏</p>
                                         </div>
                                     </div>
                                 </div>
@@ -328,6 +326,7 @@
                 </div>
             </main>
 
+            <!-- Right Sidebar -->
             <aside class="sidebar col-lg-3 p-3 border-start">
                 <h5 class="fw-bold mb-4">Upcoming Events</h5>
                 <div class="card border-0 shadow-sm mb-3">
@@ -385,4 +384,22 @@
             });
         });
 
-       
+        // Infinite Scroll Simulation
+        let loading = false;
+        window.addEventListener('scroll', () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500 && !loading) {
+                loading = true;
+                // Simulate loading
+                setTimeout(() => {
+                    // Add new posts
+                    loading = false;
+                }, 1000);
+            }
+        });
+
+        // Initialize tooltips
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    </script>
+</body>
+</html>
