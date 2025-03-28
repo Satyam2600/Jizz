@@ -100,20 +100,66 @@
     <!-- Header -->
     <header class="custom-header d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-3">
-            <svg viewBox="0 0 48 48" style="width: 16px; height: 16px;">
-                <path d="M6 6H42L36 24L42 42H6L12 24L6 6Z" fill="currentColor"/>
-            </svg>
-            <h2 class="mb-0 fw-bold fs-5">Jizz</h2>
+            
+      
         </div>
         
         <div class="d-flex align-items-center gap-5">
-            <nav class="d-flex gap-4">
-                <a href="#" class="text-dark text-decoration-none fs-6">Home</a>
-                <a href="#" class="text-dark text-decoration-none fs-6">Feed</a>
-                <a href="#" class="text-dark text-decoration-none fs-6">Groups</a>
-                <a href="#" class="text-dark text-decoration-none fs-6">Events</a>
-                <a href="#" class="text-dark text-decoration-none fs-6">Jobs</a>
+            <nav class="navbar navbar-expand-lg fixed-top border-bottom">
+                <div class="container-fluid px-4">
+                    <a class="navbar-brand fw-bold" href="#">jizz</a>
+                    
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+        
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#"><i class="bi bi-house-door me-2"></i>Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#"><i class="bi bi-people me-2"></i>Communities</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#"><i class="bi bi-calendar-event me-2"></i>Events</a>
+                            </li>
+                        </ul>
+        
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="theme-toggle" id="themeToggle">
+                                <i class="bi bi-moon"></i>
+                            </div>
+                            
+                            <div class="dropdown">
+                                <button class="btn btn-link text-dark position-relative" type="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-bell"></i>
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        3
+                                    </span>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end p-2" style="min-width: 300px;">
+                                    <h6 class="dropdown-header">Notifications</h6>
+                                    <div class="list-group border-0">
+                                        <a href="#" class="list-group-item list-group-item-action border-0">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-person-check fs-5 me-3"></i>
+                                                <div>
+                                                    <p class="mb-0 small">New connection request</p>
+                                                    <small class="text-muted">2m ago</small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+        
+                            
+                        </div>
+                    </div>
+                </div>
             </nav>
+        '
             <div class="profile-photo rounded-circle" 
                  style="width: 40px; height: 40px; background-image: url('https://cdn.usegalileo.ai/sdxl10/6bda000c-5df0-466f-bf81-d706fbd6339c.png')">
             </div>
@@ -176,9 +222,15 @@
                 <label class="form-label fw-medium mb-2">Department</label>
                 <select class="form-select form-control-custom custom-select">
                     <option value=""></option>
-                    <option value="two">two</option>
-                    <option value="three">three</option>
-                </select>
+                    <option value="CSE">CSE</option>
+                    <option value="ECE">ECE</option>
+                    <option value="Mechanical">Mechanical</option>
+                    <option value="Architecture">Architecture</option>
+                    <option value="Production">Production</option>
+                    <option value="Civil">Civil</option>
+                    <option value="Electrical">Electrical</option>
+                    <option value=""></option>
+                </select>.
             </div>
 
             <!-- Bio -->
@@ -196,18 +248,23 @@
             <!-- Social Links -->
             <div class="mb-4">
                 <label class="form-label fw-medium mb-2">GitHub</label>
-                <input type="url" class="form-control form-control-custom">
+                <input type="url" class="form-control form-control-custom"placeholder="Github.com/yourhandle">
             </div>
 
             <div class="mb-4">
                 <label class="form-label fw-medium mb-2">LinkedIn</label>
-                <input type="url" class="form-control form-control-custom">
+                <input type="url" class="form-control form-control-custom"placeholder="linkedin.com/yourhandle">
             </div>
 
             <div class="mb-4">
                 <label class="form-label fw-medium mb-2">Twitter</label>
                 <input type="url" class="form-control form-control-custom" placeholder="twitter.com/yourhandle">
             </div>
+            <div class="mb-4">
+                <label class="form-label fw-medium mb-2">Instagram</label>
+                <input type="url" class="form-control form-control-custom" placeholder="Instagram.com/yourhandle">
+            </div>
+
 
             <!-- Settings Section -->
             <h3 class="fw-bold fs-5 mt-5 mb-3">Settings</h3>
