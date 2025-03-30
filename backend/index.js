@@ -31,6 +31,26 @@ app.get("/", (req, res) => {
     res.render("index", { title: "JIZZ - Campus Social Network" });
 });
 
+// Route for Login Page
+app.get("/login", (req, res) => {
+    res.render("login", { title: "Login - JIZZ" });
+});
+
+// Route for Register Page
+app.get("/register", (req, res) => {
+    res.render("register", { title: "Register - JIZZ" });
+});
+
+// Route for Dashboard Page
+app.get("/dashboard", (req, res) => {
+    res.render("dashboard", { title: "Dashboard - JIZZ" });
+});
+
+// Route for Edit Profile Page
+app.get("/edit-profile", (req, res) => {
+    res.render("editProfile", { title: "Edit Profile - JIZZ" });
+});
+
 // Import Routes
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
@@ -58,11 +78,6 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/newsletter", newsletterRoutes);
 app.use("/api/password-reset", passwordresetRoutes);
 app.use("/api/uploads", uploadRoutes);
-
-// Default Route: Render the home page using EJS (index.ejs)
-app.get("/", (req, res) => {
-    res.render("index", { title: "JIZZ - Campus Social Network" });
-});
 
 // Health Check Route
 app.get("/health", (req, res) => res.send("🚀 JIZZ Social Media API Running..."));
