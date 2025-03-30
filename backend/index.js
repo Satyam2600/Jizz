@@ -19,8 +19,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// Serve static files from the "public" directory
-app.use(express.static(path.join(__dirname, "../public")));
+// Serve static files from the "frontend/assets" directory
+app.use("/assets", express.static(path.join(__dirname, "../frontend/assets")));
 
 // Set up EJS as the view engine and define the views directory
 app.set("view engine", "ejs");
