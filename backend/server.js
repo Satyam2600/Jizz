@@ -9,17 +9,17 @@ const server = http.createServer(app);
 // Setup Socket.io
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000", // Match frontend port
+    origin: "http://localhost:5000", // Match your frontend URL/port
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
-    credentials: true
+    credentials: true,
   },
 });
 
-// Pass `io` to `socket.js`
+// Pass `io` to socket setup module
 setupSocket(io);
 
-// Attach io to req for global access (optional, but valid)
+// Attach io to app for global access (if needed)
 app.set("io", io);
 
 // Start the Server

@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(loginData)
+        body: JSON.stringify(loginData),
       });
 
       const data = await response.json();
@@ -43,17 +43,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (response.ok) {
         // Save token and user details based on "Remember Me" option
-        if (rememberMe.checked) {
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("uid", data.user.rollNo);
-          localStorage.setItem("email", data.user.email);
-        } else {
-          sessionStorage.setItem("token", data.token);
-          sessionStorage.setItem("uid", data.user.rollNo);
-          sessionStorage.setItem("email", data.user.email);
-        }
+        const storage = rememberMe.checked ? localStorage : sessionStorage;
+        storage.setItem("token", data.token);
+        storage.setItem("userId", data.user.id); // Store userId for future use
+        storage.setItem("uid", data.user.rollNo);
+        storage.setItem("email", data.user.email);
+
         alert("Login successful!");
-        window.location.href = "/frontend/pages/dashboard.html";
+        window.location.href = "/frontend/pages/editProfile.html"; // Redirect to edit profile page
       } else {
         alert("Login failed: " + (data.message || data.error));
       }

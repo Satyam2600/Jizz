@@ -103,9 +103,7 @@
 </head>
 <body>
     <!-- Header -->
-    
-      
-       
+ 
     <nav class="navbar navbar-expand-lg fixed-top border-bottom">
         <div class="container-fluid px-4">
             <a class="navbar-brand fw-bold" href="#">jizz</a>
@@ -152,7 +150,7 @@
             <div class="mx-auto mb-3 profile-photo rounded-circle" 
                  style="width: 128px; height: 128px; background-image: url('/frontend/assets/images/default\ pfp.jpg')">
             </div>
-            <h3 class="fw-bold mb-1 fs-4">Alexandra Ramirez</h3>
+            <h3 class="fw-bold mb-1 fs-4">Your Name</h3>
             <p class="text-secondary mb-3">Upload a profile picture</p>
             <button class="custom-btn btn btn-light-custom d-inline-flex align-items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
@@ -167,14 +165,14 @@
             <!-- Full Name -->
             <div class="mb-4">
                 <label class="form-label fw-medium mb-2">Full Name</label>
-                <input type="text" class="form-control form-control-custom">
+                <input type="text" class="form-control form-control-custom" placeholder="Full Name">
             </div>
 
             <!-- Username -->
             <div class="mb-4">
                 <label class="form-label fw-medium mb-2">Username</label>
                 <div class="input-group">
-                    <input type="text" class="form-control form-control-custom rounded-end-0">
+                    <input type="text" class="form-control form-control-custom rounded-end-0" placeholder="Username">
                     <span class="input-group-text bg-white border-start-0 rounded-end">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#A18249" viewBox="0 0 256 256">
                             <path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/>
@@ -272,5 +270,52 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+<script>
+  document.querySelector("form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const fullName = document.querySelector('input[placeholder="Full Name"]').value.trim();
+    const username = document.querySelector('input[placeholder="Username"]').value.trim();
+    const department = document.querySelector(".custom-select").value;
+    const bio = document.querySelector("textarea").value.trim();
+    const phoneNumber = document.querySelector('input[type="tel"]').value.trim();
+    const github = document.querySelector('input[placeholder="Github.com/yourhandle"]').value.trim();
+    const linkedin = document.querySelector('input[placeholder="linkedin.com/yourhandle"]').value.trim();
+    const twitter = document.querySelector('input[placeholder="twitter.com/yourhandle"]').value.trim();
+    const instagram = document.querySelector('input[placeholder="Instagram.com/yourhandle"]').value.trim();
+
+    const userProfile = {
+      userId: "USER_ID_HERE", // Replace with the actual user ID
+      fullName,
+      username,
+      department,
+      bio,
+      phoneNumber,
+      github,
+      linkedin,
+      twitter,
+      instagram,
+    };
+
+    try {
+      const response = await fetch("http://localhost:5000/api/users/update-profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userProfile),
+      });
+
+      if (response.ok) {
+        alert("Profile updated successfully!");
+        window.location.href = "dashboard.html";
+      } else {
+        alert("Failed to update profile. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("An error occurred. Please try again.");
+    }
+  });
+</script>
+</script>
 </body>
 </html>

@@ -1,9 +1,11 @@
+// backend/index.js
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const path = require("path");
 const connectDB = require("./config/db");
 
-// Load environment variables
+// Load environment variables from .env file
 dotenv.config();
 
 // Connect to MongoDB
@@ -12,9 +14,22 @@ connectDB();
 // Initialize Express App
 const app = express();
 
-// Middleware
+// Middleware: parse JSON and URL-encoded bodies
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, "../public")));
+
+// Set up EJS as the view engine and define the views directory
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "../frontend/views")); // Updated path to views directory
+
+// Default Route: Render the home page using EJS (index.ejs)
+app.get("/", (req, res) => {
+    res.render("index", { title: "JIZZ - Campus Social Network" });
+});
 
 // Import Routes
 const authRoutes = require("./routes/authRoutes");
@@ -28,8 +43,9 @@ const reportRoutes = require("./routes/reportRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const newsletterRoutes = require("./routes/newsletterRoutes");
 const passwordresetRoutes = require("./routes/passwordresetRoutes");
+const uploadRoutes = require("./routes/uploadRoutes");
 
-// Use Routes
+// Mount API Routes under proper endpoints
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
@@ -41,9 +57,15 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/newsletter", newsletterRoutes);
 app.use("/api/password-reset", passwordresetRoutes);
+app.use("/api/uploads", uploadRoutes);
+
+// Default Route: Render the home page using EJS (index.ejs)
+app.get("/", (req, res) => {
+    res.render("index", { title: "JIZZ - Campus Social Network" });
+});
 
 // Health Check Route
-app.get("/", (req, res) => res.send("🚀 JIZZ Social Media API Running..."));
+app.get("/health", (req, res) => res.send("🚀 JIZZ Social Media API Running..."));
 
-// Export app for use in server.js
+// Export the app for use in server.js
 module.exports = app;
