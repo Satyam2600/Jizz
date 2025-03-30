@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (response.ok) {
                     alert("✅ Registration successful! Redirecting...");
-                    window.location.href = "login.html";
+                    window.location.href = "/login";
                 } else {
                     alert(`⚠ Error: ${result.message || `HTTP ${response.status}`}`);
                 }
