@@ -134,30 +134,28 @@
         <!-- Cover Photo Section -->
         <div class="mb-4">
             <h1 class="fw-black mb-4" style="font-size: 36px;">Edit Profile</h1>
-            <div class="cover-photo-container mb-3" 
-                 style="background-image: url('https://cdn.usegalileo.ai/sdxl10/00ddc4cb-53e8-4e1b-a5f9-b03a1c88cc29.png')">
+            <div id="coverPhotoPreview" class="cover-photo-container mb-3" 
+                 style="background-image: url('/assets/images/default\ banner.jpg')">
             </div>
-            <button class="custom-btn btn btn-light-custom d-inline-flex align-items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                    <path d="M208,56H180.28L166.65,35.56A8,8,0,0,0,160,32H96a8,8,0,0,0-6.65,3.56L75.71,56H48A24,24,0,0,0,24,80V192a24,24,0,0,0,24,24H208a24,24,0,0,0,24-24V80A24,24,0,0,0,208,56Zm8,136a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V80a8,8,0,0,1,8-8H80a8,8,0,0,0,6.66-3.56L100.28,48h55.43l13.63,20.44A8,8,0,0,0,176,72h32a8,8,0,0,1,8,8ZM128,88a44,44,0,1,0,44,44A44.05,44.05,0,0,0,128,88Zm0,72a28,28,0,1,1,28-28A28,28,0,0,1,128,160Z"/>
-                </svg>
+            <button id="uploadCoverPhotoBtn" class="custom-btn btn btn-light-custom">
                 Upload Cover Photo
             </button>
+            <input type="file" id="coverPhotoInput" class="d-none" accept="image/*">
         </div>
+
 
         <!-- Profile Section -->
         <div class="text-center mb-5">
-            <div class="mx-auto mb-3 profile-photo rounded-circle" 
-                 style="width: 128px; height: 128px; background-image: url('/frontend/assets/images/default\ pfp.jpg')">
+            <!-- Profile Photo Preview -->
+            <div id="profilePhotoPreview" class="profile-photo mx-auto mb-3" 
+                 style="background-image: url('/assets/images/default-avatar.jpg'); width: 128px; height: 128px; border-radius: 50%; background-size: cover; background-position: center; border: 2px solid var(--border-color);">
             </div>
-            <h3 class="fw-bold mb-1 fs-4">Your Name</h3>
-            <p class="text-secondary mb-3">Upload a profile picture</p>
-            <button class="custom-btn btn btn-light-custom d-inline-flex align-items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                    <path d="M208,56H180.28L166.65,35.56A8,8,0,0,0,160,32H96a8,8,0,0,0-6.65,3.56L75.71,56H48A24,24,0,0,0,24,80V192a24,24,0,0,0,24,24H208a24,24,0,0,0,24-24V80A24,24,0,0,0,208,56Zm8,136a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V80a8,8,0,0,1,8-8H80a8,8,0,0,0,6.66-3.56L100.28,48h55.43l13.63,20.44A8,8,0,0,0,176,72h32a8,8,0,0,1,8,8ZM128,88a44,44,0,1,0,44,44A44.05,44.05,0,0,0,128,88Zm0,72a28,28,0,1,1,28-28A28,28,0,0,1,128,160Z"/>
-                </svg>
+        
+            <!-- Upload Profile Photo Button -->
+            <button id="uploadProfilePhotoBtn" class="custom-btn btn btn-light-custom">
                 Upload Profile Photo
             </button>
+            <input type="file" id="profilePhotoInput" class="d-none" accept="image/*">
         </div>
 
         <!-- Form Section -->
@@ -315,6 +313,65 @@
       alert("An error occurred. Please try again.");
     }
   });
+  document.getElementById("uploadProfilePhotoBtn").addEventListener("click", () => {
+            document.getElementById("profilePhotoInput").click();
+        });
+
+        document.getElementById("profilePhotoInput").addEventListener("change", async (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append("profilePhoto", file);
+
+                try {
+                    const response = await fetch("http://localhost:5000/api/uploads/profile-photo", {
+                        method: "POST",
+                        body: formData,
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        document.getElementById("profilePhotoPreview").style.backgroundImage = `url('${data.filePath}')`;
+                        alert("Profile photo uploaded successfully!");
+                    } else {
+                        alert("Failed to upload profile photo.");
+                    }
+                } catch (error) {
+                    console.error("Error uploading profile photo:", error);
+                    alert("An error occurred while uploading the profile photo.");
+                }
+            }
+        });
+// Handle Cover Photo Upload
+document.getElementById("uploadCoverPhotoBtn").addEventListener("click", () => {
+            document.getElementById("coverPhotoInput").click();
+        });
+
+        document.getElementById("coverPhotoInput").addEventListener("change", async (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append("coverPhoto", file);
+
+                try {
+                    const response = await fetch("http://localhost:5000/api/uploads/cover-photo", {
+                        method: "POST",
+                        body: formData,
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        document.getElementById("coverPhotoPreview").style.backgroundImage = `url('${data.filePath}')`;
+                        alert("Cover photo uploaded successfully!");
+                    } else {
+                        alert("Failed to upload cover photo.");
+                    }
+                } catch (error) {
+                    console.error("Error uploading cover photo:", error);
+                    alert("An error occurred while uploading the cover photo.");
+                }
+            }
+        });
 </script>
 </script>
 </body>

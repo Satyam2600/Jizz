@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
         storage.setItem("email", data.user.email);
 
         alert("Login successful!");
-        window.location.href = "/frontend/pages/editProfile.html"; // Redirect to edit profile page
+        window.location.href = "/edit-Profile"; // Redirect to edit profile page
       } else {
         alert("Login failed: " + (data.message || data.error));
       }
