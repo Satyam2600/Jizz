@@ -51,6 +51,10 @@ app.get("/edit-profile", (req, res) => {
     res.render("editProfile", { title: "Edit Profile - JIZZ" });
 });
 
+app.get("/forgotpassword", (req, res) => {
+    res.render("forgotpassword", { title: "Forgot Password - JIZZ" });
+});
+
 // Import Routes
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
