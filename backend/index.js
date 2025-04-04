@@ -48,7 +48,8 @@ app.get("/dashboard", (req, res) => {
 
 // Route for Edit Profile Page
 app.get("/edit-profile", (req, res) => {
-    res.render("editProfile", { title: "Edit Profile - JIZZ" });
+    const user = req.user || { _id: "64a7f9c2e4b0f5a1d2c3e4f5" }; // Replace with a valid fallback ObjectId
+    res.render("editProfile", { user });
 });
 
 app.get("/forgotpassword", (req, res) => {
@@ -67,7 +68,7 @@ const reportRoutes = require("./routes/reportRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const newsletterRoutes = require("./routes/newsletterRoutes");
 const passwordresetRoutes = require("./routes/passwordresetRoutes");
-const uploadRoutes = require("./routes/uploadRoutes");
+const uploadRoutes = require("./routes/uploadRoutes"); // Ensure uploadRoutes is properly mounted
 
 // Mount API Routes under proper endpoints
 app.use("/api/auth", authRoutes);
@@ -81,7 +82,7 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/newsletter", newsletterRoutes);
 app.use("/api/password-reset", passwordresetRoutes);
-app.use("/api/uploads", uploadRoutes);
+app.use("/api/uploads", uploadRoutes); // Ensure uploadRoutes is properly mounted
 
 // Health Check Route
 app.get("/health", (req, res) => res.send("🚀 JIZZ Social Media API Running..."));
