@@ -42,8 +42,26 @@ app.get("/register", (req, res) => {
 });
 
 // Route for Dashboard Page
-app.get("/dashboard", (req, res) => {
+app.get('/dashboard', async (req, res) => {
     res.render("dashboard", { title: "Dashboard - JIZZ" });
+    try {
+        const user = await User.findById(req.session.userId);
+        if (!user) return res.redirect('/login');
+        
+        res.render('dashboard', { 
+            user: {
+                fullName: user.fullName,
+                username: user.username,
+                avatar: user.avatar,
+                banner: user.banner,
+                department: user.department,
+                bio: user.bio,
+                socialLinks: user.socialLinks
+            }
+        });
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
 });
 
 // Route for Edit Profile Page

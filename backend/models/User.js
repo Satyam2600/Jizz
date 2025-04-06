@@ -1,25 +1,23 @@
-const mongoose = require("mongoose");
+// models/User.js
+const mongoose = require('mongoose');
 
-const UserSchema = new mongoose.Schema(
-  {
-    name: { type: String, required: true },
-    rollNo: { type: String, required: true, unique: true }, // Added Roll No. (UID)
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    profilePic: { type: String, default: "" }, // Deprecated, replaced by avatar
-    avatar: { type: String, default: "/assets/images/default-avatar.jpg" }, // Profile photo
-    banner: { type: String, default: "/assets/images/default-banner.jpg" }, // Banner photo
-    badges: [{ type: String }], // Gamification badges
-    savedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
-    role: { type: String, enum: ["user", "admin"], default: "user" }, // Admin Control
-    reports: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Report",
-      },
-    ],
-  },
-  { timestamps: true }
-);
+const userSchema = new mongoose.Schema({
+    fullName: { type: String, required: true },
+    username: { type: String, required: true, unique: true },
+    avatar: { type: String, default: '/assets/images/default-avatar.jpg' },
+    banner: { type: String, default: '/assets/images/default-banner.jpg' },
+    department: String,
+    year: String,
+    bio: String,
+    phoneNumber: String,
+    socialLinks: {
+        github: String,
+        linkedin: String,
+        twitter: String,
+        instagram: String
+    },
+    isPublic: { type: Boolean, default: true },
+    createdAt: { type: Date, default: Date.now }
+});
 
-module.exports = mongoose.model("User", UserSchema);
+module.exports = mongoose.model('User', userSchema);

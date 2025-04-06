@@ -35,6 +35,7 @@ router.post("/update-profile", async (req, res) => {
   } catch (error) {
     console.error("Error updating profile:", error);
     res.status(500).json({ message: "Server error" });
+  console.log(error)
   }
 });
 
