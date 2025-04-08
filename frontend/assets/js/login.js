@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const uidInput = document.getElementById("uid");
   const passwordInput = document.getElementById("password");
   const togglePassword = document.getElementById("togglePassword");
-  const rememberMe = document.getElementById("rememberMe");
+  const rememberMe = document.getElementById("rememberMe") || { checked: false };
 
   // Toggle password visibility
   togglePassword.addEventListener("click", () => {
@@ -19,38 +19,27 @@ document.addEventListener("DOMContentLoaded", () => {
   // Handle form submission
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-
     const uid = uidInput.value.trim();
     const password = passwordInput.value.trim();
-
     if (!uid || !password) {
       alert("Please fill in all required fields.");
       return;
     }
 
-    // Prepare login data
     const loginData = { uid, password };
-
     try {
       const response = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
+        credentials: "include", // When included, the browser sends/receives session cookies.
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
       });
-
       const data = await response.json();
-      console.log("Response:", data);
-
       if (response.ok) {
-        // Save token and user details based on "Remember Me" option
-        const storage = rememberMe.checked ? localStorage : sessionStorage;
-        storage.setItem("token", data.token);
-        storage.setItem("userId", data.user.id); // Store userId for future use
-        storage.setItem("uid", data.user.rollNo);
-        storage.setItem("email", data.user.email);
-
-        alert("Login successful!");
-        window.location.href = "/edit-Profile"; // Redirect to edit profile page
+        // Save the roll number for later use
+        localStorage.setItem("uid", data.user.rollNo);
+        console.log("Login successful! Redirecting to edit profile.");
+        window.location.href = "/editProfile";
       } else {
         alert("Login failed: " + (data.message || data.error));
       }

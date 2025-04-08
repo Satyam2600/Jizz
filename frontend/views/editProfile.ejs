@@ -8,7 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-
     <style>
         :root {
             --primary-color: #1C160C;
@@ -96,22 +95,18 @@
         input:checked + .toggle-handle {
             transform: translateX(20px);
         }
-  nav{
-    background-color: white;
-  }
+        nav{
+          background-color: white;
+        }
     </style>
 </head>
 <body>
-    <!-- Header -->
- 
     <nav class="navbar navbar-expand-lg fixed-top border-bottom">
         <div class="container-fluid px-4">
             <a class="navbar-brand fw-bold" href="#">jizz</a>
-            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
@@ -124,18 +119,15 @@
                         <a class="nav-link" href="#"><i class="bi bi-calendar-event me-2"></i>Events</a>
                     </li>
                 </ul>
-
-                
             </div>
         </div>
     </nav>
-'
+
     <main class="container py-5 px-5" style="max-width: 960px;">
-        <!-- Cover Photo Section -->
         <div class="mb-4">
             <h1 class="fw-black mb-4" style="font-size: 36px;">Edit Profile</h1>
             <div id="coverPhotoPreview" class="cover-photo-container mb-3" 
-                 style="background-image: url('/assets/images/default\ banner.jpg')">
+                 style="background-image: url('/assets/images/default-banner.jpg')">
             </div>
             <button id="uploadCoverPhotoBtn" class="custom-btn btn btn-light-custom">
                 Upload Cover Photo
@@ -143,30 +135,21 @@
             <input type="file" id="coverPhotoInput" class="d-none" accept="image/*">
         </div>
 
-
-        <!-- Profile Section -->
         <div class="text-center mb-5">
-            <!-- Profile Photo Preview -->
             <div id="profilePhotoPreview" class="profile-photo mx-auto mb-3" 
                  style="background-image: url('/assets/images/default-avatar.jpg'); width: 128px; height: 128px; border-radius: 50%; background-size: cover; background-position: center; border: 2px solid var(--border-color);">
             </div>
-        
-            <!-- Upload Profile Photo Button -->
             <button id="uploadProfilePhotoBtn" class="custom-btn btn btn-light-custom">
                 Upload Profile Photo
             </button>
             <input type="file" id="profilePhotoInput" class="d-none" accept="image/*">
         </div>
 
-        <!-- Form Section -->
         <form class="mb-5">
-            <!-- Full Name -->
             <div class="mb-4">
                 <label class="form-label fw-medium mb-2">Full Name</label>
                 <input type="text" class="form-control form-control-custom" placeholder="Full Name">
             </div>
-
-            <!-- Username -->
             <div class="mb-4">
                 <label class="form-label fw-medium mb-2">Username</label>
                 <div class="input-group">
@@ -178,8 +161,6 @@
                     </span>
                 </div>
             </div>
-
-            <!-- Department -->
             <div class="mb-4">
                 <label class="form-label fw-medium mb-2">Department</label>
                 <select class="form-select form-control-custom custom-select">
@@ -191,33 +172,24 @@
                     <option value="Production">Production</option>
                     <option value="Civil">Civil</option>
                     <option value="Electrical">Electrical</option>
-                    <option value=""></option>
-                </select>.
+                </select>
             </div>
-
-            <!-- Bio -->
             <div class="mb-4">
                 <label class="form-label fw-medium mb-2">Bio</label>
                 <textarea class="form-control form-control-custom" rows="4"></textarea>
             </div>
-
-            <!-- Contact Info -->
             <div class="mb-4">
                 <label class="form-label fw-medium mb-2">Phone Number</label>
                 <input type="tel" class="form-control form-control-custom">
             </div>
-
-            <!-- Social Links -->
             <div class="mb-4">
                 <label class="form-label fw-medium mb-2">GitHub</label>
-                <input type="url" class="form-control form-control-custom"placeholder="Github.com/yourhandle">
+                <input type="url" class="form-control form-control-custom" placeholder="Github.com/yourhandle">
             </div>
-
             <div class="mb-4">
                 <label class="form-label fw-medium mb-2">LinkedIn</label>
-                <input type="url" class="form-control form-control-custom"placeholder="linkedin.com/yourhandle">
+                <input type="url" class="form-control form-control-custom" placeholder="linkedin.com/yourhandle">
             </div>
-
             <div class="mb-4">
                 <label class="form-label fw-medium mb-2">Twitter</label>
                 <input type="url" class="form-control form-control-custom" placeholder="twitter.com/yourhandle">
@@ -226,12 +198,7 @@
                 <label class="form-label fw-medium mb-2">Instagram</label>
                 <input type="url" class="form-control form-control-custom" placeholder="Instagram.com/yourhandle">
             </div>
-
-
-            <!-- Settings Section -->
             <h3 class="fw-bold fs-5 mt-5 mb-3">Settings</h3>
-            
-            <!-- Public Profile Toggle -->
             <div class="d-flex justify-content-between align-items-center py-2">
                 <div>
                     <p class="mb-0 fw-medium">Public Profile</p>
@@ -242,8 +209,6 @@
                     <div class="toggle-handle"></div>
                 </label>
             </div>
-
-            <!-- Notification Preferences -->
             <div class="d-flex justify-content-between align-items-center py-2">
                 <div>
                     <p class="mb-0 fw-medium">Notification Preferences</p>
@@ -251,14 +216,10 @@
                 </div>
                 <button class="btn btn-link text-decoration-none fw-medium">Manage</button>
             </div>
-
-            <!-- Change Password -->
             <div class="d-flex justify-content-between align-items-center py-2">
                 <p class="mb-0">Change Password</p>
                 <button class="btn btn-link text-decoration-none fw-medium">Update</button>
             </div>
-
-            <!-- Action Buttons -->
             <div class="d-flex justify-content-end gap-3 mt-5">
                 <button type="button" class="custom-btn btn btn-light-custom">Cancel</button>
                 <button type="submit" class="custom-btn btn btn-success-custom">Save Changes</button>
@@ -269,17 +230,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const userId = localStorage.getItem("userId") || sessionStorage.getItem("userId");
-
-  if (!userId) {
-    alert("User not logged in. Redirecting to login page.");
-    window.location.href = "/login"; // Redirect to login page if userId is not found
-    return;
-  }
-});
- 
-  document.querySelector("form").addEventListener("submit", async (e) => {
+document.querySelector("form").addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const fullName = document.querySelector('input[placeholder="Full Name"]').value.trim();
@@ -292,9 +243,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const twitter = document.querySelector('input[placeholder="twitter.com/yourhandle"]').value.trim();
     const instagram = document.querySelector('input[placeholder="Instagram.com/yourhandle"]').value.trim();
 
+    // Retrieve the uid (roll number) entered during login from localStorage or sessionStorage
+    const uid = localStorage.getItem("uid") || sessionStorage.getItem("uid");
+
     const userProfile = {
-      userId: "<%= user._id %>", // Replace with the actual user ID
-      
+      userId: uid, // Use the uid stored after login
       fullName,
       username,
       department,
@@ -323,85 +276,85 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error updating profile:", error);
       alert("An error occurred. Please try again.");
     }
-  });
-  document.getElementById("uploadProfilePhotoBtn").addEventListener("click", () => {
-            document.getElementById("profilePhotoInput").click();
-        });
-
-        document.getElementById("profilePhotoInput").addEventListener("change", async (event) => {
-  const file = event.target.files[0];
-  const userId = localStorage.getItem("userId") || sessionStorage.getItem("userId");
-
-  if (!userId) {
-    alert("User not logged in. Redirecting to login page.");
-    window.location.href = "/login";
-    return;
-  }
-
-  if (file) {
-    const formData = new FormData();
-    formData.append("profilePhoto", file);
-    formData.append("userId", userId); // Include userId in the request
-
-    try {
-      const response = await fetch("http://localhost:5000/api/uploads/profile-photo", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        document.getElementById("profilePhotoPreview").style.backgroundImage = `url('${data.filePath}')`;
-        alert("Profile photo uploaded successfully!");
-      } else {
-        alert("Failed to upload profile photo.");
-      }
-    } catch (error) {
-      console.error("Error uploading profile photo:", error);
-      alert("An error occurred while uploading the profile photo.");
-    }
-  }
 });
-// Handle Cover Photo Upload
+  
+document.getElementById("uploadProfilePhotoBtn").addEventListener("click", () => {
+    document.getElementById("profilePhotoInput").click();
+});
+  
+document.getElementById("profilePhotoInput").addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+    const userId = localStorage.getItem("userId") || sessionStorage.getItem("userId");
+
+    if (!userId) {
+        alert("User not logged in. Redirecting to login page.");
+        window.location.href = "/login";
+        return;
+    }
+
+    if (file) {
+        const formData = new FormData();
+        formData.append("profilePhoto", file);
+        formData.append("userId", userId);
+
+        try {
+            const response = await fetch("http://localhost:5000/api/uploads/profile-photo", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById("profilePhotoPreview").style.backgroundImage = `url('${data.filePath}')`;
+                alert("Profile photo uploaded successfully!");
+            } else {
+                alert("Failed to upload profile photo.");
+            }
+        } catch (error) {
+            console.error("Error uploading profile photo:", error);
+            alert("An error occurred while uploading the profile photo.");
+        }
+    }
+});
+
 document.getElementById("uploadCoverPhotoBtn").addEventListener("click", () => {
-            document.getElementById("coverPhotoInput").click();
-        });
-
-        document.getElementById("coverPhotoInput").addEventListener("change", async (event) => {
-  const file = event.target.files[0];
-  const userId = localStorage.getItem("userId") || sessionStorage.getItem("userId");
-
-  if (!userId) {
-    alert("User not logged in. Redirecting to login page.");
-    window.location.href = "/login";
-    return;
-  }
-
-  if (file) {
-    const formData = new FormData();
-    formData.append("coverPhoto", file);
-    formData.append("userId", userId); // Include userId in the request
-
-    try {
-      const response = await fetch("http://localhost:5000/api/uploads/cover-photo", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        document.getElementById("coverPhotoPreview").style.backgroundImage = `url('${data.filePath}')`;
-        alert("Cover photo uploaded successfully!");
-      } else {
-        alert("Failed to upload cover photo.");
-      }
-    } catch (error) {
-      console.error("Error uploading cover photo:", error);
-      alert("An error occurred while uploading the cover photo.");
-    }
-  }
+    document.getElementById("coverPhotoInput").click();
 });
-</script>
+
+document.getElementById("coverPhotoInput").addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+    const userId = localStorage.getItem("userId") || sessionStorage.getItem("userId");
+
+    if (!userId) {
+        alert("User not logged in. Redirecting to login page.");
+        window.location.href = "/login";
+        return;
+    }
+
+    if (file) {
+        const formData = new FormData();
+        formData.append("coverPhoto", file);
+        formData.append("userId", userId);
+
+        try {
+            const response = await fetch("http://localhost:5000/api/uploads/cover-photo", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById("coverPhotoPreview").style.backgroundImage = `url('${data.filePath}')`;
+                alert("Cover photo uploaded successfully!");
+            } else {
+                alert("Failed to upload cover photo.");
+            }
+        } catch (error) {
+            console.error("Error uploading cover photo:", error);
+            alert("An error occurred while uploading the cover photo.");
+        }
+    }
+});
 </script>
 </body>
-</html> 
+</html>

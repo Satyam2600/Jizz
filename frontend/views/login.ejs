@@ -95,12 +95,12 @@
       <form id="loginForm">
         <div class="mb-3">
           <label for="uid" class="form-label">Roll No. (UID)</label>
-          <input type="text" id="uid" class="form-control" placeholder="Enter your Roll No." required>
+          <input type="text" id="uid" class="form-control" placeholder="Enter your Roll No." name="uid" required>
         </div>
         <div class="mb-3">
           <label for="password" class="form-label">Password</label>
           <div class="input-group">
-            <input type="password" id="password" class="form-control" placeholder="Enter your password" autocomplete="current-password" required>
+            <input type="password" id="password" class="form-control" placeholder="Enter your password" autocomplete="current-password" name="password"required>
             <button class="btn btn-outline-secondary" type="button" id="togglePassword">
               <i class="fas fa-eye"></i>
             </button>
@@ -113,11 +113,14 @@
           </div>
           <a href="/forgotpassword" class="text-decoration-none">Forgot Password?</a>
         </div>
-        <button type="submit" class="btn btn-primary w-100">Login</button>
-      </form>
+
+      <button type="submit" class="btn btn-primary w-100">Login</button>
+  
+</form>
       <p class="text-center mt-3">Don't have an account? <a href="/register">Sign Up</a></p>
     </div>
   </div>
+
   
   <!-- Bootstrap JS Bundle -->  
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

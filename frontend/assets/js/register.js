@@ -68,22 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 console.log("Response Status:", response.status);
 
-                // Ensure response is JSON
-                const text = await response.text();
-                if (!text.trim()) {
-                    throw new Error("Empty server response");
-                }
-
-                // Debug: Log raw response
-                console.log("Raw Response:", text);
-
-                let result;
-                try {
-                    result = JSON.parse(text);
-                } catch (jsonError) {
-                    console.error("JSON Parsing Error:", jsonError);
-                    throw new Error("Invalid JSON response from server.");
-                }
+                const result = await response.json();
 
                 if (response.ok) {
                     alert("✅ Registration successful! Redirecting...");
