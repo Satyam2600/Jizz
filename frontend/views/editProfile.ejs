@@ -284,9 +284,9 @@ document.getElementById("uploadProfilePhotoBtn").addEventListener("click", () =>
   
 document.getElementById("profilePhotoInput").addEventListener("change", async (event) => {
     const file = event.target.files[0];
-    const userId = localStorage.getItem("userId") || sessionStorage.getItem("userId");
+    const uid = localStorage.getItem("uid") || sessionStorage.getItem("uid");
 
-    if (!userId) {
+    if (!uid) {
         alert("User not logged in. Redirecting to login page.");
         window.location.href = "/login";
         return;
@@ -295,7 +295,7 @@ document.getElementById("profilePhotoInput").addEventListener("change", async (e
     if (file) {
         const formData = new FormData();
         formData.append("profilePhoto", file);
-        formData.append("userId", userId);
+        formData.append("userId", uid);
 
         try {
             const response = await fetch("http://localhost:5000/api/uploads/profile-photo", {
@@ -323,9 +323,9 @@ document.getElementById("uploadCoverPhotoBtn").addEventListener("click", () => {
 
 document.getElementById("coverPhotoInput").addEventListener("change", async (event) => {
     const file = event.target.files[0];
-    const userId = localStorage.getItem("userId") || sessionStorage.getItem("userId");
+    const uid = localStorage.getItem("uid") || sessionStorage.getItem("uid");
 
-    if (!userId) {
+    if (!uid) {
         alert("User not logged in. Redirecting to login page.");
         window.location.href = "/login";
         return;
@@ -334,7 +334,7 @@ document.getElementById("coverPhotoInput").addEventListener("change", async (eve
     if (file) {
         const formData = new FormData();
         formData.append("coverPhoto", file);
-        formData.append("userId", userId);
+        formData.append("userId", uid);
 
         try {
             const response = await fetch("http://localhost:5000/api/uploads/cover-photo", {
