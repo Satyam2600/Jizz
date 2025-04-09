@@ -54,5 +54,41 @@ router.post(
     }
   }
 );
+// Endpoint for updating Profile Photo
+router.post("/profile-photo", upload.single("profilePhoto"), async (req, res) => {
+  try {
+    const user = await User.findOneAndUpdate(
+      { rollNo: req.body.userId }, // Using the uid (rollNo) sent in the request body
+      { avatar: `/assets/uploads/${req.file.filename}` },
+      { new: true }
+    );
 
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({ filePath: `/assets/uploads/${req.file.filename}` });
+  } catch (error) {
+    console.error("Error updating profile photo:", error);
+    res.status(500).json({ message: "Error updating profile photo" });
+  }
+});
+
+// Endpoint for updating Cover Photo
+router.post("/cover-photo", upload.single("coverPhoto"), async (req, res) => {
+  try {
+    const user = await User.findOneAndUpdate(
+      { rollNo: req.body.userId }, // Using the uid (rollNo) sent in the request body
+      { banner: `/assets/uploads/${req.file.filename}` },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({ filePath: `/assets/uploads/${req.file.filename}` });
+  } catch (error) {
+    console.error("Error updating cover photo:", error);
+    res.status(500).json({ message: "Error updating cover photo" });
+  }
+});
 module.exports = router;

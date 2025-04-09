@@ -64,11 +64,7 @@ app.get("/dashboard", async (req, res) => {
 });
 
 app.get("/editProfile", (req, res) => {
- 
-
   res.render("editProfile", { title: "Edit Profile - JIZZ" });
-
-
 });
 app.get("/forgotpassword", (req, res) => {
   res.render("forgotpassword", { title: "Forgot Password - JIZZ" });
