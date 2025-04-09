@@ -1,77 +1,73 @@
-// backend/index.js
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
+const session = require("express-session");
 const connectDB = require("./config/db");
+const User = require("./models/User");
 
-// Load environment variables from .env file
 dotenv.config();
-
-// Connect to MongoDB
 connectDB();
 
-// Initialize Express App
 const app = express();
 
-// Middleware: parse JSON and URL-encoded bodies
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// Serve static files from the "frontend/assets" directory
+app.use(
+  session({
+    secret: process.env.JWT_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false },
+  })
+);
+
 app.use("/assets", express.static(path.join(__dirname, "../frontend/assets")));
 
-// Set up EJS as the view engine and define the views directory
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "../frontend/views")); // Updated path to views directory
+app.set("views", path.join(__dirname, "../frontend/views"));
 
-// Default Route: Render the home page using EJS (index.ejs)
 app.get("/", (req, res) => {
-    res.render("index", { title: "JIZZ - Campus Social Network" });
+  res.render("index", { title: "JIZZ - Campus Social Network" });
 });
 
-// Route for Login Page
 app.get("/login", (req, res) => {
-    res.render("login", { title: "Login - JIZZ" });
+  res.render("login", { title: "Login - JIZZ" });
 });
 
-// Route for Register Page
 app.get("/register", (req, res) => {
-    res.render("register", { title: "Register - JIZZ" });
+  res.render("register", { title: "Register - JIZZ" });
 });
 
-// Route for Dashboard Page
-app.get('/dashboard', async (req, res) => {
-    res.render("dashboard", { title: "Dashboard - JIZZ" });
-    try {
-        const user = await User.findById(req.session.userId);
-        if (!user) return res.redirect('/login');
-        
-        res.render('dashboard', { 
-            user: {
-                fullName: user.fullName,
-                username: user.username,
-                avatar: user.avatar,
-                banner: user.banner,
-                department: user.department,
-                bio: user.bio,
-                socialLinks: user.socialLinks
-            }
-        });
-    } catch (error) {
-        res.status(500).send('Server error');
-    }
+app.get("/dashboard", async (req, res) => {
+  try {
+    const user = await User.findById(req.session.userId);
+    if (!user) return res.redirect("/login");
+
+    res.render("dashboard", {
+      user: {
+        fullName: user.fullName,
+        username: user.username,
+        avatar: user.avatar,
+        banner: user.banner,
+        department: user.department,
+        bio: user.bio,
+        socialLinks: user.socialLinks,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error);
+    res.status(500).send("Server error");
+  }
 });
 
-// Route for Edit Profile Page
-app.get("/edit-profile", (req, res) => {
-    const user = req.user || { _id: "64a7f9c2e4b0f5a1d2c3e4f5" }; // Replace with a valid fallback ObjectId
-    res.render("editProfile", { user });
+app.get("/editProfile", (req, res) => {
+  res.render("editProfile", { title: "Edit Profile - JIZZ" });
 });
-
 app.get("/forgotpassword", (req, res) => {
-    res.render("forgotpassword", { title: "Forgot Password - JIZZ" });
+  res.render("forgotpassword", { title: "Forgot Password - JIZZ" });
 });
 
 // Import Routes
@@ -86,9 +82,8 @@ const reportRoutes = require("./routes/reportRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const newsletterRoutes = require("./routes/newsletterRoutes");
 const passwordresetRoutes = require("./routes/passwordresetRoutes");
-const uploadRoutes = require("./routes/uploadRoutes"); // Ensure uploadRoutes is properly mounted
+const uploadRoutes = require("./routes/uploadRoutes");
 
-// Mount API Routes under proper endpoints
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
@@ -100,10 +95,8 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/newsletter", newsletterRoutes);
 app.use("/api/password-reset", passwordresetRoutes);
-app.use("/api/uploads", uploadRoutes); // Ensure uploadRoutes is properly mounted
+app.use("/api/uploads", uploadRoutes);
 
-// Health Check Route
 app.get("/health", (req, res) => res.send("🚀 JIZZ Social Media API Running..."));
 
-// Export the app for use in server.js
-module.exports = app;
+module.exports = app; 
