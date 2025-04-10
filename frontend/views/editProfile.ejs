@@ -145,15 +145,15 @@
             <input type="file" id="profilePhotoInput" class="d-none" accept="image/*">
         </div>
 
-        <form class="mb-5">
+        <form class="mb-5" id="profileForm">
             <div class="mb-4">
                 <label class="form-label fw-medium mb-2">Full Name</label>
-                <input type="text" class="form-control form-control-custom" placeholder="Full Name">
+                <input type="text" class="form-control form-control-custom" placeholder="Full Name" id="fullName">
             </div>
             <div class="mb-4">
                 <label class="form-label fw-medium mb-2">Username</label>
                 <div class="input-group">
-                    <input type="text" class="form-control form-control-custom rounded-end-0" placeholder="Username">
+                    <input type="text" class="form-control form-control-custom rounded-end-0" placeholder="Username" id="username">
                     <span class="input-group-text bg-white border-start-0 rounded-end">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#A18249" viewBox="0 0 256 256">
                             <path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/>
@@ -163,7 +163,7 @@
             </div>
             <div class="mb-4">
                 <label class="form-label fw-medium mb-2">Department</label>
-                <select class="form-select form-control-custom custom-select">
+                <select class="form-select form-control-custom custom-select" id="department">
                     <option value=""></option>
                     <option value="CSE">CSE</option>
                     <option value="ECE">ECE</option>
@@ -175,28 +175,51 @@
                 </select>
             </div>
             <div class="mb-4">
+                <label class="form-label fw-medium mb-2">Year of Study</label>
+                <select class="form-select form-control-custom custom-select" id="year">
+                    <option value=""></option>
+                    <option value="1">First Year</option>
+                    <option value="2">Second Year</option>
+                    <option value="3">Third Year</option>
+                    <option value="4">Fourth Year</option>
+                    <option value="5">Fifth Year</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="form-label fw-medium mb-2">Semester</label>
+                <select class="form-select form-control-custom custom-select" id="semester">
+                    <option value=""></option>
+                    <option value="1">Semester 1</option>
+                    <option value="2">Semester 2</option>
+                    <option value="3">Semester 3</option>
+                    <option value="4">Semester 4</option>
+                    <option value="5">Semester 5</option>
+                    <option value="6">Semester 6</option>
+                    <option value="7">Semester 7</option>
+                    <option value="8">Semester 8</option>
+                </select>
+            </div>
+            <div class="mb-4">
                 <label class="form-label fw-medium mb-2">Bio</label>
-                <textarea class="form-control form-control-custom" rows="4"></textarea>
+                <textarea class="form-control form-control-custom" rows="4" placeholder="Tell us about yourself, your interests, and what you're studying..." id="bio"></textarea>
             </div>
             <div class="mb-4">
-                <label class="form-label fw-medium mb-2">Phone Number</label>
-                <input type="tel" class="form-control form-control-custom">
+                <label class="form-label fw-medium mb-2">Skills</label>
+                <input type="text" class="form-control form-control-custom" placeholder="e.g., Python, JavaScript, UI/UX Design, Public Speaking" id="skills">
+                <small class="text-muted">Separate skills with commas</small>
             </div>
             <div class="mb-4">
-                <label class="form-label fw-medium mb-2">GitHub</label>
-                <input type="url" class="form-control form-control-custom" placeholder="Github.com/yourhandle">
+                <label class="form-label fw-medium mb-2">Interests</label>
+                <input type="text" class="form-control form-control-custom" placeholder="e.g., AI, Web Development, Photography, Basketball" id="interests">
+                <small class="text-muted">Separate interests with commas</small>
+            </div>
+            <div class="mb-4">
+                <label class="form-label fw-medium mb-2">Portfolio/Projects</label>
+                <input type="url" class="form-control form-control-custom" placeholder="Link to your portfolio or project showcase" id="portfolio">
             </div>
             <div class="mb-4">
                 <label class="form-label fw-medium mb-2">LinkedIn</label>
-                <input type="url" class="form-control form-control-custom" placeholder="linkedin.com/yourhandle">
-            </div>
-            <div class="mb-4">
-                <label class="form-label fw-medium mb-2">Twitter</label>
-                <input type="url" class="form-control form-control-custom" placeholder="twitter.com/yourhandle">
-            </div>
-            <div class="mb-4">
-                <label class="form-label fw-medium mb-2">Instagram</label>
-                <input type="url" class="form-control form-control-custom" placeholder="Instagram.com/yourhandle">
+                <input type="url" class="form-control form-control-custom" placeholder="linkedin.com/yourhandle" id="linkedin">
             </div>
             <h3 class="fw-bold fs-5 mt-5 mb-3">Settings</h3>
             <div class="d-flex justify-content-between align-items-center py-2">
@@ -230,51 +253,134 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-document.querySelector("form").addEventListener("submit", async (e) => {
+// Pre-fill form with existing user data
+document.addEventListener("DOMContentLoaded", () => {
+    // Get user data from localStorage
+    const userFullName = localStorage.getItem("userFullName");
+    const userUsername = localStorage.getItem("userUsername");
+    const userDepartment = localStorage.getItem("userDepartment");
+    const userYear = localStorage.getItem("userYear");
+    const userSemester = localStorage.getItem("userSemester");
+    const userBio = localStorage.getItem("userBio");
+    const userSkills = localStorage.getItem("userSkills");
+    const userInterests = localStorage.getItem("userInterests");
+    const userPortfolio = localStorage.getItem("userPortfolio");
+    const userLinkedin = localStorage.getItem("userLinkedin");
+    const userProfilePhoto = localStorage.getItem("userProfilePhoto");
+    const userCoverPhoto = localStorage.getItem("userCoverPhoto");
+    
+    // Pre-fill form fields
+    if (userFullName) {
+        document.getElementById("fullName").value = userFullName;
+    }
+    
+    if (userUsername) {
+        document.getElementById("username").value = userUsername;
+    }
+    
+    if (userDepartment) {
+        const departmentSelect = document.getElementById("department");
+        for (let i = 0; i < departmentSelect.options.length; i++) {
+            if (departmentSelect.options[i].value === userDepartment) {
+                departmentSelect.selectedIndex = i;
+                break;
+            }
+        }
+    }
+    
+    if (userYear) {
+        const yearSelect = document.getElementById("year");
+        for (let i = 0; i < yearSelect.options.length; i++) {
+            if (yearSelect.options[i].value === userYear) {
+                yearSelect.selectedIndex = i;
+                break;
+            }
+        }
+    }
+    
+    if (userSemester) {
+        const semesterSelect = document.getElementById("semester");
+        for (let i = 0; i < semesterSelect.options.length; i++) {
+            if (semesterSelect.options[i].value === userSemester) {
+                semesterSelect.selectedIndex = i;
+                break;
+            }
+        }
+    }
+    
+    if (userBio) {
+        document.getElementById("bio").value = userBio;
+    }
+    
+    if (userSkills) {
+        document.getElementById("skills").value = userSkills;
+    }
+    
+    if (userInterests) {
+        document.getElementById("interests").value = userInterests;
+    }
+    
+    if (userPortfolio) {
+        document.getElementById("portfolio").value = userPortfolio;
+    }
+    
+    if (userLinkedin) {
+        document.getElementById("linkedin").value = userLinkedin;
+    }
+    
+    // Set profile photo if it exists
+    if (userProfilePhoto) {
+        document.getElementById("profilePhotoPreview").style.backgroundImage = `url('${userProfilePhoto}')`;
+    }
+    
+    // Set cover photo if it exists
+    if (userCoverPhoto) {
+        document.getElementById("coverPhotoPreview").style.backgroundImage = `url('${userCoverPhoto}')`;
+    }
+});
+
+document.getElementById('profileForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-
-    const fullName = document.querySelector('input[placeholder="Full Name"]').value.trim();
-    const username = document.querySelector('input[placeholder="Username"]').value.trim();
-    const department = document.querySelector(".custom-select").value;
-    const bio = document.querySelector("textarea").value.trim();
-    const phoneNumber = document.querySelector('input[type="tel"]').value.trim();
-    const github = document.querySelector('input[placeholder="Github.com/yourhandle"]').value.trim();
-    const linkedin = document.querySelector('input[placeholder="linkedin.com/yourhandle"]').value.trim();
-    const twitter = document.querySelector('input[placeholder="twitter.com/yourhandle"]').value.trim();
-    const instagram = document.querySelector('input[placeholder="Instagram.com/yourhandle"]').value.trim();
-
-    // Retrieve the uid (roll number) entered during login from localStorage or sessionStorage
-    const uid = localStorage.getItem("uid") || sessionStorage.getItem("uid");
-
-    const userProfile = {
-      userId: uid, // Use the uid stored after login
-      fullName,
-      username,
-      department,
-      bio,
-      phoneNumber,
-      github,
-      linkedin,
-      twitter,
-      instagram,
-    };
+    
+    const formData = new FormData();
+    formData.append('fullName', document.getElementById('fullName').value);
+    formData.append('username', document.getElementById('username').value);
+    formData.append('department', document.getElementById('department').value);
+    formData.append('year', document.getElementById('year').value);
+    formData.append('semester', document.getElementById('semester').value);
+    formData.append('bio', document.getElementById('bio').value);
+    formData.append('skills', document.getElementById('skills').value);
+    formData.append('interests', document.getElementById('interests').value);
+    formData.append('portfolio', document.getElementById('portfolio').value);
+    formData.append('linkedin', document.getElementById('linkedin').value);
+    
+    const avatarFile = document.getElementById('profilePhotoInput').files[0];
+    if (avatarFile) {
+        formData.append('avatar', avatarFile);
+    }
+    
+    const bannerFile = document.getElementById('coverPhotoInput').files[0];
+    if (bannerFile) {
+        formData.append('banner', bannerFile);
+    }
 
     try {
-      const response = await fetch("http://localhost:5000/api/users/update-profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userProfile),
-      });
+        const response = await fetch('/api/users/update-profile', {
+            method: 'POST',
+            body: formData
+        });
 
-      if (response.ok) {
-        alert("Profile updated successfully!");
-        window.location.href = "/dashboard";
-      } else {
-        alert("Failed to update profile. Please try again.");
-      }
+        const data = await response.json();
+        
+        if (response.ok) {
+            alert('Profile updated successfully!');
+            window.location.href = '/profile';
+        } else {
+            alert(data.message || 'Failed to update profile');
+        }
     } catch (error) {
-      console.error("Error updating profile:", error);
-      alert("An error occurred. Please try again.");
+        console.error('Error:', error);
+        alert('An error occurred while updating your profile');
     }
 });
   
@@ -305,7 +411,10 @@ document.getElementById("profilePhotoInput").addEventListener("change", async (e
 
             if (response.ok) {
                 const data = await response.json();
-                document.getElementById("profilePhotoPreview").style.backgroundImage = `url('${data.filePath}')`;
+                const profilePhotoUrl = data.filePath;
+                document.getElementById("profilePhotoPreview").style.backgroundImage = `url('${profilePhotoUrl}')`;
+                // Store the profile photo URL in localStorage
+                localStorage.setItem("userProfilePhoto", profilePhotoUrl);
                 alert("Profile photo uploaded successfully!");
             } else {
                 alert("Failed to upload profile photo.");
@@ -344,7 +453,10 @@ document.getElementById("coverPhotoInput").addEventListener("change", async (eve
 
             if (response.ok) {
                 const data = await response.json();
-                document.getElementById("coverPhotoPreview").style.backgroundImage = `url('${data.filePath}')`;
+                const coverPhotoUrl = data.filePath;
+                document.getElementById("coverPhotoPreview").style.backgroundImage = `url('${coverPhotoUrl}')`;
+                // Store the cover photo URL in localStorage
+                localStorage.setItem("userCoverPhoto", coverPhotoUrl);
                 alert("Cover photo uploaded successfully!");
             } else {
                 alert("Failed to upload cover photo.");

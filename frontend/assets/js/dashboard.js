@@ -12,28 +12,80 @@ document.querySelector('.navbar-toggler').addEventListener('click', () => {
         sidebar.classList.toggle('active');
     });
 });
-document.addEventListener("DOMContentLoaded", async () => {
-    const userId = localStorage.getItem("userId");
 
-    if (!userId) {
+document.addEventListener("DOMContentLoaded", async () => {
+    const uid = localStorage.getItem("uid");
+
+    if (!uid) {
       alert("User not logged in. Redirecting to login page.");
       window.location.href = "/login";
       return;
     }
 
-    try {
-      const response = await fetch(`http://localhost:5000/api/users/get-profile?userId=${userId}`);
-      const userProfile = await response.json();
+    // First try to get user details from localStorage (from editProfile page)
+    const userFullName = localStorage.getItem("userFullName");
+    const userUsername = localStorage.getItem("userUsername");
+    const userProfilePhoto = localStorage.getItem("userProfilePhoto");
+    const userCoverPhoto = localStorage.getItem("userCoverPhoto");
+    const userDepartment = localStorage.getItem("userDepartment");
+    const userBio = localStorage.getItem("userBio");
 
-      if (response.ok) {
-        document.getElementById("userName").textContent = userProfile.name || "John Doe";
-        document.getElementById("userHandle").textContent = userProfile.rollNo ? `@${userProfile.rollNo}` : "@unknown";
-        document.getElementById("userAvatar").src = userProfile.avatar || "/assets/images/default-avatar.jpg";
-      } else {
-        alert("Failed to load user profile.");
-      }
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
-      alert("An error occurred while loading the profile.");
+    // If we have user details in localStorage, use them
+    if (userFullName) {
+      document.getElementById("userName").textContent = userFullName;
     }
-  });
+    
+    if (userUsername) {
+      document.getElementById("userHandle").textContent = `@${userUsername}`;
+    }
+    
+    if (userProfilePhoto) {
+      document.getElementById("userAvatar").src = userProfilePhoto;
+      
+      // Also update the dropdown avatar if it exists
+      const dropdownUserAvatar = document.getElementById("dropdownUserAvatar");
+      if (dropdownUserAvatar) {
+        dropdownUserAvatar.style.backgroundImage = `url('${userProfilePhoto}')`;
+      }
+    }
+    
+    // If we don't have user details in localStorage, fetch them from the server
+    if (!userFullName || !userUsername || !userProfilePhoto) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/users/get-profile?userId=${uid}`);
+        const userProfile = await response.json();
+
+        if (response.ok) {
+          // Only update elements if they weren't set from localStorage
+          if (!userFullName) {
+            document.getElementById("userName").textContent = userProfile.name || "John Doe";
+          }
+          
+          if (!userUsername) {
+            document.getElementById("userHandle").textContent = userProfile.rollNo ? `@${userProfile.rollNo}` : "@unknown";
+          }
+          
+          if (!userProfilePhoto) {
+            const avatarUrl = userProfile.avatar || "/assets/images/default-avatar.jpg";
+            document.getElementById("userAvatar").src = avatarUrl;
+            
+            // Also update the dropdown avatar if it exists
+            const dropdownUserAvatar = document.getElementById("dropdownUserAvatar");
+            if (dropdownUserAvatar) {
+              dropdownUserAvatar.style.backgroundImage = `url('${avatarUrl}')`;
+            }
+          }
+          
+          // Store the fetched data in localStorage for future use
+          if (userProfile.name) localStorage.setItem("userFullName", userProfile.name);
+          if (userProfile.rollNo) localStorage.setItem("userUsername", userProfile.rollNo);
+          if (userProfile.avatar) localStorage.setItem("userProfilePhoto", userProfile.avatar);
+          if (userProfile.banner) localStorage.setItem("userCoverPhoto", userProfile.banner);
+        } else {
+          console.error("Failed to load user profile from server.");
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    }
+});

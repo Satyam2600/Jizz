@@ -43,7 +43,7 @@ app.get("/register", (req, res) => {
 
 app.get("/dashboard", async (req, res) => {
   try {
-    const user = await User.findById(req.session.userId);
+    const user = await User.findOne({ rollNo: req.session.userId });
     if (!user) return res.redirect("/login");
 
     res.render("dashboard", {
@@ -63,9 +63,13 @@ app.get("/dashboard", async (req, res) => {
   }
 });
 
-app.get("/editProfile", (req, res) => {
+app.get("/edit-profile", (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect("/login");
+  }
   res.render("editProfile", { title: "Edit Profile - JIZZ" });
 });
+
 app.get("/forgotpassword", (req, res) => {
   res.render("forgotpassword", { title: "Forgot Password - JIZZ" });
 });

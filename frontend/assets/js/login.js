@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Save the roll number for later use
         localStorage.setItem("uid", data.user.rollNo);
         console.log("Login successful! Redirecting to edit profile.");
-        window.location.href = "/editProfile";
+        window.location.href = "/edit-profile";
       } else {
         alert("Login failed: " + (data.message || data.error));
       }

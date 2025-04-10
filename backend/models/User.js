@@ -10,7 +10,11 @@ const userSchema = new mongoose.Schema({
     banner: { type: String, default: '/assets/images/default-banner.jpg' },
     department: String,
     year: String,
+    semester: String,
     bio: String,
+    skills: [String],
+    interests: [String],
+    portfolio: String,
     phoneNumber: String,
     socialLinks: {
         github: String,

@@ -57,8 +57,15 @@ router.post(
 // Endpoint for updating Profile Photo
 router.post("/profile-photo", upload.single("profilePhoto"), async (req, res) => {
   try {
+    // Use session userId if available, otherwise use the one from the request
+    const userIdentifier = req.session.userId || req.body.userId;
+    
+    if (!userIdentifier) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
     const user = await User.findOneAndUpdate(
-      { rollNo: req.body.userId }, // Using the uid (rollNo) sent in the request body
+      { rollNo: userIdentifier }, // Using the uid (rollNo) sent in the request body
       { avatar: `/assets/uploads/${req.file.filename}` },
       { new: true }
     );
@@ -76,8 +83,15 @@ router.post("/profile-photo", upload.single("profilePhoto"), async (req, res) =>
 // Endpoint for updating Cover Photo
 router.post("/cover-photo", upload.single("coverPhoto"), async (req, res) => {
   try {
+    // Use session userId if available, otherwise use the one from the request
+    const userIdentifier = req.session.userId || req.body.userId;
+    
+    if (!userIdentifier) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
     const user = await User.findOneAndUpdate(
-      { rollNo: req.body.userId }, // Using the uid (rollNo) sent in the request body
+      { rollNo: userIdentifier }, // Using the uid (rollNo) sent in the request body
       { banner: `/assets/uploads/${req.file.filename}` },
       { new: true }
     );
