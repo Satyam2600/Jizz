@@ -26,26 +26,37 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const loginData = { uid, password };
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        credentials: "include", // When included, the browser sends/receives session cookies.
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(loginData),
+      const response = await fetch('/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ rollNo: uid, password })
       });
+      
       const data = await response.json();
+      
       if (response.ok) {
-        // Save the roll number for later use
-        localStorage.setItem("uid", data.user.rollNo);
-        console.log("Login successful! Redirecting to edit profile.");
-        window.location.href = "/edit-profile";
+        // Store user data in localStorage
+        localStorage.setItem('uid', data.user.uid);
+        localStorage.setItem('userFullName', data.user.fullName);
+        localStorage.setItem('userUsername', data.user.username);
+        localStorage.setItem('userAvatar', data.user.avatar);
+        localStorage.setItem('userBanner', data.user.banner);
+        
+        // Redirect based on first login status
+        if (data.user.isFirstLogin) {
+          window.location.href = '/edit-profile';
+        } else {
+          window.location.href = '/dashboard';
+        }
       } else {
-        alert("Login failed: " + (data.message || data.error));
+        alert(data.message || 'Login failed');
       }
     } catch (error) {
-      console.error("Error during login:", error);
-      alert("An error occurred. Please try again.");
+      console.error('Error:', error);
+      alert('An error occurred during login');
     }
   });
 });

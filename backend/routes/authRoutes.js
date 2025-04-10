@@ -73,6 +73,7 @@ router.post("/login", async (req, res) => {
     res.status(200).json({
       message: "Login successful",
       token,
+      isFirstLogin: user.isFirstLogin,
       user: {
         id: user._id,
         fullName: user.fullName,
@@ -82,6 +83,22 @@ router.post("/login", async (req, res) => {
     });
   } catch (error) {
     console.error("Error during login:", error);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+});
+
+// 📌 User Logout
+router.post("/logout", (req, res) => {
+  try {
+    // Clear the session
+    req.session.destroy();
+    
+    // Clear the session cookie
+    res.clearCookie('connect.sid');
+    
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.error("Error during logout:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });

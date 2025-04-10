@@ -24,7 +24,17 @@ app.use(
   })
 );
 
-app.use("/assets", express.static(path.join(__dirname, "../frontend/assets")));
+// Serve static files from the frontend directory
+app.use(express.static(path.join(__dirname, "../frontend"), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
+  }
+}));
+
+// Serve uploaded files
+app.use("/assets/uploads", express.static(path.join(__dirname, "../frontend/assets/uploads")));
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "../frontend/views"));
@@ -85,7 +95,7 @@ const eventRoutes = require("./routes/eventRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const newsletterRoutes = require("./routes/newsletterRoutes");
-const passwordresetRoutes = require("./routes/passwordresetRoutes");
+const passwordResetRoutes = require("./routes/passwordresetRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 
 app.use("/api/auth", authRoutes);
@@ -98,7 +108,7 @@ app.use("/api/events", eventRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/newsletter", newsletterRoutes);
-app.use("/api/password-reset", passwordresetRoutes);
+app.use("/api/password-reset", passwordResetRoutes);
 app.use("/api/uploads", uploadRoutes);
 
 app.get("/health", (req, res) => res.send("🚀 JIZZ Social Media API Running..."));

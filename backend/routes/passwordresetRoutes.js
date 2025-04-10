@@ -26,8 +26,13 @@ router.post("/request-reset", async (req, res) => {
 
     // Hash the new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
-    await user.save();
+    
+    // Update only the password field, not the entire user object
+    // This prevents validation errors for required fields
+    await User.updateOne(
+      { _id: user._id },
+      { $set: { password: hashedPassword } }
+    );
 
     // Compose email content with the new password
     const htmlContent = `
@@ -39,7 +44,10 @@ router.post("/request-reset", async (req, res) => {
     // Send email with the new password using Brevo
     await sendEmail(email, "Your New Password", htmlContent);
 
-    res.status(200).json({ message: "A new password has been sent to your registered email." });
+    res.status(200).json({ 
+      message: "A new password has been sent to your registered email.",
+      redirectUrl: "/login"
+    });
   } catch (error) {
     console.error("Error in /request-reset:", error);
     res.status(500).json({ message: "Internal Server Error", error: error.message });
