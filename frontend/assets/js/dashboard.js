@@ -82,12 +82,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             });
             
-            // Update dropdown avatar if it exists
-            const dropdownUserAvatar = document.getElementById("dropdownUserAvatar");
-            if (dropdownUserAvatar) {
-                dropdownUserAvatar.style.backgroundImage = `url('${profileAvatarUrl}')`;
-            }
-
             // Store user data in localStorage for future use
             localStorage.setItem("userFullName", userProfile.name);
             localStorage.setItem("userUsername", userProfile.username || userProfile.rollNo);
