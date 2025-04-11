@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        const response = await fetch(`http://localhost:5000/api/users/get-profile?userId=${uid}`);
+        const response = await fetch(`/api/users/get-profile?userId=${uid}`);
         const userProfile = await response.json();
 
         if (response.ok) {

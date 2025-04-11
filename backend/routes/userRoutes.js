@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
+const bcrypt = require("bcrypt");
 
 // Update user profile
 router.post("/update-profile", async (req, res) => {
@@ -93,7 +94,7 @@ router.get("/get-profile", async (req, res) => {
     if (user) {
       res.status(200).json({
         name: user.fullName,
-        username: user.username,
+        username: user.username || user.rollNo,
         rollNo: user.rollNo,
         avatar: user.avatar || '/assets/images/default-avatar.jpg',
         banner: user.banner || '/assets/images/default-banner.jpg',
@@ -183,6 +184,45 @@ router.get("/profile/:uid", async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching profile:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Change password route
+router.post("/change-password", async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const uid = req.session.userId;
+
+    if (!uid) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    const user = await User.findOne({ rollNo: uid });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Verify current password using bcrypt directly
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Current password is incorrect" });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update only the password field using findOneAndUpdate
+    await User.findOneAndUpdate(
+      { rollNo: uid },
+      { $set: { password: hashedPassword } },
+      { new: true }
+    );
+
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Error changing password:", error);
     res.status(500).json({ message: "Server error" });
   }
 });

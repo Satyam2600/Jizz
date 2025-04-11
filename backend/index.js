@@ -80,6 +80,10 @@ app.get("/edit-profile", (req, res) => {
   res.render("editProfile", { title: "Edit Profile - JIZZ" });
 });
 
+app.get("/change-password", (req, res) => {
+  res.render("changePassword", { title: "Change Password - JIZZ" });
+});
+
 app.get("/forgotpassword", (req, res) => {
   res.render("forgotpassword", { title: "Forgot Password - JIZZ" });
 });
