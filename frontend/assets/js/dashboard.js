@@ -32,11 +32,20 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.getElementById("userHandle").textContent = userProfile.username ? `@${userProfile.username}` : `@${userProfile.rollNo}`;
             
             // Update avatar
-            const userAvatar = document.getElementById("userAvatar");
-            const dropdownUserAvatar = document.getElementById("dropdownUserAvatar");
             const avatarUrl = userProfile.avatar || "/assets/images/default-avatar.jpg";
             
-            userAvatar.src = avatarUrl;
+            // Update all avatar images on the page
+            const allAvatars = document.querySelectorAll('.user-avatar');
+            allAvatars.forEach(avatar => {
+                if (avatar.tagName.toLowerCase() === 'img') {
+                    avatar.src = avatarUrl;
+                } else if (avatar.style) {
+                    avatar.style.backgroundImage = `url('${avatarUrl}')`;
+                }
+            });
+            
+            // Update dropdown avatar if it exists
+            const dropdownUserAvatar = document.getElementById("dropdownUserAvatar");
             if (dropdownUserAvatar) {
                 dropdownUserAvatar.style.backgroundImage = `url('${avatarUrl}')`;
             }
@@ -50,8 +59,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             localStorage.setItem("userBio", userProfile.bio);
             
             // Update other profile information if needed
-            if (userProfile.department) {
-                document.getElementById("userDepartment")?.textContent = userProfile.department;
+            const userDepartmentElement = document.getElementById("userDepartment");
+            if (userDepartmentElement) {
+                userDepartmentElement.textContent = userProfile.department;
             }
             if (userProfile.bio) {
                 document.getElementById("userBio")?.textContent = userProfile.bio;

@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
     fullName: { type: String, required: true, trim: true },
-    username: { type: String, required: true, unique: true, trim: true },
+    username: { type: String, trim: true },
     email: { type: String, required: true, unique: true, trim: true, lowercase: true },
     password: { type: String, required: true },
     avatar: { type: String, default: '/assets/images/default-avatar.jpg' },
@@ -11,18 +11,15 @@ const userSchema = new mongoose.Schema({
     banner: { type: String, default: '/assets/images/default-banner.jpg' },
     department: {
         type: String,
-        required: true,
         enum: ["CSE", "ECE", "Mechanical", "Architecture", "Production", "Civil", "Electrical"],
     },
     year: {
         type: Number,
-        required: true,
         min: 1,
         max: 5,
     },
     semester: {
         type: Number,
-        required: true,
         min: 1,
         max: 8,
     },

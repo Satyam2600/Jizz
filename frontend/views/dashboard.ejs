@@ -166,7 +166,7 @@
       <!-- Left Sidebar -->
       <aside class="sidebar col-lg-3 p-3 border-end">
         <div class="d-flex align-items-center gap-3 mb-4">
-          <img src="" id="userAvatar" class="user-avatar rounded-circle shadow-sm" alt="User Avatar">
+          <img src="" id="sidebarUserAvatar" class="user-avatar rounded-circle shadow-sm" alt="User Avatar">
           <div>
             <h6 id="userName" class="mb-0 fw-bold">Loading...</h6>
             <small id="userHandle" class="text-muted">Loading...</small>
@@ -200,8 +200,7 @@
         <div class="card post-card mb-4">
           <div class="card-body">
             <div class="d-flex align-items-start gap-3">
-              <img src="https://cdn.usegalileo.ai/sdxl10/fb528de0-f0c5-4cca-9782-834f68da0615.png" 
-                   class="user-avatar rounded-circle shadow-sm" alt="User Avatar">
+              <img src="" id="postUserAvatar" class="user-avatar rounded-circle shadow-sm" alt="User Avatar">
               <div class="w-100">
                 <textarea class="form-control border-0 mb-3 fs-6" 
                           rows="3" 
@@ -355,14 +354,22 @@
       // Update profile elements
       const userNameElement = document.getElementById('userName');
       const userHandleElement = document.getElementById('userHandle');
-      const userAvatarElement = document.getElementById('userAvatar');
+      const sidebarUserAvatarElement = document.getElementById('sidebarUserAvatar');
+      const postUserAvatarElement = document.getElementById('postUserAvatar');
       const bannerImageElement = document.getElementById('bannerImage');
       
       if (userNameElement) userNameElement.textContent = userFullName || 'User';
       if (userHandleElement) userHandleElement.textContent = `@${userUsername || 'username'}`;
       
-      if (userAvatarElement) {
-          userAvatarElement.src = userAvatar || '/assets/images/default-avatar.jpg';
+      // Update all avatar images
+      const avatarUrl = userAvatar || '/assets/images/default-avatar.jpg';
+      
+      if (sidebarUserAvatarElement) {
+          sidebarUserAvatarElement.src = avatarUrl;
+      }
+      
+      if (postUserAvatarElement) {
+          postUserAvatarElement.src = avatarUrl;
       }
 
       if (bannerImageElement) {
