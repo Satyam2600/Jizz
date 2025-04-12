@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log("Sending request to API...");
 
                 // Ensure the correct API route
-                const response = await fetch("http://localhost:5000/api/auth/register", {
+                const response = await fetch("/api/auth/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(userData),

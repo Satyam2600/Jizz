@@ -5,8 +5,6 @@ if (themeToggle) {
         const isDark = document.body.getAttribute('data-bs-theme') === 'dark';
         document.body.setAttribute('data-bs-theme', isDark ? 'light' : 'dark');
         themeToggle.innerHTML = isDark ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon"></i>';
-        emojiPicker.classList.toggle('light', !isDark);
-        emojiPicker.classList.toggle('dark', isDark);
     });
 }
 
@@ -21,190 +19,247 @@ if (navbarToggler) {
 }
 
 // Main Dashboard Initialization
-document.addEventListener("DOMContentLoaded", async () => {
-    const uid = localStorage.getItem("uid");
-
-    if (!uid) {
-        alert("User not logged in. Redirecting to login page.");
-        window.location.href = "/login";
-        return;
-    }
-
-    // Set user information from localStorage
-    const userFullName = localStorage.getItem('userFullName');
-    const userUsername = localStorage.getItem('userUsername');
-    const userAvatar = localStorage.getItem('userAvatar');
-    const userBanner = localStorage.getItem('userBanner');
-
-    // Update profile elements
-    const userNameElement = document.getElementById('userName');
-    const userHandleElement = document.getElementById('userHandle');
-    const sidebarUserAvatarElement = document.getElementById('sidebarUserAvatar');
-    const postUserAvatarElement = document.getElementById('postUserAvatar');
-    const bannerImageElement = document.getElementById('bannerImage');
+document.addEventListener("DOMContentLoaded", () => {
+    // Get user information from localStorage
+    const userFullName = localStorage.getItem("userFullName");
+    const userUsername = localStorage.getItem("userUsername");
+    const userProfilePhoto = localStorage.getItem("userProfilePhoto");
+    const userDepartment = localStorage.getItem("userDepartment");
+    const userYear = localStorage.getItem("userYear");
+    const userSemester = localStorage.getItem("userSemester");
     
-    if (userNameElement) userNameElement.textContent = userFullName || 'User';
-    if (userHandleElement) userHandleElement.textContent = `@${userUsername || 'username'}`;
+    // Update sidebar profile elements
+    const sidebarUserAvatar = document.getElementById("sidebarUserAvatar");
+    const userName = document.getElementById("userName");
+    const userHandle = document.getElementById("userHandle");
     
-    // Update all avatar images
-    const avatarUrl = userAvatar || '/assets/images/default-avatar.jpg';
+    // Update post creation area profile elements
+    const postUserAvatar = document.getElementById("postUserAvatar");
+    const postUserName = document.getElementById("postUserName");
+    const postUserHandle = document.getElementById("postUserHandle");
     
-    if (sidebarUserAvatarElement) {
-        sidebarUserAvatarElement.src = avatarUrl;
+    // Set user information in sidebar
+    if (userFullName) {
+        userName.textContent = userFullName;
+    } else {
+        userName.textContent = "User";
     }
     
-    if (postUserAvatarElement) {
-        postUserAvatarElement.src = avatarUrl;
+    if (userUsername) {
+        userHandle.textContent = `@${userUsername}`;
+    } else {
+        userHandle.textContent = "@user";
     }
-
-    if (bannerImageElement) {
-        bannerImageElement.src = userBanner || '/assets/images/default-banner.jpg';
+    
+    // Set profile photo in sidebar
+    if (userProfilePhoto && userProfilePhoto !== "undefined" && userProfilePhoto !== "null") {
+        sidebarUserAvatar.src = userProfilePhoto;
+        console.log("Setting sidebar avatar to:", userProfilePhoto);
+    } else {
+        sidebarUserAvatar.src = "/assets/images/default-avatar.jpg";
+        console.log("Using default avatar for sidebar");
     }
-
-    try {
-        // Fetch user profile from API
-        const response = await fetch(`/api/users/get-profile?userId=${uid}`);
-        const userProfile = await response.json();
-
-        if (response.ok) {
-            // Update user information in the UI
-            if (userNameElement) userNameElement.textContent = userProfile.name || "Loading...";
-            if (userHandleElement) userHandleElement.textContent = userProfile.username ? `@${userProfile.username}` : `@${userProfile.rollNo}`;
-            
-            // Update avatar
-            const profileAvatarUrl = userProfile.avatar || "/assets/images/default-avatar.jpg";
-            
-            // Update all avatar images on the page
-            const allAvatars = document.querySelectorAll('.user-avatar');
-            allAvatars.forEach(avatar => {
-                if (avatar.tagName.toLowerCase() === 'img') {
-                    avatar.src = profileAvatarUrl;
-                } else if (avatar.style) {
-                    avatar.style.backgroundImage = `url('${profileAvatarUrl}')`;
-                }
-            });
-            
-            // Store user data in localStorage for future use
-            localStorage.setItem("userFullName", userProfile.name);
-            localStorage.setItem("userUsername", userProfile.username || userProfile.rollNo);
-            localStorage.setItem("userProfilePhoto", userProfile.avatar);
-            localStorage.setItem("userCoverPhoto", userProfile.banner);
-            localStorage.setItem("userDepartment", userProfile.department);
-            localStorage.setItem("userBio", userProfile.bio);
-            
-            // Update other profile information if needed
-            const userDepartmentElement = document.getElementById("userDepartment");
-            if (userDepartmentElement) {
-                userDepartmentElement.textContent = userProfile.department;
-            }
-            
-            const userBioElement = document.getElementById("userBio");
-            if (userBioElement && userProfile.bio) {
-                userBioElement.textContent = userProfile.bio;
-            }
-            
-            // Fetch additional user data
-            try {
-                const additionalResponse = await fetch(`/api/users/profile/${uid}`);
-                const userData = await additionalResponse.json();
-                
-                if (additionalResponse.ok) {
-                    // Update additional profile information
-                    const userYearElement = document.getElementById('userYear');
-                    const skillsListElement = document.getElementById('skillsList');
-                    const interestsListElement = document.getElementById('interestsList');
-                    
-                    if (userYearElement) userYearElement.textContent = `Year ${userData.year || 'Not set'}`;
-                    
-                    // Update skills and interests
-                    if (skillsListElement && userData.skills) {
-                        skillsListElement.innerHTML = userData.skills.map(skill => 
-                            `<span class="badge bg-primary me-2">${skill}</span>`
-                        ).join('');
-                    }
-
-                    if (interestsListElement && userData.interests) {
-                        interestsListElement.innerHTML = userData.interests.map(interest => 
-                            `<span class="badge bg-secondary me-2">${interest}</span>`
-                        ).join('');
-                    }
-                }
-            } catch (additionalError) {
-                console.error("Error fetching additional user data:", additionalError);
-            }
-        } else {
-            console.error("Failed to load user profile:", userProfile.message);
-            // Set default values if profile loading fails
-            if (userNameElement) userNameElement.textContent = "User";
-            if (userHandleElement) userHandleElement.textContent = `@${uid}`;
-        }
-    } catch (error) {
-        console.error("Error fetching user profile:", error);
-        // Set default values if there's an error
-        if (userNameElement) userNameElement.textContent = "User";
-        if (userHandleElement) userHandleElement.textContent = `@${uid}`;
+    
+    // Set user information in post creation area
+    if (userFullName) {
+        postUserName.textContent = userFullName;
+    } else {
+        postUserName.textContent = "User";
     }
+    
+    if (userUsername) {
+        postUserHandle.textContent = `@${userUsername}`;
+    } else {
+        postUserHandle.textContent = "@user";
+    }
+    
+    // Set profile photo in post creation area
+    if (userProfilePhoto && userProfilePhoto !== "undefined" && userProfilePhoto !== "null") {
+        postUserAvatar.src = userProfilePhoto;
+        console.log("Setting post creation avatar to:", userProfilePhoto);
+    } else {
+        postUserAvatar.src = "/assets/images/default-avatar.jpg";
+        console.log("Using default avatar for post creation");
+    }
+    
+    // Initialize emoji picker
+    initializeEmojiPicker();
+    
+    // Load posts
+    loadPosts();
 });
 
 // Emoji Picker Implementation
+let emojiPicker = null;
+const emojiPickerContainer = document.getElementById('emoji-picker-container');
 const emojiPickerBtn = document.getElementById('emojiPickerBtn');
-const emojiPickerDialog = document.getElementById('emojiPickerDialog');
-const emojiPicker = document.getElementById('emojiPicker');
 const postContent = document.getElementById('postContent');
 
-// Toggle emoji picker
-function toggleEmojiPicker() {
-    const isVisible = emojiPickerDialog.style.display === 'block';
-    if (!isVisible) {
-        const buttonRect = emojiPickerBtn.getBoundingClientRect();
-        emojiPickerDialog.style.top = `${buttonRect.bottom + window.scrollY + 5}px`;
-        emojiPickerDialog.style.left = `${buttonRect.left}px`;
-        emojiPickerDialog.style.display = 'block';
-    } else {
-        emojiPickerDialog.style.display = 'none';
+// Initialize emoji picker
+function initializeEmojiPicker() {
+    const emojiPickerBtn = document.getElementById('emojiPickerBtn');
+    const emojiPickerContainer = document.getElementById('emoji-picker-container');
+    const postContent = document.getElementById('postContent');
+    
+    if (!emojiPickerBtn || !emojiPickerContainer || !postContent) {
+        console.error('Emoji picker elements not found');
+        return;
     }
-}
-
-// Event Listeners
-if (emojiPickerBtn) {
-    emojiPickerBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        toggleEmojiPicker();
+    
+    // Toggle emoji picker visibility
+    emojiPickerBtn.addEventListener('click', () => {
+        const isVisible = emojiPickerContainer.style.display === 'block';
+        emojiPickerContainer.style.display = isVisible ? 'none' : 'block';
+        
+        // Position the emoji picker near the button
+        if (!isVisible) {
+            const buttonRect = emojiPickerBtn.getBoundingClientRect();
+            emojiPickerContainer.style.top = `${buttonRect.bottom + 10}px`;
+            emojiPickerContainer.style.left = `${buttonRect.left}px`;
+        }
     });
-}
-
-// Handle emoji selection
-if (emojiPicker) {
-    emojiPicker.addEventListener('emoji-click', event => {
-        const cursorPosition = postContent.selectionStart;
-        const textBeforeCursor = postContent.value.substring(0, cursorPosition);
-        const textAfterCursor = postContent.value.substring(cursorPosition);
-        postContent.value = textBeforeCursor + event.detail.unicode + textAfterCursor;
+    
+    // Close emoji picker when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!emojiPickerContainer.contains(e.target) && e.target !== emojiPickerBtn) {
+            emojiPickerContainer.style.display = 'none';
+        }
+    });
+    
+    // Insert emoji at cursor position
+    function insertEmoji(emoji) {
+        const cursorPos = postContent.selectionStart;
+        const text = postContent.value;
+        postContent.value = text.slice(0, cursorPos) + emoji + text.slice(cursorPos);
         postContent.focus();
-        postContent.selectionStart = cursorPosition + event.detail.unicode.length;
-        postContent.selectionEnd = cursorPosition + event.detail.unicode.length;
-        emojiPickerDialog.style.display = 'none';
+        postContent.selectionStart = cursorPos + emoji.length;
+        postContent.selectionEnd = cursorPos + emoji.length;
+        
+        // Hide emoji picker after insertion
+        emojiPickerContainer.style.display = 'none';
+    }
+    
+    // Add click event to emoji buttons
+    const emojiButtons = emojiPickerContainer.querySelectorAll('.emoji-button');
+    emojiButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            insertEmoji(button.textContent);
+        });
     });
 }
 
-// Close emoji picker when clicking outside
-document.addEventListener('click', (e) => {
-    if (emojiPickerDialog.style.display === 'block' && 
-        !emojiPickerDialog.contains(e.target) && 
-        !emojiPickerBtn.contains(e.target)) {
-        emojiPickerDialog.style.display = 'none';
+// Create a simple fallback emoji picker
+function createFallbackEmojiPicker() {
+    // Common emojis to display
+    const commonEmojis = [
+        '😀', '😃', '😄', '😁', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘',
+        '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳', '😏', '😒',
+        '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡',
+        '🤬', '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭', '🤫', '🤥', '😶',
+        '😐', '😑', '😬', '🙄', '😯', '😦', '😧', '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴',
+        '🤢', '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '👍', '👎', '👏', '🙌', '👋', '🤝', '✌️', '🤞',
+        '🤟', '🤘', '👌', '👈', '👉', '👆', '👇', '☝️', '👆', '🖕', '👇', '✋', '🤚', '🖐️', '🖖', '👋'
+    ];
+    
+    // Create emoji grid
+    const emojiGrid = document.createElement('div');
+    emojiGrid.className = 'emoji-grid';
+    
+    // Add emojis to grid
+    commonEmojis.forEach(emoji => {
+        const emojiButton = document.createElement('button');
+        emojiButton.className = 'emoji-button';
+        emojiButton.textContent = emoji;
+        
+        // Add click handler
+        emojiButton.addEventListener('click', () => {
+            insertEmoji(emoji);
+        });
+        
+        emojiGrid.appendChild(emojiButton);
+    });
+    
+    // Add to container
+    emojiPickerContainer.innerHTML = '';
+    emojiPickerContainer.appendChild(emojiGrid);
+}
+
+// Toggle emoji picker visibility
+function toggleEmojiPicker() {
+    if (!emojiPickerContainer) return;
+    
+    const isVisible = emojiPickerContainer.style.display === 'block';
+    
+    if (isVisible) {
+        emojiPickerContainer.style.display = 'none';
+    } else {
+        // Position the emoji picker near the button
+        const buttonRect = emojiPickerBtn.getBoundingClientRect();
+        
+        // Calculate position to ensure it stays within viewport
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        // Position horizontally - try to align with the button
+        let leftPosition = buttonRect.left;
+        
+        // If the picker would go off the right edge, adjust it
+        if (leftPosition + 320 > viewportWidth) {
+            leftPosition = viewportWidth - 320 - 10; // 320px width + 10px margin
+        }
+        
+        // Position vertically - try to place below the button
+        let topPosition = buttonRect.bottom + 10;
+        
+        // If the picker would go off the bottom, place it above the button
+        if (topPosition + 350 > viewportHeight) {
+            topPosition = buttonRect.top - 350 - 10; // 350px height + 10px margin
+        }
+        
+        emojiPickerContainer.style.top = `${topPosition}px`;
+        emojiPickerContainer.style.left = `${leftPosition}px`;
+        emojiPickerContainer.style.display = 'block';
+        
+        // Update theme if needed
+        if (emojiPicker && typeof emojiPicker.updateTheme === 'function') {
+            emojiPicker.updateTheme(document.body.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light');
+        }
     }
-});
+}
+
+// Insert emoji at cursor position
+function insertEmoji(emoji) {
+    if (!postContent) return;
+    
+    const cursorPos = postContent.selectionStart;
+    const text = postContent.value;
+    postContent.value = text.slice(0, cursorPos) + emoji + text.slice(cursorPos);
+    postContent.focus();
+    postContent.selectionStart = cursorPos + emoji.length;
+    postContent.selectionEnd = cursorPos + emoji.length;
+    
+    // Hide emoji picker after insertion
+    emojiPickerContainer.style.display = 'none';
+}
 
 // Handle post submission
-const postSubmitBtn = document.getElementById('postSubmitBtn');
-if (postSubmitBtn) {
-    postSubmitBtn.addEventListener('click', async () => {
+const createPostForm = document.getElementById('createPostForm');
+if (createPostForm) {
+    createPostForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
         const content = postContent.value.trim();
         const uid = localStorage.getItem('uid');
+        const token = localStorage.getItem('token');
         
         if (!uid) {
             alert('User not logged in. Please log in again.');
+            window.location.href = '/login';
+            return;
+        }
+
+        if (!token) {
+            alert('Authentication token missing. Please log in again.');
             window.location.href = '/login';
             return;
         }
@@ -216,33 +271,71 @@ if (postSubmitBtn) {
 
         try {
             // First, get the user's MongoDB _id
-            const userResponse = await fetch(`/api/users/get-profile?userId=${uid}`);
-            const userData = await userResponse.json();
+            const userResponse = await fetch(`/api/users/get-profile?userId=${uid}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             
-            if (!userResponse.ok || !userData._id) {
+            if (!userResponse.ok) {
+                const errorData = await userResponse.json();
+                if (errorData.message === 'Invalid Token') {
+                    localStorage.removeItem('token'); // Clear the invalid token
+                    alert('Your session has expired. Please log in again.');
+                    window.location.href = '/login';
+                    return;
+                }
                 alert('Failed to get user information. Please try again.');
                 return;
+            }
+            
+            const userData = await userResponse.json();
+            
+            if (!userData._id) {
+                alert('Failed to get user information. Please try again.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('content', content);
+            formData.append('userId', userData._id);
+
+            // Add media if present
+            const imageInput = document.getElementById('imageUpload');
+            const videoInput = document.getElementById('videoUpload');
+            
+            if (imageInput && imageInput.files[0]) {
+                formData.append('media', imageInput.files[0]);
+            } else if (videoInput && videoInput.files[0]) {
+                formData.append('media', videoInput.files[0]);
             }
 
             const response = await fetch('/api/posts/create', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ 
-                    content,
-                    userId: userData._id // Use the MongoDB _id instead of the UID
-                }),
+                body: formData
             });
 
-            if (response.ok) {
-                postContent.value = '';
-                // Refresh the feed
-                loadPosts();
-            } else {
-                const data = await response.json();
-                alert(data.message || 'Failed to create post');
+            if (!response.ok) {
+                const errorData = await response.json();
+                if (errorData.message === 'Invalid Token') {
+                    localStorage.removeItem('token'); // Clear the invalid token
+                    alert('Your session has expired. Please log in again.');
+                    window.location.href = '/login';
+                    return;
+                }
+                alert(errorData.message || 'Failed to create post');
+                return;
             }
+
+            postContent.value = '';
+            // Clear file inputs
+            if (imageInput) imageInput.value = '';
+            if (videoInput) videoInput.value = '';
+            // Refresh the feed
+            loadPosts();
         } catch (error) {
             console.error('Error creating post:', error);
             alert('An error occurred while creating your post');
@@ -252,260 +345,538 @@ if (postSubmitBtn) {
 
 // Function to load and display posts
 async function loadPosts() {
-    const postsContainer = document.querySelector('.main-feed');
+    const postsContainer = document.getElementById('postsContainer');
     if (!postsContainer) return;
 
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+        console.error('Authentication token missing');
+        postsContainer.innerHTML = '<div class="alert alert-danger">Authentication error. Please log in again.</div>';
+        return;
+    }
+
     try {
-        const response = await fetch('/api/posts');
+        const response = await fetch('/api/posts', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Failed to load posts:', errorData.message);
+            
+            if (errorData.message === 'Invalid Token') {
+                // Token is invalid, redirect to login
+                localStorage.removeItem('token'); // Clear the invalid token
+                postsContainer.innerHTML = '<div class="alert alert-danger">Your session has expired. Please log in again.</div>';
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000);
+                return;
+            }
+            
+            postsContainer.innerHTML = '<div class="alert alert-danger">Failed to load posts. Please try again later.</div>';
+            return;
+        }
+        
         const posts = await response.json();
 
-        if (response.ok) {
-            // Clear existing posts except the create post card
-            const createPostCard = postsContainer.querySelector('.post-card');
-            postsContainer.innerHTML = '';
-            if (createPostCard) {
-                postsContainer.appendChild(createPostCard);
-            }
+        // Clear existing posts
+        postsContainer.innerHTML = '';
 
-            // Add each post to the feed
-            posts.forEach(post => {
-                const postElement = createPostElement(post);
-                postsContainer.appendChild(postElement);
-            });
-        } else {
-            console.error('Failed to load posts:', posts.message);
+        if (posts.length === 0) {
+            postsContainer.innerHTML = '<div class="alert alert-info">No posts yet. Be the first to post!</div>';
+            return;
         }
+
+        // Add each post to the feed
+        posts.forEach(post => {
+            const postElement = createPostCard(post);
+            postsContainer.appendChild(postElement);
+        });
     } catch (error) {
         console.error('Error loading posts:', error);
+        postsContainer.innerHTML = '<div class="alert alert-danger">An error occurred while loading posts.</div>';
     }
 }
 
-// Function to create a post element
-function createPostElement(post) {
-    const postDiv = document.createElement('div');
-    postDiv.className = 'card post-card mb-4';
-    postDiv.innerHTML = `
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div class="d-flex align-items-center gap-3">
-                    <img src="${post.user.avatar || '/assets/images/default-avatar.jpg'}" 
-                         class="user-avatar rounded-circle shadow-sm" 
-                         width="48" height="48" 
-                         alt="${post.user.name}'s Avatar">
-                    <div>
-                        <h6 class="mb-0 fw-bold">${post.user.name}</h6>
-                        <small class="text-muted">${post.user.department || ''} · ${formatTimeAgo(post.createdAt)}</small>
-                    </div>
-                </div>
-                <div class="dropdown">
-                    <button class="btn btn-link text-dark" data-bs-toggle="dropdown">
-                        <i class="bi bi-three-dots"></i>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-bookmark me-2"></i>Save Post</a></li>
-                        <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-flag me-2"></i>Report Post</a></li>
-                    </ul>
-                </div>
-            </div>
-            <p class="mb-3">${post.content}</p>
-            ${post.image ? `
-                <div class="post-media mb-3 rounded-3 overflow-hidden">
-                    <img src="${post.image}" 
-                         class="img-fluid w-100" 
-                         style="max-height: 480px; object-fit: cover;" 
-                         alt="Post Media">
-                </div>
-            ` : ''}
-            ${post.video ? `
-                <div class="post-media mb-3 rounded-3 overflow-hidden">
-                    <video src="${post.video}" 
-                           class="img-fluid w-100" 
-                           controls 
-                           style="max-height: 480px; object-fit: cover;">
-                    </video>
-                </div>
-            ` : ''}
-            <div class="engagement-buttons d-flex gap-3">
-                <button class="btn btn-outline-secondary rounded-pill" onclick="handleLike('${post._id}')">
-                    <i class="bi bi-heart me-2"></i>${post.likes || 0}
-                </button>
-                <button class="btn btn-outline-secondary rounded-pill" onclick="handleComment('${post._id}')">
-                    <i class="bi bi-chat me-2"></i>${post.comments?.length || 0}
-                </button>
-                <button class="btn btn-outline-secondary rounded-pill" onclick="handleShare('${post._id}')">
-                    <i class="bi bi-share me-2"></i>Share
-                </button>
-            </div>
-            <div class="comment-section mt-3 pt-3">
-                <div class="d-flex gap-2 mb-3">
-                    <img src="${localStorage.getItem('userAvatar') || '/assets/images/default-avatar.jpg'}" 
-                         class="rounded-circle" 
-                         width="36" height="36" 
-                         alt="Your Avatar">
-                    <div class="flex-grow-1">
-                        <input type="text" 
-                               class="form-control rounded-pill" 
-                               placeholder="Write a comment..."
-                               onkeypress="handleCommentSubmit(event, '${post._id}')">
-                    </div>
-                </div>
-                <div class="comment-list">
-                    ${post.comments?.map(comment => `
-                        <div class="d-flex gap-2 mb-3">
-                            <img src="${comment.user.avatar || '/assets/images/default-avatar.jpg'}" 
-                                 class="rounded-circle" 
-                                 width="36" height="36" 
-                                 alt="${comment.user.name}'s Avatar">
-                            <div class="flex-grow-1">
-                                <div class="bg-light rounded-3 p-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <strong>${comment.user.name}</strong>
-                                        <small class="text-muted">${formatTimeAgo(comment.createdAt)}</small>
-                                    </div>
-                                    <p class="mb-0">${comment.content}</p>
+// Function to create a post card
+function createPostCard(post) {
+    const postCard = document.createElement("div");
+    postCard.className = "post-card";
+    postCard.dataset.postId = post._id;
+    
+    // Format date
+    const postDate = new Date(post.createdAt);
+    const formattedDate = postDate.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+    
+    // Create post header
+    const postHeader = document.createElement("div");
+    postHeader.className = "post-header";
+    
+    const postAvatar = document.createElement("img");
+    postAvatar.className = "post-avatar";
+    
+    // Set profile photo with proper validation
+    if (post.user && post.user.avatar && post.user.avatar !== "undefined" && post.user.avatar !== "null") {
+        postAvatar.src = post.user.avatar;
+    } else {
+        postAvatar.src = "/assets/images/default-avatar.jpg";
+    }
+    
+    postAvatar.alt = post.user.name || "User";
+    
+    const postUserInfo = document.createElement("div");
+    
+    const postUserName = document.createElement("h6");
+    postUserName.className = "mb-0 fw-bold";
+    postUserName.textContent = post.user.name || "User";
+    
+    const postUserHandle = document.createElement("small");
+    postUserHandle.className = "text-muted";
+    postUserHandle.textContent = `@${post.user.username || "user"}`;
+    
+    const postTime = document.createElement("small");
+    postTime.className = "text-muted ms-2";
+    postTime.textContent = formattedDate;
+    
+    postUserInfo.appendChild(postUserName);
+    postUserInfo.appendChild(postUserHandle);
+    postUserInfo.appendChild(postTime);
+    
+    postHeader.appendChild(postAvatar);
+    postHeader.appendChild(postUserInfo);
+    
+    // Create post content
+    const postContent = document.createElement("div");
+    postContent.className = "post-content";
+    
+    const postText = document.createElement("p");
+    postText.className = "mb-3";
+    postText.textContent = post.content;
+    
+    postContent.appendChild(postText);
+    
+    // Add media if exists
+    if (post.media) {
+        const postMedia = document.createElement("img");
+        postMedia.className = "post-media";
+        postMedia.src = post.media;
+        postMedia.alt = "Post media";
+        postContent.appendChild(postMedia);
+    }
+    
+    // Create post actions
+    const postActions = document.createElement("div");
+    postActions.className = "post-actions";
+    
+    const likeButton = document.createElement("button");
+    likeButton.className = "post-action-btn";
+    if (post.liked) {
+        likeButton.classList.add("liked");
+    }
+    likeButton.innerHTML = `<i class="bi bi-heart${post.liked ? "-fill" : ""}"></i> <span>${post.likes || 0}</span>`;
+    likeButton.addEventListener("click", () => toggleLike(post._id));
+    
+    const commentButton = document.createElement("button");
+    commentButton.className = "post-action-btn";
+    commentButton.innerHTML = `<i class="bi bi-chat"></i> <span>${post.comments ? post.comments.length : 0}</span>`;
+    commentButton.addEventListener("click", () => toggleComments(post._id));
+    
+    const shareButton = document.createElement("button");
+    shareButton.className = "post-action-btn";
+    shareButton.innerHTML = `<i class="bi bi-share"></i>`;
+    shareButton.addEventListener("click", () => sharePost(post._id));
+    
+    postActions.appendChild(likeButton);
+    postActions.appendChild(commentButton);
+    postActions.appendChild(shareButton);
+    
+    // Create comments section
+    const postComments = document.createElement("div");
+    postComments.className = "post-comments";
+    postComments.style.display = "none";
+    
+    // Add existing comments
+    if (post.comments && post.comments.length > 0) {
+        post.comments.forEach(comment => {
+            const commentItem = document.createElement("div");
+            commentItem.className = "comment-item";
+            
+            const commentAvatar = document.createElement("img");
+            commentAvatar.className = "comment-avatar";
+            
+            // Set comment avatar with proper validation
+            if (comment.user && comment.user.avatar && comment.user.avatar !== "undefined" && comment.user.avatar !== "null") {
+                commentAvatar.src = comment.user.avatar;
+            } else {
+                commentAvatar.src = "/assets/images/default-avatar.jpg";
+            }
+            
+            commentAvatar.alt = comment.user.name || "User";
+            
+            const commentContent = document.createElement("div");
+            commentContent.className = "comment-content";
+            
+            const commentUserName = document.createElement("strong");
+            commentUserName.textContent = comment.user.name;
+            
+            const commentText = document.createElement("p");
+            commentText.className = "mb-0";
+            commentText.textContent = comment.content;
+            
+            commentContent.appendChild(commentUserName);
+            commentContent.appendChild(commentText);
+            
+            commentItem.appendChild(commentAvatar);
+            commentItem.appendChild(commentContent);
+            
+            postComments.appendChild(commentItem);
+        });
+    }
+    
+    // Add comment input
+    const commentInput = document.createElement("div");
+    commentInput.className = "comment-input";
+    
+    const commentInputField = document.createElement("input");
+    commentInputField.className = "comment-input-field";
+    commentInputField.placeholder = "Write a comment...";
+    
+    const commentSubmitBtn = document.createElement("button");
+    commentSubmitBtn.className = "comment-submit-btn";
+    commentSubmitBtn.innerHTML = `<i class="bi bi-send"></i>`;
+    commentSubmitBtn.addEventListener("click", () => {
+        if (commentInputField.value.trim()) {
+            addComment(post._id, commentInputField.value);
+            commentInputField.value = "";
+        }
+    });
+    
+    commentInput.appendChild(commentInputField);
+    commentInput.appendChild(commentSubmitBtn);
+    
+    postComments.appendChild(commentInput);
+    
+    // Assemble post card
+    postCard.appendChild(postHeader);
+    postCard.appendChild(postContent);
+    postCard.appendChild(postActions);
+    postCard.appendChild(postComments);
+    
+    return postCard;
+}
+
+// Function to toggle comments visibility
+function toggleComments(postId) {
+    const postCard = document.querySelector(`.post-card[data-post-id="${postId}"]`);
+    if (!postCard) return;
+    
+    const commentsSection = postCard.querySelector(".post-comments");
+    if (commentsSection.style.display === "none") {
+        commentsSection.style.display = "block";
+    } else {
+        commentsSection.style.display = "none";
+    }
+}
+
+// Handle like functionality
+async function handleLike(postId) {
+    const uid = localStorage.getItem('uid');
+    if (!uid) {
+        alert('Please log in to like posts');
+        window.location.href = '/login';
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/posts/${postId}/like`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            // Update the like count in the UI
+            const likeButton = document.querySelector(`#post-${postId} .engagement-buttons button:first-child`);
+            if (likeButton) {
+                likeButton.innerHTML = `<i class="bi bi-heart${data.isLiked ? '-fill text-danger' : ''} me-2"></i>${data.likes}`;
+            }
+        } else {
+            const data = await response.json();
+            alert(data.message || 'Failed to like post');
+        }
+    } catch (error) {
+        console.error('Error liking post:', error);
+        alert('An error occurred while liking the post');
+    }
+}
+
+// Handle comment submission
+async function handleCommentSubmit(event, postId) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        
+        const commentInput = document.getElementById(`comment-input-${postId}`);
+        const content = commentInput.value.trim();
+        
+        if (!content) return;
+        
+        const uid = localStorage.getItem('uid');
+        if (!uid) {
+            alert('Please log in to comment');
+            window.location.href = '/login';
+            return;
+        }
+        
+        try {
+            // Get user's MongoDB _id
+            const userResponse = await fetch(`/api/users/get-profile?userId=${uid}`);
+            const userData = await userResponse.json();
+            
+            if (!userResponse.ok || !userData._id) {
+                alert('Failed to get user information. Please try again.');
+                return;
+            }
+            
+            const response = await fetch(`/api/posts/${postId}/comment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    content,
+                    userId: userData._id
+                })
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                
+                // Clear the input
+                commentInput.value = '';
+                
+                // Add the new comment to the UI
+                const commentList = document.getElementById(`comment-list-${postId}`);
+                if (commentList) {
+                    const currentUserAvatar = localStorage.getItem('userAvatar') || '/assets/images/default-avatar.jpg';
+                    const currentUserName = localStorage.getItem('userFullName') || 'You';
+                    
+                    const commentElement = document.createElement('div');
+                    commentElement.className = 'd-flex gap-2 mb-3';
+                    commentElement.innerHTML = `
+                        <img src="${currentUserAvatar}" 
+                             class="rounded-circle" 
+                             width="36" height="36" 
+                             alt="Your Avatar">
+                        <div class="flex-grow-1">
+                            <div class="bg-light rounded-3 p-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <strong>${currentUserName}</strong>
+                                    <small class="text-muted">just now</small>
                                 </div>
+                                <p class="mb-0">${content}</p>
                             </div>
                         </div>
-                    `).join('') || ''}
-                </div>
-            </div>
-        </div>
-    `;
-    return postDiv;
+                    `;
+                    
+                    // Remove "No comments yet" message if it exists
+                    const noCommentsMsg = commentList.querySelector('p.text-muted');
+                    if (noCommentsMsg) {
+                        commentList.removeChild(noCommentsMsg);
+                    }
+                    
+                    commentList.appendChild(commentElement);
+                    
+                    // Update comment count
+                    const commentButton = document.querySelector(`#post-${postId} .engagement-buttons button:nth-child(2)`);
+                    if (commentButton) {
+                        const currentCount = parseInt(commentButton.textContent.match(/\d+/)[0] || '0');
+                        commentButton.innerHTML = `<i class="bi bi-chat me-2"></i>${currentCount + 1}`;
+                    }
+                }
+            } else {
+                const data = await response.json();
+                alert(data.message || 'Failed to add comment');
+            }
+        } catch (error) {
+            console.error('Error adding comment:', error);
+            alert('An error occurred while adding your comment');
+        }
+    }
 }
 
-// Helper function to format time ago
-function formatTimeAgo(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const seconds = Math.floor((now - date) / 1000);
+// Handle share functionality
+function handleShare(postId) {
+    // Get the current URL
+    const url = window.location.origin + '/post/' + postId;
     
-    if (seconds < 60) return 'just now';
-    
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`;
-    
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-    
-    const days = Math.floor(hours / 24);
-    if (days < 7) return `${days}d ago`;
-    
-    return date.toLocaleDateString();
+    // Check if the browser supports the clipboard API
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(url).then(() => {
+            alert('Post link copied to clipboard!');
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+            alert('Failed to copy link to clipboard');
+        });
+    } else {
+        // Fallback for browsers that don't support clipboard API
+        const textArea = document.createElement('textarea');
+        textArea.value = url;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            alert('Post link copied to clipboard!');
+        } catch (err) {
+            console.error('Failed to copy: ', err);
+            alert('Failed to copy link to clipboard');
+        }
+        document.body.removeChild(textArea);
+    }
 }
 
-// Load posts when the page loads
-document.addEventListener('DOMContentLoaded', () => {
-    loadPosts();
-});
+// Save post functionality
+function savePost(postId) {
+    // This would typically save the post to the user's saved posts
+    alert('Post saved!');
+}
 
-// Media Upload Implementation
-const imageUploadBtn = document.getElementById('imageUploadBtn');
-const videoUploadBtn = document.getElementById('videoUploadBtn');
+// Report post functionality
+async function reportPost(postId) {
+    const reason = prompt('Please enter the reason for reporting this post:');
+    if (reason) {
+        try {
+            const response = await fetch(`/api/posts/${postId}/report`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ reason })
+            });
 
-// Create hidden file inputs
-const imageInput = document.createElement('input');
-imageInput.type = 'file';
-imageInput.accept = 'image/*';
-imageInput.style.display = 'none';
-document.body.appendChild(imageInput);
-
-const videoInput = document.createElement('input');
-videoInput.type = 'file';
-videoInput.accept = 'video/*';
-videoInput.style.display = 'none';
-document.body.appendChild(videoInput);
+            if (response.ok) {
+                alert('Post reported. Thank you for your feedback.');
+            } else {
+                const data = await response.json();
+                alert(data.message || 'Failed to report post');
+            }
+        } catch (error) {
+            console.error('Error reporting post:', error);
+            alert('An error occurred while reporting the post');
+        }
+    }
+}
 
 // Handle image upload
+const imageUploadBtn = document.getElementById('imageUploadBtn');
+const imageInput = document.getElementById('imageUpload');
+
 if (imageUploadBtn) {
     imageUploadBtn.addEventListener('click', () => {
         imageInput.click();
     });
 }
 
-imageInput.addEventListener('change', async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
+if (imageInput) {
+    imageInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
 
-    const uid = localStorage.getItem('uid');
-    if (!uid) {
-        alert('User not logged in. Please log in again.');
-        window.location.href = '/login';
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('image', file);
-    formData.append('userId', uid);
-
-    try {
-        const response = await fetch('/api/uploads/post-image', {
-            method: 'POST',
-            body: formData
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            // Insert image URL into post content
-            const imageUrl = data.filePath;
-            const cursorPosition = postContent.selectionStart;
-            const textBeforeCursor = postContent.value.substring(0, cursorPosition);
-            const textAfterCursor = postContent.value.substring(cursorPosition);
-            postContent.value = textBeforeCursor + `\n[Image](${imageUrl})\n` + textAfterCursor;
-            postContent.focus();
-        } else {
-            const data = await response.json();
-            alert(data.message || 'Failed to upload image');
+        const uid = localStorage.getItem('uid');
+        if (!uid) {
+            alert('User not logged in. Please log in again.');
+            window.location.href = '/login';
+            return;
         }
-    } catch (error) {
-        console.error('Error uploading image:', error);
-        alert('An error occurred while uploading the image');
-    }
-});
+
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('userId', uid);
+
+        try {
+            const response = await fetch('/api/uploads/post-image', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                // Insert image URL into post content
+                const imageUrl = data.filePath;
+                const cursorPosition = postContent.selectionStart;
+                const textBeforeCursor = postContent.value.substring(0, cursorPosition);
+                const textAfterCursor = postContent.value.substring(cursorPosition);
+                postContent.value = textBeforeCursor + `\n[Image](${imageUrl})\n` + textAfterCursor;
+                postContent.focus();
+            } else {
+                const data = await response.json();
+                alert(data.message || 'Failed to upload image');
+            }
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            alert('An error occurred while uploading the image');
+        }
+    });
+}
 
 // Handle video upload
+const videoUploadBtn = document.getElementById('videoUploadBtn');
+const videoInput = document.getElementById('videoUpload');
+        
 if (videoUploadBtn) {
     videoUploadBtn.addEventListener('click', () => {
         videoInput.click();
     });
 }
 
-videoInput.addEventListener('change', async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
+if (videoInput) {
+    videoInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
 
-    const uid = localStorage.getItem('uid');
-    if (!uid) {
-        alert('User not logged in. Please log in again.');
-        window.location.href = '/login';
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('video', file);
-    formData.append('userId', uid);
-
-    try {
-        const response = await fetch('/api/uploads/post-video', {
-            method: 'POST',
-            body: formData
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            // Insert video URL into post content
-            const videoUrl = data.filePath;
-            const cursorPosition = postContent.selectionStart;
-            const textBeforeCursor = postContent.value.substring(0, cursorPosition);
-            const textAfterCursor = postContent.value.substring(cursorPosition);
-            postContent.value = textBeforeCursor + `\n[Video](${videoUrl})\n` + textAfterCursor;
-            postContent.focus();
-        } else {
-            const data = await response.json();
-            alert(data.message || 'Failed to upload video');
+        const uid = localStorage.getItem('uid');
+        if (!uid) {
+            alert('User not logged in. Please log in again.');
+            window.location.href = '/login';
+            return;
         }
-    } catch (error) {
-        console.error('Error uploading video:', error);
-        alert('An error occurred while uploading the video');
-    }
-});
+
+        const formData = new FormData();
+        formData.append('video', file);
+        formData.append('userId', uid);
+
+        try {
+            const response = await fetch('/api/uploads/post-video', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                // Insert video URL into post content
+                const videoUrl = data.filePath;
+                const cursorPosition = postContent.selectionStart;
+                const textBeforeCursor = postContent.value.substring(0, cursorPosition);
+                const textAfterCursor = postContent.value.substring(cursorPosition);
+                postContent.value = textBeforeCursor + `\n[Video](${videoUrl})\n` + textAfterCursor;
+                postContent.focus();
+            } else {
+                const data = await response.json();
+                alert(data.message || 'Failed to upload video');
+            }
+        } catch (error) {
+            console.error('Error uploading video:', error);
+            alert('An error occurred while uploading the video');
+        }
+    });
+}

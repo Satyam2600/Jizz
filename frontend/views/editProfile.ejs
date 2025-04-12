@@ -345,16 +345,27 @@ document.getElementById('profileForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const formData = new FormData();
-    formData.append('fullName', document.getElementById('fullName').value);
-    formData.append('username', document.getElementById('username').value);
-    formData.append('department', document.getElementById('department').value);
-    formData.append('year', document.getElementById('year').value);
-    formData.append('semester', document.getElementById('semester').value);
-    formData.append('bio', document.getElementById('bio').value);
-    formData.append('skills', document.getElementById('skills').value);
-    formData.append('interests', document.getElementById('interests').value);
-    formData.append('portfolio', document.getElementById('portfolio').value);
-    formData.append('linkedin', document.getElementById('linkedin').value);
+    const fullName = document.getElementById('fullName').value;
+    const username = document.getElementById('username').value;
+    const department = document.getElementById('department').value;
+    const year = document.getElementById('year').value;
+    const semester = document.getElementById('semester').value;
+    const bio = document.getElementById('bio').value;
+    const skills = document.getElementById('skills').value;
+    const interests = document.getElementById('interests').value;
+    const portfolio = document.getElementById('portfolio').value;
+    const linkedin = document.getElementById('linkedin').value;
+    
+    formData.append('fullName', fullName);
+    formData.append('username', username);
+    formData.append('department', department);
+    formData.append('year', year);
+    formData.append('semester', semester);
+    formData.append('bio', bio);
+    formData.append('skills', skills);
+    formData.append('interests', interests);
+    formData.append('portfolio', portfolio);
+    formData.append('linkedin', linkedin);
     
     const avatarFile = document.getElementById('profilePhotoInput').files[0];
     if (avatarFile) {
@@ -375,6 +386,28 @@ document.getElementById('profileForm').addEventListener('submit', async (e) => {
         const data = await response.json();
         
         if (response.ok) {
+            // Save user data to localStorage
+            localStorage.setItem("userFullName", fullName);
+            localStorage.setItem("userUsername", username);
+            localStorage.setItem("userDepartment", department);
+            localStorage.setItem("userYear", year);
+            localStorage.setItem("userSemester", semester);
+            localStorage.setItem("userBio", bio);
+            localStorage.setItem("userSkills", skills);
+            localStorage.setItem("userInterests", interests);
+            localStorage.setItem("userPortfolio", portfolio);
+            localStorage.setItem("userLinkedin", linkedin);
+            
+            // If the server returns updated profile photo URL, save it
+            if (data.profilePhoto) {
+                localStorage.setItem("userProfilePhoto", data.profilePhoto);
+            }
+            
+            // If the server returns updated cover photo URL, save it
+            if (data.coverPhoto) {
+                localStorage.setItem("userCoverPhoto", data.coverPhoto);
+            }
+            
             alert('Profile updated successfully!');
             window.location.href = '/dashboard';
         } else {
@@ -406,6 +439,7 @@ document.getElementById("profilePhotoInput").addEventListener("change", async (e
         formData.append("userId", uid);
 
         try {
+            console.log("Uploading profile photo...");
             const response = await fetch("http://localhost:5000/api/uploads/profile-photo", {
                 method: "POST",
                 body: formData,
@@ -414,11 +448,32 @@ document.getElementById("profilePhotoInput").addEventListener("change", async (e
             if (response.ok) {
                 const data = await response.json();
                 const profilePhotoUrl = data.filePath;
+                console.log("Profile photo uploaded successfully. URL:", profilePhotoUrl);
+                
+                // Update the profile photo preview
                 document.getElementById("profilePhotoPreview").style.backgroundImage = `url('${profilePhotoUrl}')`;
+                
                 // Store the profile photo URL in localStorage
                 localStorage.setItem("userProfilePhoto", profilePhotoUrl);
+                console.log("Profile photo URL saved to localStorage:", profilePhotoUrl);
+                
+                // Also update the avatar in the post creation area if it exists
+                const postUserAvatar = document.getElementById("postUserAvatar");
+                if (postUserAvatar) {
+                    postUserAvatar.src = profilePhotoUrl;
+                    console.log("Updated post creation avatar");
+                }
+                
+                // Also update the avatar in the sidebar if it exists
+                const sidebarUserAvatar = document.getElementById("sidebarUserAvatar");
+                if (sidebarUserAvatar) {
+                    sidebarUserAvatar.src = profilePhotoUrl;
+                    console.log("Updated sidebar avatar");
+                }
+                
                 alert("Profile photo uploaded successfully!");
             } else {
+                console.error("Failed to upload profile photo. Status:", response.status);
                 alert("Failed to upload profile photo.");
             }
         } catch (error) {

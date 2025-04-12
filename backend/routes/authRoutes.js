@@ -21,17 +21,12 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "Email or UID already exists" });
     }
 
-    // Hash the password
-    console.log("Password before hashing:", password); // Debugging log
-    const hashedPassword = await bcrypt.hash(password, 10);
-    console.log("Hashed Password:", hashedPassword); // Debugging log
-
-    // Create a new user
+    // Create a new user - password will be hashed by the User model's pre-save hook
     const newUser = new User({
       fullName,
       rollNo: uid,
       email,
-      password: hashedPassword, // Store the hashed password
+      password, // Store the plain password, it will be hashed by the pre-save hook
     });
 
     // Save the new user to the database
@@ -43,6 +38,7 @@ router.post("/register", async (req, res) => {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
+
 // 📌 User Login
 router.post("/login", async (req, res) => {
   try {

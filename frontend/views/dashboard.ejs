@@ -6,7 +6,6 @@
   <title>Jizz - Campus Network</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.3/index.css">
   <style>
     :root {
       --primary-bg: #ffffff;
@@ -16,6 +15,8 @@
       --accent-color: #019863;
       --border-color: #e9ecef;
       --card-radius: 1rem;
+      --hover-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      --transition-speed: 0.3s;
     }
     [data-bs-theme="dark"] {
       --primary-bg: #1a1a1a;
@@ -23,6 +24,7 @@
       --text-primary: #ffffff;
       --text-secondary: #adb5bd;
       --border-color: #343a40;
+      --hover-shadow: 0 8px 24px rgba(0,0,0,0.3);
     }
     body {
       background-color: var(--primary-bg);
@@ -51,12 +53,14 @@
       background-color: var(--primary-bg);
       border: 1px solid var(--border-color);
       border-radius: var(--card-radius);
-      transition: all 0.2s ease;
+      transition: all var(--transition-speed) ease;
       margin-bottom: 1.5rem;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
     .post-card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      box-shadow: var(--hover-shadow);
     }
     .user-avatar {
       width: 48px;
@@ -111,33 +115,290 @@
       }
     }
 
-    .emoji-picker-dialog {
-      position: absolute;
-      z-index: 1000;
+    /* Emoji picker container styles */
+    #emoji-picker-container {
       background: white;
       border-radius: 8px;
-      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
-      padding: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      position: fixed;
+      z-index: 1000;
+      max-height: 350px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      width: 320px;
+    }
+    
+    /* Dark mode support */
+    [data-bs-theme="dark"] #emoji-picker-container {
+      background: #2d2d2d;
+      border-color: #444;
+    }
+    
+    /* Emoji mart overrides */
+    .em-emoji-picker {
+      --rgb-background: var(--primary-bg);
+      --rgb-input: var(--secondary-bg);
+      --rgb-color: var(--text-primary);
+    }
+    
+    /* Fallback emoji picker styles */
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 5px;
+      padding: 10px;
+    }
+    
+    .emoji-button {
+      font-size: 20px;
+      padding: 5px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 36px;
+    }
+    
+    .emoji-button:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    [data-bs-theme="dark"] .emoji-button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Emoji picker button styles */
+    #emojiPickerBtn {
+      transition: all 0.2s ease;
+    }
+    
+    #emojiPickerBtn:hover {
+      background-color: var(--secondary-bg);
+    }
+    
+    [data-bs-theme="dark"] #emojiPickerBtn:hover {
+      background-color: #444;
     }
 
-    [data-bs-theme="dark"] .emoji-picker-dialog {
-      background: var(--secondary-bg);
+    /* Enhanced post creation card styles */
+    .post-creation-card {
+      background-color: var(--primary-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--card-radius);
+      transition: all var(--transition-speed) ease;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .post-creation-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--hover-shadow);
+    }
+    
+    .post-creation-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .post-creation-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent-color);
+    }
+    
+    .post-creation-body {
+      padding: 1.25rem;
+    }
+    
+    .post-creation-textarea {
+      border: none;
+      resize: none;
+      background-color: transparent;
+      color: var(--text-primary);
+      font-size: 1rem;
+      padding: 0.5rem 0;
+      min-height: 100px;
+      transition: all var(--transition-speed) ease;
+    }
+    
+    .post-creation-textarea:focus {
+      outline: none;
+      box-shadow: none;
+    }
+    
+    .post-creation-footer {
+      padding: 0.75rem 1.25rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .post-creation-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .post-creation-action-btn {
+      background-color: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 0.5rem;
+      border-radius: 50%;
+      transition: all var(--transition-speed) ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .post-creation-action-btn:hover {
+      background-color: var(--secondary-bg);
+      color: var(--accent-color);
+      transform: scale(1.1);
+    }
+    
+    .post-creation-submit-btn {
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: 2rem;
+      padding: 0.5rem 1.5rem;
+      font-weight: 600;
+      transition: all var(--transition-speed) ease;
+    }
+    
+    .post-creation-submit-btn:hover {
+      background-color: #018555;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(1, 152, 99, 0.3);
     }
 
-    emoji-picker {
-      --num-columns: 8;
-      --category-emoji-size: 1.5rem;
-      --emoji-size: 1.5rem;
-      --indicator-color: var(--accent-color);
-      --background: var(--primary-bg);
-      --border-color: var(--border-color);
-      --button-active-background: var(--secondary-bg);
-      --button-hover-background: var(--secondary-bg);
-      --input-border-color: var(--border-color);
-      --input-border-radius: 8px;
-      --input-font-color: var(--text-primary);
-      --input-placeholder-color: var(--text-secondary);
-      --outline-color: var(--accent-color);
+    /* Enhanced post card styles */
+    .post-header {
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .post-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    
+    .post-content {
+      padding: 0 1.25rem 1rem;
+    }
+    
+    .post-media {
+      width: 100%;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      max-height: 400px;
+      object-fit: cover;
+    }
+    
+    .post-actions {
+      padding: 0.75rem 1.25rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .post-action-btn {
+      background-color: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      transition: all var(--transition-speed) ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .post-action-btn:hover {
+      background-color: var(--secondary-bg);
+      color: var(--accent-color);
+    }
+    
+    .post-action-btn.liked {
+      color: var(--accent-color);
+    }
+    
+    .post-comments {
+      padding: 0 1.25rem 1rem;
+    }
+    
+    .comment-item {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .comment-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    
+    .comment-content {
+      background-color: var(--secondary-bg);
+      padding: 0.75rem;
+      border-radius: 1rem;
+      max-width: 85%;
+    }
+    
+    .comment-input {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    
+    .comment-input-field {
+      flex: 1;
+      border: 1px solid var(--border-color);
+      border-radius: 2rem;
+      padding: 0.5rem 1rem;
+      background-color: var(--secondary-bg);
+      color: var(--text-primary);
+    }
+    
+    .comment-input-field:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+    
+    .comment-submit-btn {
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition-speed) ease;
+    }
+    
+    .comment-submit-btn:hover {
+      background-color: #018555;
+      transform: scale(1.1);
     }
   </style>
 </head>
@@ -206,8 +467,8 @@
   </nav>
 
   <!-- Main Content -->
-  <div class="container-fluid">
-    <div class="row">
+  <div class="container-fluid main-section">
+    <div class="row justify-content-between">
       <!-- Left Sidebar -->
       <aside class="sidebar col-lg-3 p-3 border-end">
         <div class="d-flex align-items-center gap-3 mb-4">
@@ -240,112 +501,47 @@
       </aside>
 
       <!-- Main Feed -->
-      <main class="col-lg-6 main-feed">
-        <!-- Create Post -->
-        <div class="card post-card mb-4">
-          <div class="card-body">
-            <div class="d-flex align-items-start gap-3">
-              <img src="" id="postUserAvatar" class="user-avatar rounded-circle shadow-sm" alt="User Avatar">
-              <div class="w-100">
-                <textarea class="form-control border-0 mb-3 fs-6" 
-                          id="postContent"
-                          rows="3" 
-                          placeholder="What's happening?"
-                          style="resize: none; background: var(--secondary-bg)"></textarea>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-secondary rounded-pill" id="imageUploadBtn">
-                      <i class="bi bi-image"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-secondary rounded-pill" id="videoUploadBtn">
-                      <i class="bi bi-camera-video"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-secondary rounded-pill" id="emojiPickerBtn">
-                      <i class="bi bi-emoji-smile"></i>
-                    </button>
-                  </div>
-                  <button class="btn btn-success rounded-pill px-4 fw-bold" id="postSubmitBtn">Post</button>
-                </div>
-              </div>
+      <div class="col-lg-6 col-md-7">
+        <div class="post-creation-card">
+          <div class="post-creation-header">
+            <img src="" id="postUserAvatar" class="post-creation-avatar" alt="User Avatar">
+            <div>
+              <h6 id="postUserName" class="mb-0 fw-bold">Loading...</h6>
+              <small id="postUserHandle" class="text-muted">Loading...</small>
             </div>
+          </div>
+          <div class="post-creation-body">
+            <form id="createPostForm">
+              <textarea class="post-creation-textarea w-100" id="postContent" rows="3" placeholder="What's on your mind?"></textarea>
+              <div class="post-creation-footer">
+                <div class="post-creation-actions">
+                  <button type="button" class="post-creation-action-btn" id="emojiPickerBtn">
+                    <i class="bi bi-emoji-smile fs-5"></i>
+                  </button>
+                  <label for="imageUpload" class="post-creation-action-btn mb-0">
+                    <i class="bi bi-image fs-5"></i>
+                  </label>
+                  <input type="file" id="imageUpload" class="d-none" accept="image/*">
+                  <label for="videoUpload" class="post-creation-action-btn mb-0">
+                    <i class="bi bi-camera-video fs-5"></i>
+                  </label>
+                  <input type="file" id="videoUpload" class="d-none" accept="video/*">
+                </div>
+                <button type="submit" class="post-creation-submit-btn">Post</button>
+              </div>
+            </form>
           </div>
         </div>
 
-        <!-- Sample Post -->
-        <div class="card post-card mb-4">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-              <div class="d-flex align-items-center gap-3">
-                <img src="https://via.placeholder.com/48" 
-                     class="user-avatar rounded-circle shadow-sm" alt="User Avatar">
-                <div>
-                  <h6 class="mb-0 fw-bold">Sarah Johnson</h6>
-                  <small class="text-muted">Computer Science · 15m ago</small>
-                </div>
-              </div>
-              <div class="dropdown">
-                <button class="btn btn-link text-dark" data-bs-toggle="dropdown">
-                  <i class="bi bi-three-dots"></i>
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#"><i class="bi bi-bookmark me-2"></i>Save Post</a></li>
-                  <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-flag me-2"></i>Report Post</a></li>
-                </ul>
-              </div>
-            </div>
-            <p class="mb-3">Just launched our new campus networking platform! 🚀 Check it out and let us know your feedback!</p>
-            <div class="post-media mb-3 rounded-3 overflow-hidden">
-              <img src="https://cdn.usegalileo.ai/sdxl10/23c2b772-9e47-42df-adea-b44b6151e46a.png" 
-                   class="img-fluid w-100" 
-                   style="max-height: 480px; object-fit: cover;" alt="Post Media">
-            </div>
-            <div class="engagement-buttons d-flex gap-3">
-              <button class="btn btn-outline-secondary rounded-pill">
-                <i class="bi bi-heart me-2"></i>245
-              </button>
-              <button class="btn btn-outline-secondary rounded-pill">
-                <i class="bi bi-chat me-2"></i>48
-              </button>
-              <button class="btn btn-outline-secondary rounded-pill">
-                <i class="bi bi-share me-2"></i>Share
-              </button>
-            </div>
-            <div class="comment-section mt-3 pt-3">
-              <div class="d-flex gap-2 mb-3">
-                <img src="https://via.placeholder.com/36" 
-                     class="rounded-circle" 
-                     width="36" 
-                     height="36" alt="User Avatar">
-                <div class="flex-grow-1">
-                  <input type="text" 
-                         class="form-control rounded-pill" 
-                         placeholder="Write a comment...">
-                </div>
-              </div>
-              <div class="comment-list">
-                <div class="d-flex gap-2 mb-3">
-                  <img src="https://via.placeholder.com/36" 
-                       class="rounded-circle" 
-                       width="36" 
-                       height="36" alt="User Avatar">
-                  <div class="flex-grow-1">
-                    <div class="bg-light rounded-3 p-3">
-                      <div class="d-flex justify-content-between mb-1">
-                        <strong>Mike Chen</strong>
-                        <small class="text-muted">2m ago</small>
-                      </div>
-                      <p class="mb-0">This is amazing! Great work team! 👏</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+        <!-- Posts Container -->
+        <div id="postsContainer">
+          <!-- Posts will be loaded here dynamically -->
         </div>
-      </main>
+      </div>
 
       <!-- Right Sidebar -->
       <aside class="sidebar col-lg-3 p-3 border-start">
+        <!-- Events Section -->
         <h5 class="fw-bold mb-4">Upcoming Events</h5>
         <div class="card border-0 shadow-sm mb-3">
           <div class="card-body">
@@ -361,6 +557,8 @@
             <button class="btn btn-outline-success w-100 rounded-pill">RSVP Now</button>
           </div>
         </div>
+
+        <!-- Communities Section -->
         <h5 class="fw-bold mt-4 mb-4">Trending Communities</h5>
         <div class="card border-0 shadow-sm mb-3">
           <div class="card-body">
@@ -380,14 +578,16 @@
     </div>
   </div>
 
-  <!-- Emoji Picker Dialog -->
-  <div id="emojiPickerDialog" class="emoji-picker-dialog" style="display: none;">
-    <emoji-picker id="emojiPicker" class="light"></emoji-picker>
-  </div>
+  <!-- Emoji picker container -->
+  <div id="emoji-picker-container" style="display: none;"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@emoji-mart/data"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emoji-mart/react"></script>
+  <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/assets/js/logout.js"></script>
   <script src="/assets/js/dashboard.js"></script>
-  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.3/index.js"></script>
 </body>
 </html>

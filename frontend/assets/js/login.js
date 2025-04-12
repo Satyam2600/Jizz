@@ -27,26 +27,36 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const response = await fetch('/api/users/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ rollNo: uid, password })
+        body: JSON.stringify({ uid: uid, password: password })
       });
       
       const data = await response.json();
       
       if (response.ok) {
         // Store user data in localStorage
-        localStorage.setItem('uid', data.user.uid);
+        localStorage.setItem('uid', data.user.rollNo);
         localStorage.setItem('userFullName', data.user.fullName);
-        localStorage.setItem('userUsername', data.user.username);
-        localStorage.setItem('userAvatar', data.user.avatar);
-        localStorage.setItem('userBanner', data.user.banner);
+        localStorage.setItem('userUsername', data.user.username || data.user.rollNo);
+        localStorage.setItem('userAvatar', data.user.avatar || '/assets/images/default-avatar.jpg');
+        localStorage.setItem('userBanner', data.user.banner || '/assets/images/default-banner.jpg');
+        
+        // Store the JWT token
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+          console.log('Token stored successfully');
+        } else {
+          console.error('No token found in login response');
+          alert('Login successful but authentication token is missing. Please try again.');
+          return;
+        }
         
         // Redirect based on first login status
-        if (data.user.isFirstLogin) {
+        if (data.isFirstLogin) {
           window.location.href = '/edit-profile';
         } else {
           window.location.href = '/dashboard';

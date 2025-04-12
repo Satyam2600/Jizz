@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const PostSchema = new mongoose.Schema(
   {
-    userId: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true
@@ -30,7 +30,7 @@ const PostSchema = new mongoose.Schema(
       ref: "User"
     }],
     comments: [{
-      userId: {
+      user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
@@ -53,7 +53,7 @@ const PostSchema = new mongoose.Schema(
     mentions: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // Users mentioned in the post
     reports: [
       {
-        userId: {
+        user: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
           required: true
@@ -76,7 +76,7 @@ const PostSchema = new mongoose.Schema(
 );
 
 // Create indexes for better query performance
-PostSchema.index({ userId: 1, createdAt: -1 });
+PostSchema.index({ user: 1, createdAt: -1 });
 PostSchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model("Post", PostSchema);
