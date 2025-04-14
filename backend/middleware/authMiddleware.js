@@ -3,13 +3,33 @@ const User = require("../models/User");
 
 const authMiddleware = async (req, res, next) => {
   try {
-    const token = req.header("Authorization");
-    if (!token) return res.status(401).json({ message: "Access Denied" });
-    const verified = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET);
-    req.user = await User.findById(verified.id).select("-password");
+    // Get token from Authorization header
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Add user info to request
+    req.user = {
+      userId: decoded.userId,
+      rollNumber: decoded.rollNumber
+    };
+    
     next();
   } catch (error) {
-    res.status(400).json({ message: "Invalid Token" });
+    console.error('Auth middleware error:', error);
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token expired' });
+    }
+    res.status(500).json({ message: 'Server error' });
   }
 };
 

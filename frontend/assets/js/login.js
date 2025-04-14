@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("loginForm");
-  const uidInput = document.getElementById("uid");
+  const rollNumberInput = document.getElementById("rollNumber");
   const passwordInput = document.getElementById("password");
   const togglePassword = document.getElementById("togglePassword");
   const rememberMe = document.getElementById("rememberMe") || { checked: false };
@@ -19,46 +19,50 @@ document.addEventListener("DOMContentLoaded", () => {
   // Handle form submission
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const uid = uidInput.value.trim();
+    const rollNumber = rollNumberInput.value.trim();
     const password = passwordInput.value.trim();
-    if (!uid || !password) {
+    if (!rollNumber || !password) {
       alert("Please fill in all required fields.");
       return;
     }
 
     try {
+      console.log("Sending login request...");
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ uid: uid, password: password })
+        body: JSON.stringify({ rollNumber, password })
       });
       
+      console.log("Response status:", response.status);
       const data = await response.json();
+      console.log("Response data:", data);
       
       if (response.ok) {
         // Store user data in localStorage
-        localStorage.setItem('uid', data.user.rollNo);
-        localStorage.setItem('userFullName', data.user.fullName);
-        localStorage.setItem('userUsername', data.user.username || data.user.rollNo);
-        localStorage.setItem('userAvatar', data.user.avatar || '/assets/images/default-avatar.jpg');
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userFullName', data.user.fullName || '');
+        localStorage.setItem('userUsername', data.user.username || '');
+        localStorage.setItem('userProfilePhoto', data.user.avatar || '/assets/images/default-avatar.png');
         localStorage.setItem('userBanner', data.user.banner || '/assets/images/default-banner.jpg');
         
-        // Store the JWT token
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-          console.log('Token stored successfully');
-        } else {
-          console.error('No token found in login response');
-          alert('Login successful but authentication token is missing. Please try again.');
-          return;
-        }
+        // Log the stored user data for debugging
+        console.log('User data stored in localStorage:', {
+          fullName: data.user.fullName,
+          username: data.user.username || 'Not set',
+          avatar: data.user.avatar,
+          banner: data.user.banner,
+          isFirstLogin: data.user.isFirstLogin
+        });
         
-        // Redirect based on first login status
-        if (data.isFirstLogin) {
+        // Redirect based on first-time login
+        if (data.user.isFirstLogin) {
+          console.log("First time login, redirecting to edit profile...");
           window.location.href = '/edit-profile';
         } else {
+          console.log("Returning user, redirecting to dashboard...");
           window.location.href = '/dashboard';
         }
       } else {

@@ -15,21 +15,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Form submission handler
     if (registerForm) {
-        registerForm.addEventListener("submit", async function (event) {
-            event.preventDefault();
+        registerForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
 
             // Get input values and trim spaces
             const fullName = fullNameInput.value.trim();
-            const uid = uidInput.value.trim();
+            const rollNumber = uidInput.value.trim();
             const email = emailInput.value.trim();
             const password = passwordInput.value.trim();
 
             console.log("Entered Full Name:", fullName);
-            console.log("Entered UID:", uid);
+            console.log("Entered Roll Number:", rollNumber);
             console.log("Entered Email:", email);
 
             // Validate required fields
-            if (!fullName || !uid || !email || !password) {
+            if (!fullName || !rollNumber || !email || !password) {
                 alert("⚠ Please fill in all required fields.");
                 return;
             }
@@ -41,12 +41,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // UID validation (numeric only)
-            if (!/^\d+$/.test(uid)) {
-                alert("⚠ UID should be numeric.");
-                return;
-            }
-
             // Password validation
             if (password.length < 6) {
                 alert("⚠ Password must be at least 6 characters long.");
@@ -54,12 +48,11 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             // Prepare data for API
-            const userData = { fullName, uid, email, password };
+            const userData = { fullName, rollNumber, email, password };
 
             try {
                 console.log("Sending request to API...");
 
-                // Ensure the correct API route
                 const response = await fetch("/api/auth/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },

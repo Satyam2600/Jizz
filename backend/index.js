@@ -36,6 +36,9 @@ app.use(express.static(path.join(__dirname, "../frontend"), {
 // Serve uploaded files
 app.use("/assets/uploads", express.static(path.join(__dirname, "../frontend/assets/uploads")));
 
+// Serve backend uploads
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "../frontend/views"));
 
@@ -53,30 +56,18 @@ app.get("/register", (req, res) => {
 
 app.get("/dashboard", async (req, res) => {
   try {
-    const user = await User.findOne({ rollNo: req.session.userId });
-    if (!user) return res.redirect("/login");
-
-    res.render("dashboard", {
-      user: {
-        fullName: user.fullName,
-        username: user.username,
-        avatar: user.avatar,
-        banner: user.banner,
-        department: user.department,
-        bio: user.bio,
-        socialLinks: user.socialLinks,
-      },
-    });
+    // For JWT authentication, we don't need to check session here
+    // The frontend will handle authentication with the token
+    res.render("dashboard", { title: "Dashboard - JIZZ" });
   } catch (error) {
-    console.error("Error fetching dashboard data:", error);
+    console.error("Error rendering dashboard:", error);
     res.status(500).send("Server error");
   }
 });
 
 app.get("/edit-profile", (req, res) => {
-  if (!req.session.userId) {
-    return res.redirect("/login");
-  }
+  // For JWT authentication, we don't need to check session here
+  // The frontend will handle authentication with the token
   res.render("editProfile", { title: "Edit Profile - JIZZ" });
 });
 
@@ -114,6 +105,26 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/newsletter", newsletterRoutes);
 app.use("/api/password-reset", passwordResetRoutes);
 app.use("/api/uploads", uploadRoutes);
+
+// Error handling middleware for multer errors
+app.use((err, req, res, next) => {
+  if (err.name === 'MulterError') {
+    // A Multer error occurred when uploading
+    console.error('Multer error:', err);
+    return res.status(400).json({ 
+      message: 'File upload error', 
+      error: err.message 
+    });
+  } else if (err) {
+    // An unknown error occurred
+    console.error('Unknown error:', err);
+    return res.status(500).json({ 
+      message: 'Server error', 
+      error: err.message 
+    });
+  }
+  next();
+});
 
 app.get("/health", (req, res) => res.send("🚀 JIZZ Social Media API Running..."));
 

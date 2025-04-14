@@ -2,20 +2,44 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const User = require("../models/User"); // Ensure User model is imported
+const authMiddleware = require("../middleware/authMiddleware");
+const fs = require('fs');
 
 const router = express.Router();
 
+// Ensure uploads directory exists
+const uploadPath = path.join(__dirname, "../../frontend/assets/uploads");
+if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
+}
+
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, "../../frontend/assets/uploads");
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
+    destination: (req, file, cb) => {
+        cb(null, uploadPath);
+    },
+    filename: (req, file, cb) => {
+        // Generate a unique filename with original extension
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
 });
 
-const upload = multer({ storage });
+// File filter to only allow images
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+        cb(null, true);
+    } else {
+        cb(new Error('Only image files are allowed!'), false);
+    }
+};
+
+const upload = multer({ 
+    storage: storage,
+    fileFilter: fileFilter,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
+    }
+});
 
 // Update Profile Route: Use rollNo (uid) sent in req.body.userId
 router.post(
@@ -54,55 +78,99 @@ router.post(
     }
   }
 );
-// Endpoint for updating Profile Photo
-router.post("/profile-photo", upload.single("profilePhoto"), async (req, res) => {
-  try {
-    // Use session userId if available, otherwise use the one from the request
-    const userIdentifier = req.session.userId || req.body.userId;
-    
-    if (!userIdentifier) {
-      return res.status(401).json({ message: "Not authenticated" });
-    }
 
-    const user = await User.findOneAndUpdate(
-      { rollNo: userIdentifier }, // Using the uid (rollNo) sent in the request body
-      { avatar: `/assets/uploads/${req.file.filename}` },
-      { new: true }
-    );
+// Profile photo upload endpoint
+router.post("/profile-photo", authMiddleware, async (req, res) => {
+    try {
+        upload.single("profilePhoto")(req, res, async (err) => {
+            if (err) {
+                if (err instanceof multer.MulterError) {
+                    if (err.code === 'LIMIT_FILE_SIZE') {
+                        return res.status(400).json({ message: "File is too large. Maximum size is 5MB." });
+                    }
+                    return res.status(400).json({ message: err.message });
+                }
+                return res.status(400).json({ message: "Error uploading file: " + err.message });
+            }
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+            if (!req.file) {
+                return res.status(400).json({ message: "No file uploaded" });
+            }
+
+            try {
+                const user = await User.findByIdAndUpdate(
+                    req.user.userId,
+                    { avatar: `/assets/uploads/${req.file.filename}` },
+                    { new: true }
+                );
+
+                if (!user) {
+                    // Delete the uploaded file if user not found
+                    fs.unlinkSync(req.file.path);
+                    return res.status(404).json({ message: "User not found" });
+                }
+
+                res.json({ 
+                    message: "Profile photo uploaded successfully",
+                    filePath: `/assets/uploads/${req.file.filename}` 
+                });
+            } catch (error) {
+                // Delete the uploaded file if database update fails
+                fs.unlinkSync(req.file.path);
+                throw error;
+            }
+        });
+    } catch (error) {
+        console.error("Error in profile photo upload:", error);
+        res.status(500).json({ message: "Server error while uploading profile photo" });
     }
-    res.json({ filePath: `/assets/uploads/${req.file.filename}` });
-  } catch (error) {
-    console.error("Error updating profile photo:", error);
-    res.status(500).json({ message: "Error updating profile photo" });
-  }
 });
 
-// Endpoint for updating Cover Photo
-router.post("/cover-photo", upload.single("coverPhoto"), async (req, res) => {
-  try {
-    // Use session userId if available, otherwise use the one from the request
-    const userIdentifier = req.session.userId || req.body.userId;
-    
-    if (!userIdentifier) {
-      return res.status(401).json({ message: "Not authenticated" });
-    }
+// Cover photo upload endpoint
+router.post("/cover-photo", authMiddleware, async (req, res) => {
+    try {
+        upload.single("coverPhoto")(req, res, async (err) => {
+            if (err) {
+                if (err instanceof multer.MulterError) {
+                    if (err.code === 'LIMIT_FILE_SIZE') {
+                        return res.status(400).json({ message: "File is too large. Maximum size is 5MB." });
+                    }
+                    return res.status(400).json({ message: err.message });
+                }
+                return res.status(400).json({ message: "Error uploading file: " + err.message });
+            }
 
-    const user = await User.findOneAndUpdate(
-      { rollNo: userIdentifier }, // Using the uid (rollNo) sent in the request body
-      { banner: `/assets/uploads/${req.file.filename}` },
-      { new: true }
-    );
+            if (!req.file) {
+                return res.status(400).json({ message: "No file uploaded" });
+            }
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+            try {
+                const user = await User.findByIdAndUpdate(
+                    req.user.userId,
+                    { banner: `/assets/uploads/${req.file.filename}` },
+                    { new: true }
+                );
+
+                if (!user) {
+                    // Delete the uploaded file if user not found
+                    fs.unlinkSync(req.file.path);
+                    return res.status(404).json({ message: "User not found" });
+                }
+
+                res.json({ 
+                    message: "Cover photo uploaded successfully",
+                    filePath: `/assets/uploads/${req.file.filename}` 
+                });
+            } catch (error) {
+                // Delete the uploaded file if database update fails
+                fs.unlinkSync(req.file.path);
+                throw error;
+            }
+        });
+    } catch (error) {
+        console.error("Error in cover photo upload:", error);
+        res.status(500).json({ message: "Server error while uploading cover photo" });
     }
-    res.json({ filePath: `/assets/uploads/${req.file.filename}` });
-  } catch (error) {
-    console.error("Error updating cover photo:", error);
-    res.status(500).json({ message: "Error updating cover photo" });
-  }
 });
+
 module.exports = router;

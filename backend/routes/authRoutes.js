@@ -8,78 +8,81 @@ const router = express.Router();
 // 📌 Register a New User
 router.post("/register", async (req, res) => {
   try {
-    const { fullName, uid, email, password } = req.body;
+    const { fullName, email, password, rollNumber } = req.body;
 
     // Validate required fields
-    if (!fullName || !uid || !email || !password) {
+    if (!fullName || !email || !password || !rollNumber) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Check if the user already exists
-    const existingUser = await User.findOne({ $or: [{ email }, { rollNo: uid }] });
+    // Check if user already exists
+    const existingUser = await User.findOne({ $or: [{ email }, { rollNumber }] });
     if (existingUser) {
-      return res.status(400).json({ message: "Email or UID already exists" });
+      return res.status(400).json({ message: "User already exists with this email or roll number" });
     }
 
-    // Create a new user - password will be hashed by the User model's pre-save hook
-    const newUser = new User({
+    // Create new user
+    const user = new User({
       fullName,
-      rollNo: uid,
       email,
-      password, // Store the plain password, it will be hashed by the pre-save hook
+      password,
+      rollNumber
     });
 
-    // Save the new user to the database
-    await newUser.save();
+    await user.save();
 
-    res.status(201).json({ message: "User registered successfully!" });
+    res.status(201).json({
+      message: "User registered successfully. Please login to continue.",
+      success: true
+    });
   } catch (error) {
-    console.error("Error during registration:", error);
-    res.status(500).json({ message: "Server Error", error: error.message });
+    console.error("Registration error:", error);
+    res.status(500).json({ message: "Error registering user" });
   }
 });
 
 // 📌 User Login
 router.post("/login", async (req, res) => {
   try {
-    const { uid, password } = req.body;
-
-    if (!uid || !password) {
-      return res.status(400).json({ message: "Roll No. and password are required" });
-    }
-
-    // Find the user by UID
-    const user = await User.findOne({ rollNo: uid });
+    const { rollNumber, password } = req.body;
+    const user = await User.findOne({ rollNumber });
+    
     if (!user) {
-      return res.status(400).json({ message: "Invalid Roll No. or password" });
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
-
-    // Compare the entered password with the hashed password
-    const isMatch = await bcrypt.compare(password, user.password);
+    
+    const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid Roll No. or password" });
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Generate a JWT token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    // Check if this is first login (no username or profile photo set)
+    const isFirstLogin = !user.username || !user.avatar;
 
-    // Set the session
-    req.session.userId = user.rollNo;
+    const token = jwt.sign(
+      { userId: user._id, rollNumber: user.rollNumber },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
 
-    res.status(200).json({
-      message: "Login successful",
+    // Return user data without password
+    const userData = {
+      _id: user._id,
+      fullName: user.fullName,
+      username: user.username,
+      rollNumber: user.rollNumber,
+      avatar: user.avatar,
+      banner: user.banner,
+      isFirstLogin: isFirstLogin
+    };
+
+    res.json({
       token,
-      isFirstLogin: user.isFirstLogin,
-      user: {
-        id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        rollNo: user.rollNo,
-      },
+      user: userData
     });
   } catch (error) {
-    console.error("Error during login:", error);
-    res.status(500).json({ message: "Server Error", error: error.message });
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
@@ -97,6 +100,62 @@ router.post("/logout", (req, res) => {
     console.error("Error during logout:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
+});
+
+// Forgot password route
+router.post('/forgot-password', async (req, res) => {
+    try {
+        const { rollNumber } = req.body;
+        
+        if (!rollNumber) {
+            return res.status(400).json({ message: 'Roll number is required' });
+        }
+        
+        // Find user by roll number
+        const user = await User.findOne({ rollNumber });
+        
+        // For security reasons, we don't reveal whether a user exists or not
+        // Instead, we always return a success message
+        res.status(200).json({ 
+            message: 'If an account exists with the provided roll number, password reset instructions will be sent.',
+            success: true
+        });
+        
+        // If user exists, generate a random password and send it via email
+        if (user && user.email) {
+            // Generate a random password (8 characters)
+            const crypto = require('crypto');
+            const newPassword = crypto.randomBytes(4).toString('hex');
+            
+            // Hash the new password
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            
+            // Update the user's password
+            await User.updateOne(
+                { _id: user._id },
+                { $set: { password: hashedPassword } }
+            );
+            
+            // Send email with the new password
+            const sendEmail = require('../utils/emailService');
+            const htmlContent = `
+                <h2>Password Reset</h2>
+                <p>Hello ${user.fullName || 'User'},</p>
+                <p>Your password has been reset. Your new password is: <strong>${newPassword}</strong></p>
+                <p>Please log in using this password and change it immediately for security.</p>
+                <p>If you did not request this password reset, please contact support immediately.</p>
+            `;
+            
+            await sendEmail(user.email, "Your New Password", htmlContent);
+            
+            console.log(`Password reset completed for user: ${user.fullName || user.rollNumber} (${user.rollNumber})`);
+        } else if (user) {
+            console.error('User found but email is missing:', user);
+        }
+    } catch (error) {
+        console.error('Forgot password error:', error);
+        // Don't send a response here since we already sent one above
+    }
 });
 
 module.exports = router;

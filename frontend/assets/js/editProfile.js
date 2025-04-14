@@ -1,19 +1,34 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    const uid = localStorage.getItem('uid');
-    if (!uid) {
-        window.location.href = '/login';
+    const token = localStorage.getItem('token');
+    
+    // Debug log to check token
+    console.log('Current token:', token);
+
+    if (!token) {
+        console.log('No token found in localStorage');
+        alert('Please log in to edit your profile');
         return;
     }
 
     // Fetch existing user data
     try {
-        const response = await fetch(`/api/users/profile/${uid}`);
+        const response = await fetch('/api/users/profile', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        console.log('Profile fetch response status:', response.status);
         const userData = await response.json();
+        console.log('Profile fetch response data:', userData);
         
         if (response.ok) {
             // Pre-fill form fields
             const fullNameInput = document.getElementById('fullName');
             const usernameInput = document.getElementById('username');
+            const rollNoInput = document.getElementById('rollNo');
             const departmentSelect = document.getElementById('department');
             const yearSelect = document.getElementById('year');
             const semesterSelect = document.getElementById('semester');
@@ -25,6 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             if (fullNameInput) fullNameInput.value = userData.fullName || '';
             if (usernameInput) usernameInput.value = userData.username || '';
+            if (rollNoInput) rollNoInput.value = userData.rollNumber || '';
             
             if (departmentSelect) {
                 for (let i = 0; i < departmentSelect.options.length; i++) {
@@ -69,6 +85,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (coverPhotoPreview && userData.banner) {
                 coverPhotoPreview.style.backgroundImage = `url('${userData.banner}')`;
             }
+        } else {
+            console.error('Failed to fetch profile:', userData.message);
         }
     } catch (error) {
         console.error('Error fetching user data:', error);
@@ -81,14 +99,21 @@ if (profileForm) {
     profileForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
+        const token = localStorage.getItem('token');
+        console.log('Submitting form with token:', token);
+        
+        if (!token) {
+            console.log('No token found during form submission');
+            alert('Please log in to update your profile');
+            return;
+        }
+        
         const formData = new FormData();
-        const uid = localStorage.getItem('uid');
         
         // Add form fields
-        formData.append('userId', uid);
-        
         const fullNameInput = document.getElementById('fullName');
         const usernameInput = document.getElementById('username');
+        const rollNoInput = document.getElementById('rollNo');
         const departmentSelect = document.getElementById('department');
         const yearSelect = document.getElementById('year');
         const semesterSelect = document.getElementById('semester');
@@ -96,10 +121,17 @@ if (profileForm) {
         const skillsInput = document.getElementById('skills');
         const interestsInput = document.getElementById('interests');
         const portfolioInput = document.getElementById('portfolio');
+        const phoneNumberInput = document.getElementById('phoneNumber');
+        const isPublicInput = document.getElementById('isPublic');
         const linkedinInput = document.getElementById('linkedin');
+        const githubInput = document.getElementById('github');
+        const twitterInput = document.getElementById('twitter');
+        const instagramInput = document.getElementById('instagram');
         
+        // Add all form fields to formData
         if (fullNameInput) formData.append('fullName', fullNameInput.value);
         if (usernameInput) formData.append('username', usernameInput.value);
+        if (rollNoInput) formData.append('rollNumber', rollNoInput.value);
         if (departmentSelect) formData.append('department', departmentSelect.value);
         if (yearSelect) formData.append('year', yearSelect.value);
         if (semesterSelect) formData.append('semester', semesterSelect.value);
@@ -107,7 +139,12 @@ if (profileForm) {
         if (skillsInput) formData.append('skills', skillsInput.value);
         if (interestsInput) formData.append('interests', interestsInput.value);
         if (portfolioInput) formData.append('portfolio', portfolioInput.value);
+        if (phoneNumberInput) formData.append('phoneNumber', phoneNumberInput.value);
+        if (isPublicInput) formData.append('isPublic', isPublicInput.checked);
         if (linkedinInput) formData.append('linkedin', linkedinInput.value);
+        if (githubInput) formData.append('github', githubInput.value);
+        if (twitterInput) formData.append('twitter', twitterInput.value);
+        if (instagramInput) formData.append('instagram', instagramInput.value);
         
         // Add files if selected
         const profilePhotoInput = document.getElementById('profilePhotoInput');
@@ -122,27 +159,39 @@ if (profileForm) {
         }
 
         try {
+            console.log('Sending profile update request...');
             const response = await fetch('/api/users/update-profile', {
                 method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
                 body: formData
             });
 
+            console.log('Profile update response status:', response.status);
             const data = await response.json();
+            console.log('Profile update response data:', data);
             
             if (response.ok) {
                 // Update localStorage with new data
                 localStorage.setItem('userFullName', data.user.fullName);
                 localStorage.setItem('userUsername', data.user.username);
-                if (data.user.avatar) localStorage.setItem('userAvatar', data.user.avatar);
+                localStorage.setItem('userRollNo', data.user.rollNumber);
+                localStorage.setItem('userDepartment', data.user.department);
+                localStorage.setItem('userYear', data.user.year);
+                localStorage.setItem('userSemester', data.user.semester);
+                if (data.user.avatar) localStorage.setItem('userProfilePhoto', data.user.avatar);
                 if (data.user.banner) localStorage.setItem('userBanner', data.user.banner);
                 
+                console.log('Profile updated successfully:', data.user);
                 alert('Profile updated successfully!');
                 window.location.href = '/dashboard';
             } else {
+                console.error('Profile update failed:', data.message);
                 alert(data.message || 'Failed to update profile');
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error updating profile:', error);
             alert('An error occurred while updating your profile');
         }
     });

@@ -19,74 +19,299 @@ if (navbarToggler) {
 }
 
 // Main Dashboard Initialization
-document.addEventListener("DOMContentLoaded", () => {
-    // Get user information from localStorage
-    const userFullName = localStorage.getItem("userFullName");
-    const userUsername = localStorage.getItem("userUsername");
+document.addEventListener("DOMContentLoaded", async () => {
+    console.log("Dashboard initialization started");
+    
+    // Check if user is logged in
+    const token = localStorage.getItem("token");
+    if (!token) {
+        console.log("No token found, redirecting to login");
+        window.location.href = "/login";
+        return;
+    }
+    
+    // Get user info from localStorage
+    const userFullName = localStorage.getItem("userFullName") || "User";
+    const userUsername = localStorage.getItem("userUsername") || "Not set";
     const userProfilePhoto = localStorage.getItem("userProfilePhoto");
-    const userDepartment = localStorage.getItem("userDepartment");
-    const userYear = localStorage.getItem("userYear");
-    const userSemester = localStorage.getItem("userSemester");
+    const userBanner = localStorage.getItem("userBanner");
+    const userDepartment = localStorage.getItem("userDepartment") || "Not set";
+    const userYear = localStorage.getItem("userYear") || "Not set";
+    const userSemester = localStorage.getItem("userSemester") || "Not set";
+    const userBio = localStorage.getItem("userBio");
+    const userSkills = localStorage.getItem("userSkills");
+    const userInterests = localStorage.getItem("userInterests");
+    const userPortfolio = localStorage.getItem("userPortfolio");
+    const userLinkedIn = localStorage.getItem("userLinkedIn");
+    const userGithub = localStorage.getItem("userGithub");
+    const userTwitter = localStorage.getItem("userTwitter");
+    const userInstagram = localStorage.getItem("userInstagram");
     
-    // Update sidebar profile elements
-    const sidebarUserAvatar = document.getElementById("sidebarUserAvatar");
-    const userName = document.getElementById("userName");
-    const userHandle = document.getElementById("userHandle");
+    console.log("User data from localStorage:", {
+        fullName: userFullName,
+        username: userUsername,
+        profilePhoto: userProfilePhoto,
+        banner: userBanner,
+        department: userDepartment,
+        year: userYear,
+        semester: userSemester,
+        bio: userBio,
+        skills: userSkills,
+        interests: userInterests,
+        portfolio: userPortfolio,
+        linkedIn: userLinkedIn,
+        github: userGithub,
+        twitter: userTwitter,
+        instagram: userInstagram
+    });
     
-    // Update post creation area profile elements
-    const postUserAvatar = document.getElementById("postUserAvatar");
-    const postUserName = document.getElementById("postUserName");
+    // Update sidebar with user info
+    const sidebarAvatar = document.querySelector('.sidebar-avatar');
+    const sidebarName = document.querySelector('.sidebar-name');
+    const sidebarUsername = document.querySelector('.sidebar-username');
+    const sidebarUserDepartment = document.getElementById("sidebarUserDepartment");
+    const sidebarUserYearSem = document.getElementById("sidebarUserYearSem");
+    const sidebarUserBio = document.getElementById("sidebarUserBio");
+    const sidebarUserSkills = document.getElementById("sidebarUserSkills");
+    const sidebarUserInterests = document.getElementById("sidebarUserInterests");
+    const sidebarUserPortfolio = document.getElementById("sidebarUserPortfolio");
+    const sidebarUserLinkedIn = document.getElementById("sidebarUserLinkedIn");
+    const sidebarUserGithub = document.getElementById("sidebarUserGithub");
+    const sidebarUserTwitter = document.getElementById("sidebarUserTwitter");
+    const sidebarUserInstagram = document.getElementById("sidebarUserInstagram");
+    
+    // Set user avatar in sidebar
+    if (sidebarAvatar) {
+        if (userProfilePhoto && userProfilePhoto !== 'undefined' && userProfilePhoto !== 'null') {
+            sidebarAvatar.src = userProfilePhoto;
+            console.log('Setting sidebar avatar to user profile photo:', userProfilePhoto);
+        } else {
+            sidebarAvatar.src = '/assets/images/default-avatar.png';
+            console.log('Setting sidebar avatar to default');
+        }
+        sidebarAvatar.alt = userFullName;
+    } else {
+        console.error('Sidebar avatar element not found');
+    }
+    
+    // Set user name in sidebar
+    if (sidebarName) {
+        if (userFullName) {
+            sidebarName.textContent = userFullName;
+            console.log('Setting sidebar name to:', userFullName);
+        } else {
+            sidebarName.textContent = 'User';
+            console.log('Setting sidebar name to default');
+        }
+    } else {
+        console.error('Sidebar name element not found');
+    }
+    
+    // Set username/UID in sidebar
+    if (sidebarUsername) {
+        if (userUsername && userUsername.trim() !== '') {
+            sidebarUsername.textContent = `@${userUsername}`;
+            console.log('Setting sidebar username to:', userUsername);
+        } else if (userUsername === 'Not set') {
+            sidebarUsername.textContent = '@user';
+            console.log('Setting sidebar username to default');
+        }
+    } else {
+        console.error('Sidebar username element not found');
+    }
+    
+    // Set department in sidebar
+    if (sidebarUserDepartment) {
+        if (userDepartment) {
+            sidebarUserDepartment.textContent = userDepartment;
+            console.log('Setting sidebar department to:', userDepartment);
+        } else {
+            sidebarUserDepartment.textContent = "Department";
+            console.log('Setting sidebar department to default');
+        }
+    } else {
+        console.error('Sidebar department element not found');
+    }
+    
+    // Set year/semester in sidebar
+    if (sidebarUserYearSem) {
+        if (userYear && userSemester) {
+            sidebarUserYearSem.textContent = `Year ${userYear}, Sem ${userSemester}`;
+            console.log('Setting sidebar year/semester to:', userYear, userSemester);
+        } else {
+            sidebarUserYearSem.textContent = "Year, Semester";
+            console.log('Setting sidebar year/semester to default');
+        }
+    } else {
+        console.error('Sidebar year/semester element not found');
+    }
+    
+    // Set bio in sidebar
+    if (sidebarUserBio) {
+        if (userBio) {
+            sidebarUserBio.textContent = userBio;
+            console.log('Setting sidebar bio to:', userBio);
+        } else {
+            sidebarUserBio.textContent = "No bio available";
+            console.log('Setting sidebar bio to default');
+        }
+    } else {
+        console.error('Sidebar bio element not found');
+    }
+    
+    // Set skills in sidebar
+    if (sidebarUserSkills) {
+        if (userSkills) {
+            sidebarUserSkills.textContent = userSkills;
+            console.log('Setting sidebar skills to:', userSkills);
+        } else {
+            sidebarUserSkills.textContent = "No skills listed";
+            console.log('Setting sidebar skills to default');
+        }
+    } else {
+        console.error('Sidebar skills element not found');
+    }
+    
+    // Set interests in sidebar
+    if (sidebarUserInterests) {
+        if (userInterests) {
+            sidebarUserInterests.textContent = userInterests;
+            console.log('Setting sidebar interests to:', userInterests);
+        } else {
+            sidebarUserInterests.textContent = "No interests listed";
+            console.log('Setting sidebar interests to default');
+        }
+    } else {
+        console.error('Sidebar interests element not found');
+    }
+    
+    // Set portfolio in sidebar
+    if (sidebarUserPortfolio) {
+        if (userPortfolio) {
+            sidebarUserPortfolio.href = userPortfolio;
+            sidebarUserPortfolio.style.display = 'block';
+            console.log('Setting sidebar portfolio to:', userPortfolio);
+        } else {
+            sidebarUserPortfolio.style.display = 'none';
+            console.log('Hiding sidebar portfolio link');
+        }
+    } else {
+        console.error('Sidebar portfolio element not found');
+    }
+    
+    // Set LinkedIn in sidebar
+    if (sidebarUserLinkedIn) {
+        if (userLinkedIn) {
+            sidebarUserLinkedIn.href = userLinkedIn;
+            sidebarUserLinkedIn.style.display = 'block';
+            console.log('Setting sidebar LinkedIn to:', userLinkedIn);
+        } else {
+            sidebarUserLinkedIn.style.display = 'none';
+            console.log('Hiding sidebar LinkedIn link');
+        }
+    } else {
+        console.error('Sidebar LinkedIn element not found');
+    }
+    
+    // Set GitHub in sidebar
+    if (sidebarUserGithub) {
+        if (userGithub) {
+            sidebarUserGithub.href = userGithub;
+            sidebarUserGithub.style.display = 'block';
+            console.log('Setting sidebar GitHub to:', userGithub);
+        } else {
+            sidebarUserGithub.style.display = 'none';
+            console.log('Hiding sidebar GitHub link');
+        }
+    } else {
+        console.error('Sidebar GitHub element not found');
+    }
+    
+    // Set Twitter in sidebar
+    if (sidebarUserTwitter) {
+        if (userTwitter) {
+            sidebarUserTwitter.href = userTwitter;
+            sidebarUserTwitter.style.display = 'block';
+            console.log('Setting sidebar Twitter to:', userTwitter);
+        } else {
+            sidebarUserTwitter.style.display = 'none';
+            console.log('Hiding sidebar Twitter link');
+        }
+    } else {
+        console.error('Sidebar Twitter element not found');
+    }
+    
+    // Set Instagram in sidebar
+    if (sidebarUserInstagram) {
+        if (userInstagram) {
+            sidebarUserInstagram.href = userInstagram;
+            sidebarUserInstagram.style.display = 'block';
+            console.log('Setting sidebar Instagram to:', userInstagram);
+        } else {
+            sidebarUserInstagram.style.display = 'none';
+            console.log('Hiding sidebar Instagram link');
+        }
+    } else {
+        console.error('Sidebar Instagram element not found');
+    }
+    
+    // Update post creation area with user info
+    const postAvatar = document.querySelector('.post-avatar');
+    const postName = document.querySelector('.post-name');
     const postUserHandle = document.getElementById("postUserHandle");
     
-    // Set user information in sidebar
-    if (userFullName) {
-        userName.textContent = userFullName;
+    // Set user avatar in post creation area
+    if (postAvatar) {
+        if (userProfilePhoto && userProfilePhoto !== 'undefined' && userProfilePhoto !== 'null') {
+            postAvatar.src = userProfilePhoto;
+            console.log('Setting post avatar to user profile photo:', userProfilePhoto);
+        } else {
+            postAvatar.src = '/assets/images/default-avatar.png';
+            console.log('Setting post avatar to default');
+        }
+        postAvatar.alt = userFullName;
     } else {
-        userName.textContent = "User";
+        console.error('Post avatar element not found');
     }
     
-    if (userUsername) {
-        userHandle.textContent = `@${userUsername}`;
+    // Set user name in post creation area
+    if (postName) {
+        if (userFullName) {
+            postName.textContent = userFullName;
+            console.log('Setting post name to:', userFullName);
+        } else {
+            postName.textContent = 'User';
+            console.log('Setting post name to default');
+        }
     } else {
-        userHandle.textContent = "@user";
+        console.error('Post name element not found');
     }
     
-    // Set profile photo in sidebar
-    if (userProfilePhoto && userProfilePhoto !== "undefined" && userProfilePhoto !== "null") {
-        sidebarUserAvatar.src = userProfilePhoto;
-        console.log("Setting sidebar avatar to:", userProfilePhoto);
+    // Set username/UID in post creation area
+    if (postUserHandle) {
+        if (userUsername && userUsername.trim() !== '') {
+            postUserHandle.textContent = `@${userUsername}`;
+            console.log('Setting post username to:', userUsername);
+        } else if (userUsername === 'Not set') {
+            postUserHandle.textContent = '@user';
+            console.log('Setting post username to default');
+        }
     } else {
-        sidebarUserAvatar.src = "/assets/images/default-avatar.jpg";
-        console.log("Using default avatar for sidebar");
-    }
-    
-    // Set user information in post creation area
-    if (userFullName) {
-        postUserName.textContent = userFullName;
-    } else {
-        postUserName.textContent = "User";
-    }
-    
-    if (userUsername) {
-        postUserHandle.textContent = `@${userUsername}`;
-    } else {
-        postUserHandle.textContent = "@user";
-    }
-    
-    // Set profile photo in post creation area
-    if (userProfilePhoto && userProfilePhoto !== "undefined" && userProfilePhoto !== "null") {
-        postUserAvatar.src = userProfilePhoto;
-        console.log("Setting post creation avatar to:", userProfilePhoto);
-    } else {
-        postUserAvatar.src = "/assets/images/default-avatar.jpg";
-        console.log("Using default avatar for post creation");
+        console.error('Post username element not found');
     }
     
     // Initialize emoji picker
-    initializeEmojiPicker();
+    const emojiPicker = new EmojiMart.Picker({
+        onEmojiSelect: (emoji) => {
+            const postInput = document.querySelector(".post-input");
+            if (postInput) {
+                postInput.value += emoji.native;
+            }
+        },
+    });
     
     // Load posts
-    loadPosts();
+    await loadPosts();
 });
 
 // Emoji Picker Implementation
@@ -335,7 +560,7 @@ if (createPostForm) {
             if (imageInput) imageInput.value = '';
             if (videoInput) videoInput.value = '';
             // Refresh the feed
-            loadPosts();
+            await loadPosts();
         } catch (error) {
             console.error('Error creating post:', error);
             alert('An error occurred while creating your post');

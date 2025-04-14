@@ -255,168 +255,110 @@
     <script src="/assets/js/logout.js"></script>
 
 <script>
-// Pre-fill form with existing user data
-document.addEventListener("DOMContentLoaded", () => {
-    // Get user data from localStorage
-    const userFullName = localStorage.getItem("userFullName");
-    const userUsername = localStorage.getItem("userUsername");
-    const userDepartment = localStorage.getItem("userDepartment");
-    const userYear = localStorage.getItem("userYear");
-    const userSemester = localStorage.getItem("userSemester");
-    const userBio = localStorage.getItem("userBio");
-    const userSkills = localStorage.getItem("userSkills");
-    const userInterests = localStorage.getItem("userInterests");
-    const userPortfolio = localStorage.getItem("userPortfolio");
-    const userLinkedin = localStorage.getItem("userLinkedin");
-    const userProfilePhoto = localStorage.getItem("userProfilePhoto");
-    const userCoverPhoto = localStorage.getItem("userCoverPhoto");
-    
-    // Pre-fill form fields
-    if (userFullName) {
-        document.getElementById("fullName").value = userFullName;
-    }
-    
-    if (userUsername) {
-        document.getElementById("username").value = userUsername;
-    }
-    
-    if (userDepartment) {
-        const departmentSelect = document.getElementById("department");
-        for (let i = 0; i < departmentSelect.options.length; i++) {
-            if (departmentSelect.options[i].value === userDepartment) {
-                departmentSelect.selectedIndex = i;
-                break;
-            }
-        }
-    }
-    
-    if (userYear) {
-        const yearSelect = document.getElementById("year");
-        for (let i = 0; i < yearSelect.options.length; i++) {
-            if (yearSelect.options[i].value === userYear) {
-                yearSelect.selectedIndex = i;
-                break;
-            }
-        }
-    }
-    
-    if (userSemester) {
-        const semesterSelect = document.getElementById("semester");
-        for (let i = 0; i < semesterSelect.options.length; i++) {
-            if (semesterSelect.options[i].value === userSemester) {
-                semesterSelect.selectedIndex = i;
-                break;
-            }
-        }
-    }
-    
-    if (userBio) {
-        document.getElementById("bio").value = userBio;
-    }
-    
-    if (userSkills) {
-        document.getElementById("skills").value = userSkills;
-    }
-    
-    if (userInterests) {
-        document.getElementById("interests").value = userInterests;
-    }
-    
-    if (userPortfolio) {
-        document.getElementById("portfolio").value = userPortfolio;
-    }
-    
-    if (userLinkedin) {
-        document.getElementById("linkedin").value = userLinkedin;
-    }
-    
-    // Set profile photo if it exists
-    if (userProfilePhoto) {
-        document.getElementById("profilePhotoPreview").style.backgroundImage = `url('${userProfilePhoto}')`;
-    }
-    
-    // Set cover photo if it exists
-    if (userCoverPhoto) {
-        document.getElementById("coverPhotoPreview").style.backgroundImage = `url('${userCoverPhoto}')`;
-    }
-});
+// Load user profile data
+async function loadUserProfile() {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = '/login';
+    return;
+  }
 
+  try {
+    const response = await fetch('/api/users/my-profile', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Loaded profile data:', data);
+
+      // Pre-fill form fields
+      document.getElementById('fullName').value = data.fullName || '';
+      document.getElementById('username').value = data.username || '';
+      document.getElementById('department').value = data.department || '';
+      document.getElementById('year').value = data.year || '';
+      document.getElementById('semester').value = data.semester || '';
+      document.getElementById('bio').value = data.bio || '';
+      document.getElementById('skills').value = data.skills || '';
+      document.getElementById('interests').value = data.interests || '';
+      document.getElementById('portfolio').value = data.portfolio || '';
+      document.getElementById('linkedin').value = data.linkedin || '';
+
+      // Set profile photos
+      if (data.avatar) {
+        document.getElementById('profilePhotoPreview').style.backgroundImage = `url('${data.avatar}')`;
+      }
+      if (data.banner) {
+        document.getElementById('coverPhotoPreview').style.backgroundImage = `url('${data.banner}')`;
+      }
+    } else if (response.status === 401) {
+      alert('Session expired. Please log in again.');
+      window.location.href = '/login';
+    } else {
+      console.error('Failed to load profile:', await response.text());
+    }
+  } catch (error) {
+    console.error('Error loading profile:', error);
+  }
+}
+
+// Load profile when page loads
+document.addEventListener('DOMContentLoaded', loadUserProfile);
+
+// Handle form submission
 document.getElementById('profileForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const formData = new FormData();
-    const fullName = document.getElementById('fullName').value;
-    const username = document.getElementById('username').value;
-    const department = document.getElementById('department').value;
-    const year = document.getElementById('year').value;
-    const semester = document.getElementById('semester').value;
-    const bio = document.getElementById('bio').value;
-    const skills = document.getElementById('skills').value;
-    const interests = document.getElementById('interests').value;
-    const portfolio = document.getElementById('portfolio').value;
-    const linkedin = document.getElementById('linkedin').value;
-    
-    formData.append('fullName', fullName);
-    formData.append('username', username);
-    formData.append('department', department);
-    formData.append('year', year);
-    formData.append('semester', semester);
-    formData.append('bio', bio);
-    formData.append('skills', skills);
-    formData.append('interests', interests);
-    formData.append('portfolio', portfolio);
-    formData.append('linkedin', linkedin);
-    
-    const avatarFile = document.getElementById('profilePhotoInput').files[0];
-    if (avatarFile) {
-        formData.append('avatar', avatarFile);
-    }
-    
-    const bannerFile = document.getElementById('coverPhotoInput').files[0];
-    if (bannerFile) {
-        formData.append('banner', bannerFile);
-    }
+  e.preventDefault();
+  
+  const formData = new FormData(e.target);
+  const token = localStorage.getItem('token');
+  
+  if (!token) {
+    alert('Please log in again');
+    window.location.href = '/login';
+    return;
+  }
 
-    try {
-        const response = await fetch('/api/users/update-profile', {
-            method: 'POST',
-            body: formData
-        });
+  try {
+    console.log('Sending profile update request...');
+    const response = await fetch('/api/users/update-profile', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    });
 
-        const data = await response.json();
-        
-        if (response.ok) {
-            // Save user data to localStorage
-            localStorage.setItem("userFullName", fullName);
-            localStorage.setItem("userUsername", username);
-            localStorage.setItem("userDepartment", department);
-            localStorage.setItem("userYear", year);
-            localStorage.setItem("userSemester", semester);
-            localStorage.setItem("userBio", bio);
-            localStorage.setItem("userSkills", skills);
-            localStorage.setItem("userInterests", interests);
-            localStorage.setItem("userPortfolio", portfolio);
-            localStorage.setItem("userLinkedin", linkedin);
-            
-            // If the server returns updated profile photo URL, save it
-            if (data.profilePhoto) {
-                localStorage.setItem("userProfilePhoto", data.profilePhoto);
-            }
-            
-            // If the server returns updated cover photo URL, save it
-            if (data.coverPhoto) {
-                localStorage.setItem("userCoverPhoto", data.coverPhoto);
-            }
-            
-            alert('Profile updated successfully!');
-            window.location.href = '/dashboard';
-        } else {
-            alert(data.message || 'Failed to update profile');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred while updating your profile');
+    console.log('Response status:', response.status);
+    const data = await response.json();
+    console.log('Profile update response:', data);
+
+    if (response.ok) {
+      // Save updated user data to localStorage
+      localStorage.setItem('userFullName', data.user.fullName);
+      localStorage.setItem('userUsername', data.user.username);
+      if (data.user.avatar) {
+        localStorage.setItem('userProfilePhoto', data.user.avatar);
+      }
+      if (data.user.banner) {
+        localStorage.setItem('userBanner', data.user.banner);
+      }
+      
+      alert('Profile updated successfully!');
+      window.location.href = '/dashboard';
+    } else {
+      if (response.status === 401) {
+        alert('Session expired. Please log in again.');
+        window.location.href = '/login';
+      } else {
+        alert(data.message || 'Failed to update profile');
+      }
     }
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    alert('An error occurred while updating your profile');
+  }
 });
   
 document.getElementById("uploadProfilePhotoBtn").addEventListener("click", () => {
@@ -425,9 +367,9 @@ document.getElementById("uploadProfilePhotoBtn").addEventListener("click", () =>
   
 document.getElementById("profilePhotoInput").addEventListener("change", async (event) => {
     const file = event.target.files[0];
-    const uid = localStorage.getItem("uid") || sessionStorage.getItem("uid");
+    const token = localStorage.getItem("token");
 
-    if (!uid) {
+    if (!token) {
         alert("User not logged in. Redirecting to login page.");
         window.location.href = "/login";
         return;
@@ -436,45 +378,47 @@ document.getElementById("profilePhotoInput").addEventListener("change", async (e
     if (file) {
         const formData = new FormData();
         formData.append("profilePhoto", file);
-        formData.append("userId", uid);
 
         try {
             console.log("Uploading profile photo...");
-            const response = await fetch("http://localhost:5000/api/uploads/profile-photo", {
+            const response = await fetch("/api/uploads/profile-photo", {
                 method: "POST",
-                body: formData,
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
             });
 
+            console.log("Upload response status:", response.status);
+            
             if (response.ok) {
                 const data = await response.json();
+                console.log("Upload response data:", data);
                 const profilePhotoUrl = data.filePath;
-                console.log("Profile photo uploaded successfully. URL:", profilePhotoUrl);
                 
                 // Update the profile photo preview
                 document.getElementById("profilePhotoPreview").style.backgroundImage = `url('${profilePhotoUrl}')`;
                 
                 // Store the profile photo URL in localStorage
                 localStorage.setItem("userProfilePhoto", profilePhotoUrl);
-                console.log("Profile photo URL saved to localStorage:", profilePhotoUrl);
                 
                 // Also update the avatar in the post creation area if it exists
                 const postUserAvatar = document.getElementById("postUserAvatar");
                 if (postUserAvatar) {
                     postUserAvatar.src = profilePhotoUrl;
-                    console.log("Updated post creation avatar");
                 }
                 
                 // Also update the avatar in the sidebar if it exists
                 const sidebarUserAvatar = document.getElementById("sidebarUserAvatar");
                 if (sidebarUserAvatar) {
                     sidebarUserAvatar.src = profilePhotoUrl;
-                    console.log("Updated sidebar avatar");
                 }
                 
                 alert("Profile photo uploaded successfully!");
             } else {
-                console.error("Failed to upload profile photo. Status:", response.status);
-                alert("Failed to upload profile photo.");
+                const errorData = await response.json();
+                console.error("Failed to upload profile photo. Status:", response.status, "Error:", errorData);
+                alert(errorData.message || "Failed to upload profile photo.");
             }
         } catch (error) {
             console.error("Error uploading profile photo:", error);
@@ -489,9 +433,9 @@ document.getElementById("uploadCoverPhotoBtn").addEventListener("click", () => {
 
 document.getElementById("coverPhotoInput").addEventListener("change", async (event) => {
     const file = event.target.files[0];
-    const uid = localStorage.getItem("uid") || sessionStorage.getItem("uid");
+    const token = localStorage.getItem("token");
 
-    if (!uid) {
+    if (!token) {
         alert("User not logged in. Redirecting to login page.");
         window.location.href = "/login";
         return;
@@ -500,23 +444,35 @@ document.getElementById("coverPhotoInput").addEventListener("change", async (eve
     if (file) {
         const formData = new FormData();
         formData.append("coverPhoto", file);
-        formData.append("userId", uid);
 
         try {
-            const response = await fetch("http://localhost:5000/api/uploads/cover-photo", {
+            console.log("Uploading cover photo...");
+            const response = await fetch("/api/uploads/cover-photo", {
                 method: "POST",
-                body: formData,
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
             });
 
+            console.log("Upload response status:", response.status);
+            
             if (response.ok) {
                 const data = await response.json();
+                console.log("Upload response data:", data);
                 const coverPhotoUrl = data.filePath;
+                
+                // Update the cover photo preview
                 document.getElementById("coverPhotoPreview").style.backgroundImage = `url('${coverPhotoUrl}')`;
+                
                 // Store the cover photo URL in localStorage
-                localStorage.setItem("userCoverPhoto", coverPhotoUrl);
+                localStorage.setItem("userBanner", coverPhotoUrl);
+                
                 alert("Cover photo uploaded successfully!");
             } else {
-                alert("Failed to upload cover photo.");
+                const errorData = await response.json();
+                console.error("Failed to upload cover photo. Status:", response.status, "Error:", errorData);
+                alert(errorData.message || "Failed to upload cover photo.");
             }
         } catch (error) {
             console.error("Error uploading cover photo:", error);
