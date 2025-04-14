@@ -31,273 +31,105 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     
     // Get user info from localStorage
-    const userFullName = localStorage.getItem("userFullName") || "User";
-    const userUsername = localStorage.getItem("userUsername") || "Not set";
+    const userFullName = localStorage.getItem("userFullName");
+    const userUsername = localStorage.getItem("userUsername");
     const userProfilePhoto = localStorage.getItem("userProfilePhoto");
-    const userBanner = localStorage.getItem("userBanner");
-    const userDepartment = localStorage.getItem("userDepartment") || "Not set";
-    const userYear = localStorage.getItem("userYear") || "Not set";
-    const userSemester = localStorage.getItem("userSemester") || "Not set";
-    const userBio = localStorage.getItem("userBio");
-    const userSkills = localStorage.getItem("userSkills");
-    const userInterests = localStorage.getItem("userInterests");
-    const userPortfolio = localStorage.getItem("userPortfolio");
-    const userLinkedIn = localStorage.getItem("userLinkedIn");
-    const userGithub = localStorage.getItem("userGithub");
-    const userTwitter = localStorage.getItem("userTwitter");
-    const userInstagram = localStorage.getItem("userInstagram");
     
     console.log("User data from localStorage:", {
         fullName: userFullName,
         username: userUsername,
-        profilePhoto: userProfilePhoto,
-        banner: userBanner,
-        department: userDepartment,
-        year: userYear,
-        semester: userSemester,
-        bio: userBio,
-        skills: userSkills,
-        interests: userInterests,
-        portfolio: userPortfolio,
-        linkedIn: userLinkedIn,
-        github: userGithub,
-        twitter: userTwitter,
-        instagram: userInstagram
+        profilePhoto: userProfilePhoto
     });
     
-    // Update sidebar with user info
-    const sidebarAvatar = document.querySelector('.sidebar-avatar');
-    const sidebarName = document.querySelector('.sidebar-name');
-    const sidebarUsername = document.querySelector('.sidebar-username');
-    const sidebarUserDepartment = document.getElementById("sidebarUserDepartment");
-    const sidebarUserYearSem = document.getElementById("sidebarUserYearSem");
-    const sidebarUserBio = document.getElementById("sidebarUserBio");
-    const sidebarUserSkills = document.getElementById("sidebarUserSkills");
-    const sidebarUserInterests = document.getElementById("sidebarUserInterests");
-    const sidebarUserPortfolio = document.getElementById("sidebarUserPortfolio");
-    const sidebarUserLinkedIn = document.getElementById("sidebarUserLinkedIn");
-    const sidebarUserGithub = document.getElementById("sidebarUserGithub");
-    const sidebarUserTwitter = document.getElementById("sidebarUserTwitter");
-    const sidebarUserInstagram = document.getElementById("sidebarUserInstagram");
+    // Update sidebar user info
+    const sidebarUserAvatar = document.getElementById("sidebarUserAvatar");
+    const userName = document.getElementById("userName");
+    const userHandle = document.getElementById("userHandle");
     
     // Set user avatar in sidebar
-    if (sidebarAvatar) {
+    if (sidebarUserAvatar) {
         if (userProfilePhoto && userProfilePhoto !== 'undefined' && userProfilePhoto !== 'null') {
-            sidebarAvatar.src = userProfilePhoto;
-            console.log('Setting sidebar avatar to user profile photo:', userProfilePhoto);
+            sidebarUserAvatar.src = userProfilePhoto;
+            console.log('Setting sidebar avatar to:', userProfilePhoto);
         } else {
-            sidebarAvatar.src = '/assets/images/default-avatar.png';
+            sidebarUserAvatar.src = '/assets/images/default-avatar.png';
             console.log('Setting sidebar avatar to default');
         }
-        sidebarAvatar.alt = userFullName;
-    } else {
-        console.error('Sidebar avatar element not found');
+        sidebarUserAvatar.alt = userFullName || 'User Avatar';
     }
     
     // Set user name in sidebar
-    if (sidebarName) {
-        if (userFullName) {
-            sidebarName.textContent = userFullName;
-            console.log('Setting sidebar name to:', userFullName);
-        } else {
-            sidebarName.textContent = 'User';
-            console.log('Setting sidebar name to default');
-        }
-    } else {
-        console.error('Sidebar name element not found');
+    if (userName) {
+        userName.textContent = userFullName || 'User';
+        console.log('Setting user name to:', userFullName || 'User');
     }
     
-    // Set username/UID in sidebar
-    if (sidebarUsername) {
-        if (userUsername && userUsername.trim() !== '') {
-            sidebarUsername.textContent = `@${userUsername}`;
-            console.log('Setting sidebar username to:', userUsername);
-        } else if (userUsername === 'Not set') {
-            sidebarUsername.textContent = '@user';
-            console.log('Setting sidebar username to default');
-        }
-    } else {
-        console.error('Sidebar username element not found');
+    // Set username/handle in sidebar
+    if (userHandle) {
+        userHandle.textContent = userUsername ? `@${userUsername}` : '@user';
+        console.log('Setting user handle to:', userUsername ? `@${userUsername}` : '@user');
     }
     
-    // Set department in sidebar
-    if (sidebarUserDepartment) {
-        if (userDepartment) {
-            sidebarUserDepartment.textContent = userDepartment;
-            console.log('Setting sidebar department to:', userDepartment);
-        } else {
-            sidebarUserDepartment.textContent = "Department";
-            console.log('Setting sidebar department to default');
-        }
-    } else {
-        console.error('Sidebar department element not found');
-    }
-    
-    // Set year/semester in sidebar
-    if (sidebarUserYearSem) {
-        if (userYear && userSemester) {
-            sidebarUserYearSem.textContent = `Year ${userYear}, Sem ${userSemester}`;
-            console.log('Setting sidebar year/semester to:', userYear, userSemester);
-        } else {
-            sidebarUserYearSem.textContent = "Year, Semester";
-            console.log('Setting sidebar year/semester to default');
-        }
-    } else {
-        console.error('Sidebar year/semester element not found');
-    }
-    
-    // Set bio in sidebar
-    if (sidebarUserBio) {
-        if (userBio) {
-            sidebarUserBio.textContent = userBio;
-            console.log('Setting sidebar bio to:', userBio);
-        } else {
-            sidebarUserBio.textContent = "No bio available";
-            console.log('Setting sidebar bio to default');
-        }
-    } else {
-        console.error('Sidebar bio element not found');
-    }
-    
-    // Set skills in sidebar
-    if (sidebarUserSkills) {
-        if (userSkills) {
-            sidebarUserSkills.textContent = userSkills;
-            console.log('Setting sidebar skills to:', userSkills);
-        } else {
-            sidebarUserSkills.textContent = "No skills listed";
-            console.log('Setting sidebar skills to default');
-        }
-    } else {
-        console.error('Sidebar skills element not found');
-    }
-    
-    // Set interests in sidebar
-    if (sidebarUserInterests) {
-        if (userInterests) {
-            sidebarUserInterests.textContent = userInterests;
-            console.log('Setting sidebar interests to:', userInterests);
-        } else {
-            sidebarUserInterests.textContent = "No interests listed";
-            console.log('Setting sidebar interests to default');
-        }
-    } else {
-        console.error('Sidebar interests element not found');
-    }
-    
-    // Set portfolio in sidebar
-    if (sidebarUserPortfolio) {
-        if (userPortfolio) {
-            sidebarUserPortfolio.href = userPortfolio;
-            sidebarUserPortfolio.style.display = 'block';
-            console.log('Setting sidebar portfolio to:', userPortfolio);
-        } else {
-            sidebarUserPortfolio.style.display = 'none';
-            console.log('Hiding sidebar portfolio link');
-        }
-    } else {
-        console.error('Sidebar portfolio element not found');
-    }
-    
-    // Set LinkedIn in sidebar
-    if (sidebarUserLinkedIn) {
-        if (userLinkedIn) {
-            sidebarUserLinkedIn.href = userLinkedIn;
-            sidebarUserLinkedIn.style.display = 'block';
-            console.log('Setting sidebar LinkedIn to:', userLinkedIn);
-        } else {
-            sidebarUserLinkedIn.style.display = 'none';
-            console.log('Hiding sidebar LinkedIn link');
-        }
-    } else {
-        console.error('Sidebar LinkedIn element not found');
-    }
-    
-    // Set GitHub in sidebar
-    if (sidebarUserGithub) {
-        if (userGithub) {
-            sidebarUserGithub.href = userGithub;
-            sidebarUserGithub.style.display = 'block';
-            console.log('Setting sidebar GitHub to:', userGithub);
-        } else {
-            sidebarUserGithub.style.display = 'none';
-            console.log('Hiding sidebar GitHub link');
-        }
-    } else {
-        console.error('Sidebar GitHub element not found');
-    }
-    
-    // Set Twitter in sidebar
-    if (sidebarUserTwitter) {
-        if (userTwitter) {
-            sidebarUserTwitter.href = userTwitter;
-            sidebarUserTwitter.style.display = 'block';
-            console.log('Setting sidebar Twitter to:', userTwitter);
-        } else {
-            sidebarUserTwitter.style.display = 'none';
-            console.log('Hiding sidebar Twitter link');
-        }
-    } else {
-        console.error('Sidebar Twitter element not found');
-    }
-    
-    // Set Instagram in sidebar
-    if (sidebarUserInstagram) {
-        if (userInstagram) {
-            sidebarUserInstagram.href = userInstagram;
-            sidebarUserInstagram.style.display = 'block';
-            console.log('Setting sidebar Instagram to:', userInstagram);
-        } else {
-            sidebarUserInstagram.style.display = 'none';
-            console.log('Hiding sidebar Instagram link');
-        }
-    } else {
-        console.error('Sidebar Instagram element not found');
-    }
-    
-    // Update post creation area with user info
-    const postAvatar = document.querySelector('.post-avatar');
-    const postName = document.querySelector('.post-name');
+    // Update post creation area
+    const postUserAvatar = document.getElementById("postUserAvatar");
+    const postUserName = document.getElementById("postUserName");
     const postUserHandle = document.getElementById("postUserHandle");
     
     // Set user avatar in post creation area
-    if (postAvatar) {
+    if (postUserAvatar) {
         if (userProfilePhoto && userProfilePhoto !== 'undefined' && userProfilePhoto !== 'null') {
-            postAvatar.src = userProfilePhoto;
-            console.log('Setting post avatar to user profile photo:', userProfilePhoto);
+            postUserAvatar.src = userProfilePhoto;
+            console.log('Setting post avatar to:', userProfilePhoto);
         } else {
-            postAvatar.src = '/assets/images/default-avatar.png';
+            postUserAvatar.src = '/assets/images/default-avatar.png';
             console.log('Setting post avatar to default');
         }
-        postAvatar.alt = userFullName;
-    } else {
-        console.error('Post avatar element not found');
+        postUserAvatar.alt = userFullName || 'User Avatar';
     }
     
     // Set user name in post creation area
-    if (postName) {
-        if (userFullName) {
-            postName.textContent = userFullName;
-            console.log('Setting post name to:', userFullName);
-        } else {
-            postName.textContent = 'User';
-            console.log('Setting post name to default');
-        }
-    } else {
-        console.error('Post name element not found');
+    if (postUserName) {
+        postUserName.textContent = userFullName || 'User';
+        console.log('Setting post user name to:', userFullName || 'User');
     }
     
-    // Set username/UID in post creation area
+    // Set username/handle in post creation area
     if (postUserHandle) {
-        if (userUsername && userUsername.trim() !== '') {
-            postUserHandle.textContent = `@${userUsername}`;
-            console.log('Setting post username to:', userUsername);
-        } else if (userUsername === 'Not set') {
-            postUserHandle.textContent = '@user';
-            console.log('Setting post username to default');
+        postUserHandle.textContent = userUsername ? `@${userUsername}` : '@user';
+        console.log('Setting post user handle to:', userUsername ? `@${userUsername}` : '@user');
+    }
+    
+    // If we don't have user data in localStorage, fetch it from the server
+    if (!userFullName || !userUsername || !userProfilePhoto) {
+        try {
+            const response = await fetch('/api/users/my-profile', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Fetched user data from server:', data);
+                
+                // Update localStorage with fetched data
+                localStorage.setItem('userFullName', data.fullName || '');
+                localStorage.setItem('userUsername', data.username || '');
+                localStorage.setItem('userProfilePhoto', data.avatar || '/assets/images/default-avatar.png');
+                
+                // Update UI with fetched data
+                if (userName) userName.textContent = data.fullName || 'User';
+                if (userHandle) userHandle.textContent = data.username ? `@${data.username}` : '@user';
+                if (sidebarUserAvatar) sidebarUserAvatar.src = data.avatar || '/assets/images/default-avatar.png';
+                if (postUserName) postUserName.textContent = data.fullName || 'User';
+                if (postUserHandle) postUserHandle.textContent = data.username ? `@${data.username}` : '@user';
+                if (postUserAvatar) postUserAvatar.src = data.avatar || '/assets/images/default-avatar.png';
+            } else {
+                console.error('Failed to fetch user data:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
         }
-    } else {
-        console.error('Post username element not found');
     }
     
     // Initialize emoji picker

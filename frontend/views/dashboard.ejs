@@ -29,20 +29,142 @@
     body {
       background-color: var(--primary-bg);
       color: var(--text-primary);
-      padding-top: 72px;
+      padding-top: 56px;
     }
     .navbar {
       background-color: var(--primary-bg) !important;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      height: 56px;
       z-index: 1030;
     }
+    .main-section {
+      padding: 0;
+      margin: 0;
+      width: 100%;
+    }
     .sidebar {
-      width: 280px;
-      height: calc(100vh - 72px);
+      height: calc(100vh - 56px);
       position: sticky;
-      top: 72px;
+      top: 56px;
       overflow-y: auto;
-      transition: transform 0.3s ease;
+      padding: 20px !important;
+      background: var(--primary-bg);
+    }
+    .sidebar-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .profile-image img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+    .profile-info h4 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .profile-info p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    .nav-link {
+      color: var(--text-primary);
+      font-size: 14px;
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+    .nav-link:hover {
+      background-color: var(--secondary-bg);
+    }
+    .nav-link i {
+      font-size: 18px;
+      width: 24px;
+    }
+    /* Main Feed Styles */
+    .col-lg-6 {
+      padding: 20px 32px;
+      border-left: 1px solid var(--border-color);
+      border-right: 1px solid var(--border-color);
+    }
+    .post-creation-card {
+      background: var(--primary-bg);
+      border: none;
+      margin-bottom: 20px;
+    }
+    .post-creation-header {
+      padding: 0 0 12px 0;
+      border: none;
+    }
+    .post-user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .post-user-info img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+    .user-details h5 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .user-details p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .post-creation-body {
+      padding: 0;
+    }
+    .post-creation-textarea {
+      border: none;
+      padding: 0;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+    .post-creation-footer {
+      padding: 12px 0;
+      border-top: 1px solid var(--border-color);
+    }
+    .post-creation-action-btn {
+      color: var(--text-secondary);
+      padding: 8px;
+      font-size: 18px;
+    }
+    .post-creation-submit-btn {
+      padding: 6px 20px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    /* Right Sidebar Styles */
+    .right-sidebar h5 {
+      font-size: 16px;
+      margin-bottom: 16px;
+    }
+    .card {
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+    .card-body {
+      padding: 16px;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+      .sidebar {
+        display: none;
+      }
+      .col-lg-6 {
+        border: none;
+        padding: 16px;
+      }
     }
     .main-feed {
       max-width: 680px;
@@ -468,15 +590,18 @@
 
   <!-- Main Content -->
   <div class="container-fluid main-section">
-    <div class="row justify-content-between">
+    <div class="row">
       <!-- Left Sidebar -->
       <aside class="sidebar col-lg-3 p-3 border-end">
-        <div class="d-flex align-items-center gap-3 mb-4">
-          <img src="" id="sidebarUserAvatar" class="user-avatar rounded-circle shadow-sm" alt="User Avatar">
-          <div>
-            <h6 id="userName" class="mb-0 fw-bold">Loading...</h6>
-            <small id="userHandle" class="text-muted">Loading...</small>
-          </div>
+        <!-- Sidebar User Profile Section -->
+        <div class="sidebar-profile">
+            <div class="profile-image">
+                <img id="sidebarUserAvatar" src="/assets/images/default-avatar.png" alt="User Avatar" class="rounded-circle">
+            </div>
+            <div class="profile-info">
+                <h4 id="userName">Loading...</h4>
+                <p id="userHandle" class="text-muted">@user</p>
+            </div>
         </div>
         <nav class="nav flex-column gap-2">
           <a class="nav-link d-flex align-items-center gap-3 py-2 rounded-3" href="#">
@@ -504,10 +629,12 @@
       <div class="col-lg-6 col-md-7">
         <div class="post-creation-card">
           <div class="post-creation-header">
-            <img src="" id="postUserAvatar" class="post-creation-avatar" alt="User Avatar">
-            <div>
-              <h6 id="postUserName" class="mb-0 fw-bold">Loading...</h6>
-              <small id="postUserHandle" class="text-muted">Loading...</small>
+            <div class="post-user-info">
+                <img id="postUserAvatar" src="/assets/images/default-avatar.png" alt="User Avatar" class="rounded-circle">
+                <div class="user-details">
+                    <h5 id="postUserName">Loading...</h5>
+                    <p id="postUserHandle" class="text-muted">@user</p>
+                </div>
             </div>
           </div>
           <div class="post-creation-body">
