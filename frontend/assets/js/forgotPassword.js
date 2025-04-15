@@ -2,13 +2,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetPasswordBtn = document.getElementById('resetPasswordBtn');
     const forgotPasswordForm = document.getElementById('forgotPasswordForm');
     const resetInstructions = document.getElementById('resetInstructions');
-    const rollNumberInput = document.getElementById('rollNumber');
+    const rollNoInput = document.getElementById('rollNumber');
 
     if (resetPasswordBtn) {
         resetPasswordBtn.addEventListener('click', async () => {
-            const rollNumber = rollNumberInput.value.trim();
+            const rollNo = rollNoInput.value.trim();
             
-            if (!rollNumber) {
+            if (!rollNo) {
                 alert('Please enter your roll number');
                 return;
             }
@@ -18,14 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 resetPasswordBtn.disabled = true;
                 resetPasswordBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Processing...';
                 
-                console.log('Sending password reset request for roll number:', rollNumber);
+                console.log('Sending password reset request for roll number:', rollNo);
                 
                 const response = await fetch('/api/auth/forgot-password', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ rollNumber })
+                    body: JSON.stringify({ rollNo })
                 });
 
                 console.log('Password reset response status:', response.status);
@@ -41,10 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = '/login';
                 }, 5000);
             } catch (error) {
-                console.error('Error requesting password reset:', error);
-                alert('An error occurred while requesting password reset');
-                
-                // Reset button state
+                console.error('Error during password reset:', error);
+                alert('An error occurred. Please try again later.');
                 resetPasswordBtn.disabled = false;
                 resetPasswordBtn.innerHTML = 'Reset Password';
             }

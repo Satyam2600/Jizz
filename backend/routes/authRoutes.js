@@ -8,15 +8,15 @@ const router = express.Router();
 // 📌 Register a New User
 router.post("/register", async (req, res) => {
   try {
-    const { fullName, email, password, rollNumber } = req.body;
+    const { fullName, email, password, rollNo } = req.body;
 
     // Validate required fields
-    if (!fullName || !email || !password || !rollNumber) {
+    if (!fullName || !email || !password || !rollNo) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
     // Check if user already exists
-    const existingUser = await User.findOne({ $or: [{ email }, { rollNumber }] });
+    const existingUser = await User.findOne({ $or: [{ email }, { rollNo }] });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists with this email or roll number" });
     }
@@ -26,7 +26,7 @@ router.post("/register", async (req, res) => {
       fullName,
       email,
       password,
-      rollNumber
+      rollNo
     });
 
     await user.save();
@@ -44,8 +44,8 @@ router.post("/register", async (req, res) => {
 // 📌 User Login
 router.post("/login", async (req, res) => {
   try {
-    const { rollNumber, password } = req.body;
-    const user = await User.findOne({ rollNumber });
+    const { rollNo, password } = req.body;
+    const user = await User.findOne({ rollNo });
     
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
@@ -60,7 +60,7 @@ router.post("/login", async (req, res) => {
     const isFirstLogin = !user.username || !user.avatar;
 
     const token = jwt.sign(
-      { userId: user._id, rollNumber: user.rollNumber },
+      { userId: user._id, rollNo: user.rollNo },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -70,7 +70,7 @@ router.post("/login", async (req, res) => {
       _id: user._id,
       fullName: user.fullName,
       username: user.username,
-      rollNumber: user.rollNumber,
+      rollNo: user.rollNo,
       avatar: user.avatar,
       banner: user.banner,
       isFirstLogin: isFirstLogin
@@ -105,56 +105,64 @@ router.post("/logout", (req, res) => {
 // Forgot password route
 router.post('/forgot-password', async (req, res) => {
     try {
-        const { rollNumber } = req.body;
+        const { rollNo } = req.body;
         
-        if (!rollNumber) {
+        if (!rollNo) {
             return res.status(400).json({ message: 'Roll number is required' });
         }
         
         // Find user by roll number
-        const user = await User.findOne({ rollNumber });
+        const user = await User.findOne({ rollNo });
         
-        // For security reasons, we don't reveal whether a user exists or not
-        // Instead, we always return a success message
-        res.status(200).json({ 
-            message: 'If an account exists with the provided roll number, password reset instructions will be sent.',
-            success: true
-        });
+        if (!user || !user.email) {
+            return res.status(404).json({ 
+                message: 'No account found with this roll number or email is missing',
+                success: false
+            });
+        }
+
+        // Generate a random password (8 characters)
+        const crypto = require('crypto');
+        const newPassword = crypto.randomBytes(4).toString('hex');
         
-        // If user exists, generate a random password and send it via email
-        if (user && user.email) {
-            // Generate a random password (8 characters)
-            const crypto = require('crypto');
-            const newPassword = crypto.randomBytes(4).toString('hex');
-            
-            // Hash the new password
-            const hashedPassword = await bcrypt.hash(newPassword, 10);
-            
-            // Update the user's password
-            await User.updateOne(
-                { _id: user._id },
-                { $set: { password: hashedPassword } }
-            );
-            
-            // Send email with the new password
-            const sendEmail = require('../utils/emailService');
-            const htmlContent = `
-                <h2>Password Reset</h2>
-                <p>Hello ${user.fullName || 'User'},</p>
-                <p>Your password has been reset. Your new password is: <strong>${newPassword}</strong></p>
-                <p>Please log in using this password and change it immediately for security.</p>
-                <p>If you did not request this password reset, please contact support immediately.</p>
-            `;
-            
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        
+        // Update the user's password
+        await User.updateOne(
+            { _id: user._id },
+            { $set: { password: hashedPassword } }
+        );
+        
+        // Send email with the new password
+        const sendEmail = require('../utils/emailService');
+        const htmlContent = `
+            <h2>Password Reset</h2>
+            <p>Hello ${user.fullName || 'User'},</p>
+            <p>Your password has been reset. Your new password is: <strong>${newPassword}</strong></p>
+            <p>Please log in using this password and change it immediately for security.</p>
+            <p>If you did not request this password reset, please contact support immediately.</p>
+        `;
+        
+        try {
             await sendEmail(user.email, "Your New Password", htmlContent);
-            
-            console.log(`Password reset completed for user: ${user.fullName || user.rollNumber} (${user.rollNumber})`);
-        } else if (user) {
-            console.error('User found but email is missing:', user);
+            res.status(200).json({ 
+                message: 'Password reset instructions have been sent to your email.',
+                success: true
+            });
+        } catch (emailError) {
+            console.error('Failed to send password reset email:', emailError);
+            res.status(500).json({ 
+                message: 'Failed to send password reset email. Please try again later.',
+                success: false
+            });
         }
     } catch (error) {
         console.error('Forgot password error:', error);
-        // Don't send a response here since we already sent one above
+        res.status(500).json({ 
+            message: 'An error occurred while processing your request',
+            success: false
+        });
     }
 });
 

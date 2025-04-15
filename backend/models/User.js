@@ -14,10 +14,10 @@ const userSchema = new mongoose.Schema({
         trim: true,
         lowercase: true
     },
-    rollNumber: {
+    rollNo: {
         type: String,
+        required: true,
         unique: true,
-        sparse: true,  // This allows multiple documents to have no rollNumber
         trim: true
     },
     password: {

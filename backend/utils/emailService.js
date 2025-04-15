@@ -4,6 +4,11 @@ require("dotenv").config();
 
 const sendEmail = async (to, subject, htmlContent) => {
   try {
+    console.log("Email service configuration:");
+    console.log("- EMAIL_FROM:", process.env.EMAIL_FROM);
+    console.log("- EMAIL_NAME:", process.env.EMAIL_NAME || "JIZZ Support");
+    console.log("- BREVO_API_KEY:", process.env.BREVO_API_KEY ? "API key is set" : "API key is missing");
+    
     // Validate email parameter
     if (!to || typeof to !== 'string' || !to.includes('@')) {
       console.error("❌ Invalid email address:", to);
@@ -39,11 +44,18 @@ const sendEmail = async (to, subject, htmlContent) => {
     sendSmtpEmail.htmlContent = htmlContent;
 
     console.log(`Attempting to send email to: ${to}`);
+    console.log(`Email subject: ${subject}`);
+    console.log(`Email content length: ${htmlContent.length} characters`);
+    
     const response = await apiInstance.sendTransacEmail(sendSmtpEmail);
     console.log("✅ Email sent successfully:", response);
     return response;
   } catch (error) {
     console.error("❌ Error sending email via Brevo:", error);
+    console.error("Error details:", error.message);
+    if (error.response) {
+      console.error("API response:", error.response.body);
+    }
     throw error;
   }
 };

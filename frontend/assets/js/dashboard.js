@@ -306,15 +306,8 @@ if (createPostForm) {
         e.preventDefault();
         
         const content = postContent.value.trim();
-        const uid = localStorage.getItem('uid');
         const token = localStorage.getItem('token');
         
-        if (!uid) {
-            alert('User not logged in. Please log in again.');
-            window.location.href = '/login';
-            return;
-        }
-
         if (!token) {
             alert('Authentication token missing. Please log in again.');
             window.location.href = '/login';
@@ -327,35 +320,9 @@ if (createPostForm) {
         }
 
         try {
-            // First, get the user's MongoDB _id
-            const userResponse = await fetch(`/api/users/get-profile?userId=${uid}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            
-            if (!userResponse.ok) {
-                const errorData = await userResponse.json();
-                if (errorData.message === 'Invalid Token') {
-                    localStorage.removeItem('token'); // Clear the invalid token
-                    alert('Your session has expired. Please log in again.');
-                    window.location.href = '/login';
-                    return;
-                }
-                alert('Failed to get user information. Please try again.');
-                return;
-            }
-            
-            const userData = await userResponse.json();
-            
-            if (!userData._id) {
-                alert('Failed to get user information. Please try again.');
-                return;
-            }
-
+            // Create form data with content
             const formData = new FormData();
             formData.append('content', content);
-            formData.append('userId', userData._id);
 
             // Add media if present
             const imageInput = document.getElementById('imageUpload');

@@ -20,7 +20,7 @@ exports.getAllPosts = async (req, res) => {
 exports.createPost = async (req, res) => {
   try {
     const { content } = req.body;
-    const userId = req.user._id;
+    const userId = req.user.userId;
 
     if (!content) {
       return res.status(400).json({ message: "Post content is required" });
@@ -54,7 +54,7 @@ exports.toggleLike = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    const userId = req.user._id;
+    const userId = req.user.userId;
     const likeIndex = post.likedBy.indexOf(userId);
 
     if (likeIndex === -1) {
@@ -77,7 +77,7 @@ exports.toggleLike = async (req, res) => {
 exports.addComment = async (req, res) => {
   try {
     const { content } = req.body;
-    const userId = req.user._id;
+    const userId = req.user.userId;
 
     if (!content) {
       return res.status(400).json({ message: "Comment content is required" });
@@ -114,7 +114,7 @@ exports.deletePost = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    if (post.user.toString() !== req.user._id.toString()) {
+    if (post.user.toString() !== req.user.userId.toString()) {
       return res.status(403).json({ message: "Not authorized to delete this post" });
     }
 
@@ -130,7 +130,7 @@ exports.deletePost = async (req, res) => {
 exports.reportPost = async (req, res) => {
   try {
     const { reason } = req.body;
-    const userId = req.user._id;
+    const userId = req.user.userId;
 
     if (!reason) {
       return res.status(400).json({ message: "Report reason is required" });

@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("loginForm");
-  const rollNumberInput = document.getElementById("rollNumber");
+  const rollNoInput = document.getElementById("rollNumber");
   const passwordInput = document.getElementById("password");
   const togglePassword = document.getElementById("togglePassword");
   const rememberMe = document.getElementById("rememberMe") || { checked: false };
@@ -19,9 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Handle form submission
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const rollNumber = rollNumberInput.value.trim();
+    const rollNo = rollNoInput.value.trim();
     const password = passwordInput.value.trim();
-    if (!rollNumber || !password) {
+    if (!rollNo || !password) {
       alert("Please fill in all required fields.");
       return;
     }
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ rollNumber, password })
+        body: JSON.stringify({ rollNo, password })
       });
       
       console.log("Response status:", response.status);
@@ -69,8 +69,8 @@ document.addEventListener("DOMContentLoaded", () => {
         alert(data.message || 'Login failed');
       }
     } catch (error) {
-      console.error('Error:', error);
-      alert('An error occurred during login');
+      console.error("Login error:", error);
+      alert("An error occurred during login. Please try again.");
     }
   });
 });
