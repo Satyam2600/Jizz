@@ -104,67 +104,58 @@ router.post("/logout", (req, res) => {
 
 // Forgot password route
 router.post('/forgot-password', async (req, res) => {
-    try {
-        const { rollNo } = req.body;
-        
-        if (!rollNo) {
-            return res.status(400).json({ message: 'Roll number is required' });
-        }
-        
-        // Find user by roll number
-        const user = await User.findOne({ rollNo });
-        
-        if (!user || !user.email) {
-            return res.status(404).json({ 
-                message: 'No account found with this roll number or email is missing',
-                success: false
-            });
-        }
-
-        // Generate a random password (8 characters)
-        const crypto = require('crypto');
-        const newPassword = crypto.randomBytes(4).toString('hex');
-        
-        // Hash the new password
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        
-        // Update the user's password
-        await User.updateOne(
-            { _id: user._id },
-            { $set: { password: hashedPassword } }
-        );
-        
-        // Send email with the new password
-        const sendEmail = require('../utils/emailService');
-        const htmlContent = `
-            <h2>Password Reset</h2>
-            <p>Hello ${user.fullName || 'User'},</p>
-            <p>Your password has been reset. Your new password is: <strong>${newPassword}</strong></p>
-            <p>Please log in using this password and change it immediately for security.</p>
-            <p>If you did not request this password reset, please contact support immediately.</p>
-        `;
-        
-        try {
-            await sendEmail(user.email, "Your New Password", htmlContent);
-            res.status(200).json({ 
-                message: 'Password reset instructions have been sent to your email.',
-                success: true
-            });
-        } catch (emailError) {
-            console.error('Failed to send password reset email:', emailError);
-            res.status(500).json({ 
-                message: 'Failed to send password reset email. Please try again later.',
-                success: false
-            });
-        }
-    } catch (error) {
-        console.error('Forgot password error:', error);
-        res.status(500).json({ 
-            message: 'An error occurred while processing your request',
-            success: false
-        });
-    }
+  try {
+      const { rollNumber } = req.body;
+      
+      if (!rollNumber) {
+          return res.status(400).json({ message: 'Roll number is required' });
+      }
+      
+      // Find user by roll number
+      const user = await User.findOne({ rollNumber });
+      
+      // For security reasons, we don't reveal whether a user exists or not
+      // Instead, we always return a success message
+      res.status(200).json({ 
+          message: 'If an account exists with the provided roll number, password reset instructions will be sent.',
+          success: true
+      });
+      
+      // If user exists, generate a random password and send it via email
+      if (user && user.email) {
+          // Generate a random password (8 characters)
+          const crypto = require('crypto');
+          const newPassword = crypto.randomBytes(4).toString('hex');
+          
+          // Hash the new password
+          const hashedPassword = await bcrypt.hash(newPassword, 10);
+          
+          // Update the user's password
+          await User.updateOne(
+              { _id: user._id },
+              { $set: { password: hashedPassword } }
+          );
+          
+          // Send email with the new password
+          const sendEmail = require('../utils/emailService');
+          const htmlContent = `
+              <h2>Password Reset</h2>
+              <p>Hello ${user.fullName || 'User'},</p>
+              <p>Your password has been reset. Your new password is: <strong>${newPassword}</strong></p>
+              <p>Please log in using this password and change it immediately for security.</p>
+              <p>If you did not request this password reset, please contact support immediately.</p>
+          `;
+          
+          await sendEmail(user.email, "Your New Password", htmlContent);
+          
+          console.log(`Password reset completed for user: ${user.fullName || user.rollNumber} (${user.rollNumber})`);
+      } else if (user) {
+          console.error('User found but email is missing:', user);
+      }
+  } catch (error) {
+      console.error('Forgot password error:', error);
+      // Don't send a response here since we already sent one above
+  }
 });
-
 module.exports = router;
 

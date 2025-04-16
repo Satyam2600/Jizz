@@ -14,44 +14,44 @@ router.post("/request-reset", async (req, res) => {
     const { uid } = req.body;
     if (!uid) return res.status(400).json({ message: "UID is required" });
 
-    // Find the user by rollNo (assuming you store UID as rollNo)
+    console.log("UID received:", uid);
+
+    // Find the user by rollNo
     const user = await User.findOne({ rollNo: uid });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    console.log("User found:", user);
 
-    const email = user.email; // Get the registered email
+    if (!user) {
+      console.log("No user found with rollNo:", uid);
+      return res.status(404).json({ message: "No account found with the provided roll number" });
+    }
 
-    // Generate a new random password (e.g., 10-character hex string)
+    const email = user.email;
+
+    // Generate a new random password
     const newPassword = crypto.randomBytes(5).toString("hex");
     console.log("Generated new password:", newPassword);
 
     // Hash the new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    
-    // Update only the password field, not the entire user object
-    // This prevents validation errors for required fields
-    await User.updateOne(
-      { _id: user._id },
-      { $set: { password: hashedPassword } }
-    );
 
-    // Compose email content with the new password
+    // Update the user's password
+    await User.updateOne({ _id: user._id }, { $set: { password: hashedPassword } });
+
+    // Send the email
     const htmlContent = `
       <h2>Password Reset</h2>
       <p>Your new password is: <strong>${newPassword}</strong></p>
       <p>Please log in using this password and change it immediately for security.</p>
     `;
-
-    // Send email with the new password using Brevo
     await sendEmail(email, "Your New Password", htmlContent);
 
-    res.status(200).json({ 
+    res.status(200).json({
       message: "A new password has been sent to your registered email.",
-      redirectUrl: "/login"
+      redirectUrl: "/login",
     });
   } catch (error) {
     console.error("Error in /request-reset:", error);
     res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 });
-
 module.exports = router;

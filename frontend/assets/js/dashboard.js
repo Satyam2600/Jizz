@@ -428,6 +428,11 @@ async function loadPosts() {
 
 // Function to create a post card
 function createPostCard(post) {
+    if (!post.user) {
+        // Optionally, you can display a placeholder or skip the post
+        console.warn('Post missing user data, skipping:', post);
+        return document.createComment('Post skipped due to missing user');
+    }
     const postCard = document.createElement("div");
     postCard.className = "post-card";
     postCard.dataset.postId = post._id;

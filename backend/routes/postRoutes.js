@@ -104,31 +104,7 @@ router.post("/:id/report", authMiddleware, postController.reportPost);
 // Create a new post
 router.post("/create", authMiddleware, upload.single("media"), postController.createPost);
 
-// Get all posts
-router.get('/', async (req, res) => {
-  try {
-    const posts = await Post.find()
-      .populate('userId', 'name avatar department')
-      .sort({ createdAt: -1 })
-      .lean();
 
-    // Transform the response to match the frontend expectations
-    const transformedPosts = posts.map(post => ({
-      ...post,
-      user: {
-        name: post.userId.name,
-        avatar: post.userId.avatar,
-        department: post.userId.department
-      },
-      userId: undefined
-    }));
-
-    res.json(transformedPosts);
-  } catch (error) {
-    console.error('Error fetching posts:', error);
-    res.status(500).json({ message: 'Error fetching posts', error: error.message });
-  }
-});
 
 // Add a comment to a post
 router.post("/:id/comment", authMiddleware, postController.addComment);
