@@ -1,3 +1,54 @@
+// Import EmojiMart components and data
+
+
+// Render a post card
+function renderPost(post) {
+    // Use post.user for user details
+    const user = post.user || {};
+    // Likes/comments
+    const isLiked = Array.isArray(post.likedBy) && post.likedBy.includes(localStorage.getItem('userId'));
+    const likeCount = post.likes || (post.likedBy ? post.likedBy.length : 0);
+    const comments = post.comments || [];
+    return `
+        <div class="card mb-3 post-card" data-post-id="${post._id}">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                    <img src="${user.avatar || '/assets/images/default-avatar.png'}" alt="Avatar" class="rounded-circle me-2" width="40" height="40">
+                    <div>
+                        <div class="fw-bold">${user.fullName || 'Unknown User'}</div>
+                        <div class="text-muted small">@${user.username || 'unknown'} • ${new Date(post.createdAt).toLocaleString()}</div>
+                    </div>
+                </div>
+                <div class="post-content mb-2">${post.content}</div>
+                ${post.image ? `<img src="${post.image}" class="img-fluid mb-2" alt="Post Image">` : ''}
+                ${post.video ? `<video controls class="w-100 mb-2"><source src="${post.video}" type="video/mp4"></video>` : ''}
+                <div class="d-flex gap-3 align-items-center mt-2">
+                    <button class="btn btn-sm btn-outline-primary like-btn ${isLiked ? 'active' : ''}" data-post-id="${post._id}"><i class="bi bi-heart${isLiked ? '-fill' : ''}"></i> <span class="like-count">${likeCount}</span></button>
+                    <button class="btn btn-sm btn-outline-secondary comment-btn" data-post-id="${post._id}"><i class="bi bi-chat"></i> <span class="comment-count">${comments.length}</span></button>
+                </div>
+                <div class="comments-section mt-3">
+                    ${comments.map(comment => `
+                        <div class="d-flex align-items-start mb-2">
+                            <img src="${comment.user?.avatar || '/assets/images/default-avatar.png'}" alt="Avatar" class="rounded-circle me-2" width="30" height="30">
+                            <div>
+                                <div class="fw-bold small">${comment.user?.fullName || 'Unknown'}</div>
+                                <div class="text-muted small">@${comment.user?.username || 'unknown'} • ${new Date(comment.createdAt).toLocaleString()}</div>
+                                <div>${comment.content}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                    <form class="add-comment-form mt-2" data-post-id="${post._id}">
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-sm comment-input" placeholder="Write a comment..." />
+                            <button type="submit" class="btn btn-success btn-sm">Post</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 // Dark Mode Toggle
 const themeToggle = document.getElementById('themeToggle');
 if (themeToggle) {
@@ -15,6 +66,94 @@ if (navbarToggler) {
         document.querySelectorAll('.sidebar').forEach(sidebar => {
             sidebar.classList.toggle('active');
         });
+    });
+}
+
+// Ensure posts are fetched and displayed on page load
+async function loadPosts() {
+    const postsContainer = document.getElementById('postsContainer');
+    postsContainer.innerHTML = '<div class="text-center py-4">Loading posts...</div>';
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            postsContainer.innerHTML = '<div class="text-center py-5 text-danger">You are not logged in. Please log in to view posts.</div>';
+            return;
+        }
+
+        const response = await fetch('/api/posts', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            postsContainer.innerHTML = `<div class="text-center py-5 text-danger">${errorData.message || 'Failed to load posts.'}</div>`;
+            return;
+        }
+
+        const data = await response.json();
+        postsContainer.innerHTML = '';
+
+        if (data.success && data.posts && data.posts.length > 0) {
+            data.posts.forEach(post => {
+                postsContainer.innerHTML += renderPost(post);
+            });
+            attachPostEventListeners();
+        } else {
+            postsContainer.innerHTML = `<div class="text-center py-5 text-muted">${data.message || 'No posts available. Be the first to post!'}</div>`;
+        }
+    } catch (err) {
+        postsContainer.innerHTML = '<div class="text-center py-5 text-danger">Failed to load posts. Please try again later.</div>';
+        console.error('Error loading posts:', err);
+    }
+}
+
+// Attach like and comment event listeners
+function attachPostEventListeners() {
+    // Like
+    document.querySelectorAll('.like-btn').forEach(btn => {
+        btn.onclick = async function(e) {
+            e.preventDefault();
+            const postId = btn.getAttribute('data-post-id');
+            const token = localStorage.getItem('token');
+            try {
+                const response = await fetch(`/api/posts/${postId}/like`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    await loadPosts();
+                }
+            } catch (err) {
+                alert('Failed to like post');
+            }
+        };
+    });
+    // Comment
+    document.querySelectorAll('.add-comment-form').forEach(form => {
+        form.onsubmit = async function(e) {
+            e.preventDefault();
+            const postId = form.getAttribute('data-post-id');
+            const input = form.querySelector('.comment-input');
+            const content = input.value.trim();
+            if (!content) return;
+            const token = localStorage.getItem('token');
+            try {
+                const response = await fetch(`/api/posts/${postId}/comment`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ content })
+                });
+                if (response.ok) {
+                    input.value = '';
+                    await loadPosts();
+                }
+            } catch (err) {
+                alert('Failed to comment');
+            }
+        };
     });
 }
 
@@ -133,17 +272,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     
     // Initialize emoji picker
-    const emojiPicker = new EmojiMart.Picker({
-        onEmojiSelect: (emoji) => {
-            const postInput = document.querySelector(".post-input");
-            if (postInput) {
-                postInput.value += emoji.native;
-            }
-        },
-    });
-    
-    // Load posts
-    await loadPosts();
+    try {
+        const emojiPicker = new window.EmojiMart.Picker({
+            onEmojiSelect: (emoji) => {
+                const postInput = document.querySelector(".post-input");
+                if (postInput) {
+                    postInput.value += emoji.native;
+                }
+            },
+        });
+
+        // Load posts
+        await loadPosts();
+    } catch (error) {
+        console.error('Error initializing emoji picker or loading posts:', error);
+    }
 });
 
 // Emoji Picker Implementation
@@ -153,92 +296,71 @@ const emojiPickerBtn = document.getElementById('emojiPickerBtn');
 const postContent = document.getElementById('postContent');
 
 // Initialize emoji picker
-function initializeEmojiPicker() {
-    const emojiPickerBtn = document.getElementById('emojiPickerBtn');
-    const emojiPickerContainer = document.getElementById('emoji-picker-container');
-    const postContent = document.getElementById('postContent');
-    
-    if (!emojiPickerBtn || !emojiPickerContainer || !postContent) {
-        console.error('Emoji picker elements not found');
-        return;
-    }
-    
-    // Toggle emoji picker visibility
-    emojiPickerBtn.addEventListener('click', () => {
-        const isVisible = emojiPickerContainer.style.display === 'block';
-        emojiPickerContainer.style.display = isVisible ? 'none' : 'block';
-        
-        // Position the emoji picker near the button
-        if (!isVisible) {
-            const buttonRect = emojiPickerBtn.getBoundingClientRect();
-            emojiPickerContainer.style.top = `${buttonRect.bottom + 10}px`;
-            emojiPickerContainer.style.left = `${buttonRect.left}px`;
-        }
-    });
-    
-    // Close emoji picker when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!emojiPickerContainer.contains(e.target) && e.target !== emojiPickerBtn) {
-            emojiPickerContainer.style.display = 'none';
-        }
-    });
-    
-    // Insert emoji at cursor position
-    function insertEmoji(emoji) {
-        const cursorPos = postContent.selectionStart;
-        const text = postContent.value;
-        postContent.value = text.slice(0, cursorPos) + emoji + text.slice(cursorPos);
-        postContent.focus();
-        postContent.selectionStart = cursorPos + emoji.length;
-        postContent.selectionEnd = cursorPos + emoji.length;
-        
-        // Hide emoji picker after insertion
-        emojiPickerContainer.style.display = 'none';
-    }
-    
-    // Add click event to emoji buttons
-    const emojiButtons = emojiPickerContainer.querySelectorAll('.emoji-button');
-    emojiButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            insertEmoji(button.textContent);
-        });
-    });
+async function onEmojiSelect(emoji) {
+    console.log('Emoji selected:', emoji);
+    // Check if emoji has native property (emoji-mart v5+) or is a string
+    const emojiChar = typeof emoji === 'object' ? (emoji.native || emoji.emoji) : emoji;
+    insertEmoji(emojiChar);
 }
 
-// Create a simple fallback emoji picker
+function initializeEmojiPicker() {
+    console.log('Initializing emoji picker');
+    
+    try {
+        // Check if emoji-mart browser module is available
+        if (typeof window.EmojiMart !== 'undefined') {
+            console.log('EmojiMart is available, creating picker');
+            // Clear any existing content
+            if (emojiPickerContainer) {
+                emojiPickerContainer.innerHTML = '';
+            }
+            
+            // Create the picker using EmojiMart browser API
+            emojiPicker = new window.EmojiMart.Picker({
+                onEmojiSelect: onEmojiSelect,
+                theme: document.body.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light',
+                autoFocus: true,
+                emojiSize: 24,
+                perLine: 8,
+                categories: ['people', 'nature', 'foods', 'activity', 'places', 'objects', 'symbols', 'flags'],
+                emojiButtonColors: ['rgba(1, 152, 99, 0.5)'],
+                emojiButtonRadius: '24px',
+                emojiButtonSize: '32px',
+                set: 'native'
+            });
+            
+            // Mount the picker
+            if (emojiPickerContainer) {
+                emojiPickerContainer.appendChild(emojiPicker);
+                console.log('Emoji picker mounted successfully');
+            }
+        } else {
+            console.log('EmojiMart not available, using fallback');
+            createFallbackEmojiPicker();
+        }
+    } catch (error) {
+        console.error('Error initializing emoji picker:', error);
+        createFallbackEmojiPicker();
+    }
+}
+
+// Simple fallback emoji picker if EmojiMart is not available
 function createFallbackEmojiPicker() {
-    // Common emojis to display
-    const commonEmojis = [
-        '😀', '😃', '😄', '😁', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘',
-        '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳', '😏', '😒',
-        '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡',
-        '🤬', '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭', '🤫', '🤥', '😶',
-        '😐', '😑', '😬', '🙄', '😯', '😦', '😧', '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴',
-        '🤢', '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '👍', '👎', '👏', '🙌', '👋', '🤝', '✌️', '🤞',
-        '🤟', '🤘', '👌', '👈', '👉', '👆', '👇', '☝️', '👆', '🖕', '👇', '✋', '🤚', '🖐️', '🖖', '👋'
-    ];
-    
-    // Create emoji grid
-    const emojiGrid = document.createElement('div');
-    emojiGrid.className = 'emoji-grid';
-    
-    // Add emojis to grid
-    commonEmojis.forEach(emoji => {
-        const emojiButton = document.createElement('button');
-        emojiButton.className = 'emoji-button';
-        emojiButton.textContent = emoji;
-        
-        // Add click handler
-        emojiButton.addEventListener('click', () => {
-            insertEmoji(emoji);
-        });
-        
-        emojiGrid.appendChild(emojiButton);
-    });
-    
-    // Add to container
+    if (!emojiPickerContainer) return;
     emojiPickerContainer.innerHTML = '';
-    emojiPickerContainer.appendChild(emojiGrid);
+    const emojis = ['😀','😂','😍','😎','😊','😉','😭','😡','👍','🙏','🔥','🎉','💯','🥳','🤔','😅','😇','😜','😏','😬','🤩','🥺','🤯','😱','😤','😴','🤗','😋','😝','😒','😔','😳','😢','😞','😩','😠','😡','🤬','😷','🤒','🤕','🤑','🤠','😈','👻','💀','👽','🤖','🎃'];
+    const grid = document.createElement('div');
+    grid.className = 'emoji-grid';
+    emojis.forEach(emoji => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'emoji-button';
+        btn.textContent = emoji;
+        btn.onclick = () => insertEmoji(emoji);
+        grid.appendChild(btn);
+    });
+    emojiPickerContainer.appendChild(grid);
+    emojiPickerContainer.style.display = 'block';
 }
 
 // Toggle emoji picker visibility
@@ -366,69 +488,8 @@ if (createPostForm) {
         }
     });
 }
-
-// Function to load and display posts
-async function loadPosts() {
-    const postsContainer = document.getElementById('postsContainer');
-    if (!postsContainer) return;
-
-    const token = localStorage.getItem('token');
-    
-    if (!token) {
-        console.error('Authentication token missing');
-        postsContainer.innerHTML = '<div class="alert alert-danger">Authentication error. Please log in again.</div>';
-        return;
-    }
-
-    try {
-        const response = await fetch('/api/posts', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Failed to load posts:', errorData.message);
-            
-            if (errorData.message === 'Invalid Token') {
-                // Token is invalid, redirect to login
-                localStorage.removeItem('token'); // Clear the invalid token
-                postsContainer.innerHTML = '<div class="alert alert-danger">Your session has expired. Please log in again.</div>';
-                setTimeout(() => {
-                    window.location.href = '/login';
-                }, 2000);
-                return;
-            }
-            
-            postsContainer.innerHTML = '<div class="alert alert-danger">Failed to load posts. Please try again later.</div>';
-            return;
-        }
-        
-        const posts = await response.json();
-
-        // Clear existing posts
-        postsContainer.innerHTML = '';
-
-        if (posts.length === 0) {
-            postsContainer.innerHTML = '<div class="alert alert-info">No posts yet. Be the first to post!</div>';
-            return;
-        }
-
-        // Add each post to the feed
-        posts.forEach(post => {
-            const postElement = createPostCard(post);
-            postsContainer.appendChild(postElement);
-        });
-    } catch (error) {
-        console.error('Error loading posts:', error);
-        postsContainer.innerHTML = '<div class="alert alert-danger">An error occurred while loading posts.</div>';
-    }
-}
-
-// Function to create a post card
 function createPostCard(post) {
-    if (!post.user) {
+    if (!post.user || typeof post.user !== "object") {
         // Optionally, you can display a placeholder or skip the post
         console.warn('Post missing user data, skipping:', post);
         return document.createComment('Post skipped due to missing user');
@@ -436,76 +497,63 @@ function createPostCard(post) {
     const postCard = document.createElement("div");
     postCard.className = "post-card";
     postCard.dataset.postId = post._id;
-    
-    // Format date
     const postDate = new Date(post.createdAt);
     const formattedDate = postDate.toLocaleDateString("en-US", {
+        year: "numeric",
         month: "short",
         day: "numeric",
         hour: "2-digit",
         minute: "2-digit"
     });
-    
     // Create post header
     const postHeader = document.createElement("div");
     postHeader.className = "post-header";
-    
     const postAvatar = document.createElement("img");
     postAvatar.className = "post-avatar";
-    
-    // Set profile photo with proper validation
     if (post.user && post.user.avatar && post.user.avatar !== "undefined" && post.user.avatar !== "null") {
         postAvatar.src = post.user.avatar;
     } else {
         postAvatar.src = "/assets/images/default-avatar.jpg";
     }
-    
-    postAvatar.alt = post.user.name || "User";
-    
+    postAvatar.alt = post.user.fullName || post.user.name || post.user.username || "User";
     const postUserInfo = document.createElement("div");
-    
     const postUserName = document.createElement("h6");
     postUserName.className = "mb-0 fw-bold";
-    postUserName.textContent = post.user.name || "User";
-    
+    postUserName.textContent = post.user.fullName || post.user.name || post.user.username || "User";
     const postUserHandle = document.createElement("small");
     postUserHandle.className = "text-muted";
     postUserHandle.textContent = `@${post.user.username || "user"}`;
-    
     const postTime = document.createElement("small");
     postTime.className = "text-muted ms-2";
     postTime.textContent = formattedDate;
-    
     postUserInfo.appendChild(postUserName);
     postUserInfo.appendChild(postUserHandle);
     postUserInfo.appendChild(postTime);
-    
     postHeader.appendChild(postAvatar);
     postHeader.appendChild(postUserInfo);
-    
     // Create post content
     const postContent = document.createElement("div");
     postContent.className = "post-content";
-    
     const postText = document.createElement("p");
     postText.className = "mb-3";
     postText.textContent = post.content;
-    
     postContent.appendChild(postText);
-    
-    // Add media if exists
-    if (post.media) {
+    if (post.image) {
         const postMedia = document.createElement("img");
         postMedia.className = "post-media";
-        postMedia.src = post.media;
+        postMedia.src = post.image;
         postMedia.alt = "Post media";
         postContent.appendChild(postMedia);
+    } else if (post.video) {
+        const postMedia = document.createElement("video");
+        postMedia.className = "post-media";
+        postMedia.src = post.video;
+        postMedia.controls = true;
+        postContent.appendChild(postMedia);
     }
-    
     // Create post actions
     const postActions = document.createElement("div");
     postActions.className = "post-actions";
-    
     const likeButton = document.createElement("button");
     likeButton.className = "post-action-btn";
     if (post.liked) {
@@ -513,64 +561,45 @@ function createPostCard(post) {
     }
     likeButton.innerHTML = `<i class="bi bi-heart${post.liked ? "-fill" : ""}"></i> <span>${post.likes || 0}</span>`;
     likeButton.addEventListener("click", () => toggleLike(post._id));
-    
     const commentButton = document.createElement("button");
     commentButton.className = "post-action-btn";
     commentButton.innerHTML = `<i class="bi bi-chat"></i> <span>${post.comments ? post.comments.length : 0}</span>`;
     commentButton.addEventListener("click", () => toggleComments(post._id));
-    
     const shareButton = document.createElement("button");
     shareButton.className = "post-action-btn";
     shareButton.innerHTML = `<i class="bi bi-share"></i>`;
     shareButton.addEventListener("click", () => sharePost(post._id));
-    
     postActions.appendChild(likeButton);
     postActions.appendChild(commentButton);
     postActions.appendChild(shareButton);
-    
     // Create comments section
     const postComments = document.createElement("div");
     postComments.className = "post-comments";
     postComments.style.display = "none";
-    
     // Add existing comments
     if (post.comments && post.comments.length > 0) {
         post.comments.forEach(comment => {
             const commentItem = document.createElement("div");
             commentItem.className = "comment-item";
-            
             const commentAvatar = document.createElement("img");
             commentAvatar.className = "comment-avatar";
-            
             // Set comment avatar with proper validation
             if (comment.user && comment.user.avatar && comment.user.avatar !== "undefined" && comment.user.avatar !== "null") {
                 commentAvatar.src = comment.user.avatar;
             } else {
                 commentAvatar.src = "/assets/images/default-avatar.jpg";
             }
-            
-            commentAvatar.alt = comment.user.name || "User";
-            
+            commentAvatar.alt = (comment.user && (comment.user.fullName || comment.user.name || comment.user.username)) || "User";
             const commentContent = document.createElement("div");
-            commentContent.className = "comment-content";
-            
             const commentUserName = document.createElement("strong");
-            commentUserName.textContent = comment.user.name;
-            
-            const commentText = document.createElement("p");
-            commentText.className = "mb-0";
-            commentText.textContent = comment.content;
-            
+            commentUserName.textContent = (comment.user && (comment.user.fullName || comment.user.name || comment.user.username)) || "User";
             commentContent.appendChild(commentUserName);
-            commentContent.appendChild(commentText);
-            
+            commentContent.appendChild(document.createTextNode(`: ${comment.content}`));
             commentItem.appendChild(commentAvatar);
             commentItem.appendChild(commentContent);
-            
             postComments.appendChild(commentItem);
         });
     }
-    
     // Add comment input
     const commentInput = document.createElement("div");
     commentInput.className = "comment-input";
@@ -909,3 +938,6 @@ if (videoInput) {
         }
     });
 }
+
+// Initialize the emoji picker on page load
+document.addEventListener('DOMContentLoaded', initializeEmojiPicker);

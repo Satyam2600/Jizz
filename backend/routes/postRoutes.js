@@ -76,7 +76,7 @@ router.post("/", authMiddleware, async (req, res) => {
 });
 
 // 📌 Get All Posts (Latest First)
-router.get("/", authMiddleware, postController.getAllPosts);
+router.get("/", authMiddleware, postController.getAllPosts); // Always returns all posts with user info, paginated if query params provided
 
 // 📌 Get Posts by User ID
 router.get("/user/:userId", async (req, res) => {
