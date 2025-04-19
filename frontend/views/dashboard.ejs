@@ -460,7 +460,93 @@
     .post-action-btn.liked {
       color: var(--accent-color);
     }
-    
+   
+    /* ... existing styles ... */
+
+    /* Post Card Styles */
+    .post-card {
+        transition: all 0.3s ease;
+    }
+
+    .post-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+    }
+
+    /* Post Action Buttons */
+    .btn-like, .btn-comment, .btn-share {
+        transition: all 0.2s ease;
+    }
+
+    .btn-like:hover {
+        background-color: var(--accent-color);
+        color: white;
+        transform: scale(1.05);
+    }
+
+    .btn-comment:hover, .btn-share:hover {
+        background-color: var(--secondary-bg);
+        transform: scale(1.05);
+    }
+
+    .btn-like.btn-primary {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+
+    /* Comment Section */
+    .comments-section {
+        transition: all 0.3s ease;
+    }
+
+    .comment-item {
+        transition: all 0.2s ease;
+    }
+
+    .comment-item:hover {
+        transform: translateX(4px);
+    }
+
+    /* Comment Input */
+    .comment-input {
+        transition: all 0.2s ease;
+    }
+
+    .comment-input:focus {
+        box-shadow: 0 0 0 2px rgba(1, 152, 99, 0.2);
+        border-color: var(--accent-color);
+    }
+
+    /* Post Media */
+    .post-media img, .post-media video {
+        transition: all 0.3s ease;
+    }
+
+    .post-media img:hover, .post-media video:hover {
+        transform: scale(1.02);
+    }
+
+    /* Post Time */
+    .post-time {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    /* Dark Mode Support */
+    [data-bs-theme="dark"] .post-card {
+        background-color: var(--secondary-bg);
+        border-color: var(--border-color);
+    }
+
+    [data-bs-theme="dark"] .comment-item .bg-light {
+        background-color: var(--primary-bg) !important;
+    }
+
+    [data-bs-theme="dark"] .btn-comment:hover, 
+    [data-bs-theme="dark"] .btn-share:hover {
+        background-color: var(--primary-bg);
+    }
+
     .post-comments {
       padding: 0 1.25rem 1rem;
     }
@@ -713,10 +799,67 @@
   <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
   <!-- Then load emoji-mart with correct module type -->
-  <script src="https://unpkg.com/emoji-mart@3.0.1/dist/emoji-mart.js"></script>
+  <script src="https://unpkg.com/emoji-mart@3.0.1/dist/browser.js"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/assets/js/logout.js"></script>
+
+  <script>
+    // Initialize emoji picker after all scripts are loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      // Wait for EmojiMart to be available
+      if (typeof window.EmojiMart !== 'undefined') {
+        const emojiPicker = new window.EmojiMart.Picker({
+          onEmojiSelect: (emoji) => {
+            const postInput = document.getElementById('postContent');
+            if (postInput) {
+              const cursorPosition = postInput.selectionStart;
+              const textBeforeCursor = postInput.value.substring(0, cursorPosition);
+              const textAfterCursor = postInput.value.substring(cursorPosition);
+              postInput.value = textBeforeCursor + emoji.native + textAfterCursor;
+              postInput.focus();
+              postInput.selectionStart = cursorPosition + emoji.native.length;
+              postInput.selectionEnd = cursorPosition + emoji.native.length;
+            }
+          },
+          theme: document.body.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light',
+          autoFocus: true,
+          emojiSize: 24,
+          perLine: 8,
+          categories: ['people', 'nature', 'foods', 'activity', 'places', 'objects', 'symbols', 'flags'],
+          emojiButtonColors: ['rgba(1, 152, 99, 0.5)'],
+          emojiButtonRadius: '24px',
+          emojiButtonSize: '32px',
+          set: 'native'
+        });
+
+        // Mount the picker
+        const emojiPickerContainer = document.getElementById('emoji-picker-container');
+        if (emojiPickerContainer) {
+          emojiPickerContainer.appendChild(emojiPicker);
+        }
+
+        // Add click handler for emoji picker button
+        const emojiPickerBtn = document.getElementById('emojiPickerBtn');
+        if (emojiPickerBtn) {
+          emojiPickerBtn.addEventListener('click', function() {
+            const isVisible = emojiPickerContainer.style.display === 'block';
+            emojiPickerContainer.style.display = isVisible ? 'none' : 'block';
+            
+            if (!isVisible) {
+              // Position the emoji picker near the button
+              const buttonRect = emojiPickerBtn.getBoundingClientRect();
+              emojiPickerContainer.style.top = `${buttonRect.bottom + 10}px`;
+              emojiPickerContainer.style.left = `${buttonRect.left}px`;
+            }
+          });
+        }
+      } else {
+        console.warn('EmojiMart not available, using fallback emoji picker');
+        // You can implement a fallback emoji picker here if needed
+      }
+    });
+  </script>
 
   <script src="/assets/js/dashboard.js"></script>
 </body>

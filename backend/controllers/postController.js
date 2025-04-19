@@ -57,19 +57,19 @@ exports.createPost = async (req, res) => {
   }
 
   try {
-    const { content } = req.body;
+    const { content, image, video } = req.body;
     const userId = req.user.userId;
 
-    if (!content) {
-      return res.status(400).json({ message: "Post content is required" });
+    if (!content && !image && !video) {
+      return res.status(400).json({ message: "Post content or media is required" });
     }
 
-    // Add post expiration (30 days)
+    // Create post with media
     const newPost = new Post({
       user: userId,
       content,
-      image: req.file ? req.file.path : null,
-      video: req.file ? req.file.path : null,
+      image: image || null,
+      video: video || null,
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
     });
 

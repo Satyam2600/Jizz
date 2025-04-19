@@ -24,12 +24,16 @@ const storage = multer.diskStorage({
     }
 });
 
-// File filter to only allow images
+// File filter for both images and videos
 const fileFilter = (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
+    // Allowed MIME types
+    const allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const allowedVideoTypes = ['video/mp4', 'video/webm', 'video/quicktime'];
+
+    if (allowedImageTypes.includes(file.mimetype) || allowedVideoTypes.includes(file.mimetype)) {
         cb(null, true);
     } else {
-        cb(new Error('Only image files are allowed!'), false);
+        cb(new Error('Invalid file type. Only images (JPEG, PNG, GIF, WEBP) and videos (MP4, WEBM, MOV) are allowed.'), false);
     }
 };
 
@@ -37,7 +41,7 @@ const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
     limits: {
-        fileSize: 5 * 1024 * 1024 // 5MB limit
+        fileSize: 100 * 1024 * 1024 // 100MB limit for videos
     }
 });
 
@@ -170,6 +174,40 @@ router.post("/cover-photo", authMiddleware, async (req, res) => {
     } catch (error) {
         console.error("Error in cover photo upload:", error);
         res.status(500).json({ message: "Server error while uploading cover photo" });
+    }
+});
+
+// Post media upload endpoint (handles both images and videos)
+router.post("/post-media", authMiddleware, upload.single("media"), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "No file uploaded" });
+        }
+
+        // Set proper content type based on file type
+        const isVideo = req.file.mimetype.startsWith('video/');
+        const contentType = isVideo ? 'video' : 'image';
+
+        // Ensure the file path starts with /assets/uploads/
+        const filePath = `/assets/uploads/${req.file.filename}`;
+
+        console.log('File uploaded:', {
+            originalName: req.file.originalname,
+            filename: req.file.filename,
+            mimetype: req.file.mimetype,
+            filePath: filePath,
+            contentType: contentType
+        });
+
+        // Return the file information
+        res.json({ 
+            message: `${contentType} uploaded successfully`,
+            filePath: filePath,
+            type: contentType
+        });
+    } catch (error) {
+        console.error(`Error uploading media:`, error);
+        res.status(500).json({ message: `Server error while uploading media` });
     }
 });
 

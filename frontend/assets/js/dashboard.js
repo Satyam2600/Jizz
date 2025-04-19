@@ -1,46 +1,136 @@
 // Import EmojiMart components and data
 
+// Get DOM elements
+const imageInput = document.getElementById('imageUpload');
+const videoInput = document.getElementById('videoUpload');
+const imageUploadBtn = document.getElementById('imageUploadBtn');
+const videoUploadBtn = document.getElementById('videoUploadBtn');
+const postContent = document.getElementById('postContent');
+
+// Media preview container
+let currentMediaFile = null;
+let currentMediaType = null;
 
 // Render a post card
 function renderPost(post) {
+    console.log('Rendering post:', post); // Debug log
+    
     // Use post.user for user details
     const user = post.user || {};
     // Likes/comments
     const isLiked = Array.isArray(post.likedBy) && post.likedBy.includes(localStorage.getItem('userId'));
     const likeCount = post.likes || (post.likedBy ? post.likedBy.length : 0);
     const comments = post.comments || [];
+    
+    let mediaHtml = '';
+    if (post.image) {
+        console.log('Rendering image:', post.image); // Debug log
+        mediaHtml = `
+            <div class="post-media mb-3">
+                <img src="${post.image}" 
+                     class="img-fluid w-100 rounded" 
+                     alt="Post Image"
+                     style="max-height: 400px; object-fit: cover;">
+            </div>
+        `;
+    } else if (post.video) {
+        console.log('Rendering video:', post.video); // Debug log
+        mediaHtml = `
+            <div class="post-media mb-3">
+                <video class="w-100 rounded" 
+                       style="max-height: 400px;"
+                       controls
+                       autoplay
+                       muted
+                       loop
+                       playsinline>
+                    <source src="${post.video}" type="video/mp4">
+                    <source src="${post.video}" type="video/webm">
+                    <source src="${post.video}" type="video/quicktime">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        `;
+    }
+
     return `
-        <div class="card mb-3 post-card" data-post-id="${post._id}">
-            <div class="card-body">
-                <div class="d-flex align-items-center mb-2">
-                    <img src="${user.avatar || '/assets/images/default-avatar.png'}" alt="Avatar" class="rounded-circle me-2" width="40" height="40">
+        <div class="card mb-4 post-card" data-post-id="${post._id}">
+            <div class="card-body p-4">
+                <!-- Post Header -->
+                <div class="d-flex align-items-center mb-3">
+                    <img src="${user.avatar || '/assets/images/default-avatar.png'}" 
+                         alt="Avatar" 
+                         class="rounded-circle me-3" 
+                         style="width: 48px; height: 48px; object-fit: cover;">
                     <div>
-                        <div class="fw-bold">${user.fullName || 'Unknown User'}</div>
-                        <div class="text-muted small">@${user.username || 'unknown'} • ${new Date(post.createdAt).toLocaleString()}</div>
+                        <h6 class="mb-0 fw-bold">${user.fullName || 'Unknown User'}</h6>
+                        <small class="text-muted">
+                            @${user.username || 'unknown'} • 
+                            <span class="post-time">${new Date(post.createdAt).toLocaleString()}</span>
+                        </small>
                     </div>
                 </div>
-                <div class="post-content mb-2">${post.content}</div>
-                ${post.image ? `<img src="${post.image}" class="img-fluid mb-2" alt="Post Image">` : ''}
-                ${post.video ? `<video controls class="w-100 mb-2"><source src="${post.video}" type="video/mp4"></video>` : ''}
-                <div class="d-flex gap-3 align-items-center mt-2">
-                    <button class="btn btn-sm btn-outline-primary like-btn ${isLiked ? 'active' : ''}" data-post-id="${post._id}"><i class="bi bi-heart${isLiked ? '-fill' : ''}"></i> <span class="like-count">${likeCount}</span></button>
-                    <button class="btn btn-sm btn-outline-secondary comment-btn" data-post-id="${post._id}"><i class="bi bi-chat"></i> <span class="comment-count">${comments.length}</span></button>
+
+                <!-- Post Content -->
+                <div class="post-content mb-3">
+                    ${post.content}
                 </div>
-                <div class="comments-section mt-3">
+
+                <!-- Post Media -->
+                ${mediaHtml}
+
+                <!-- Post Actions -->
+                <div class="d-flex gap-3 align-items-center mt-3 pt-3 border-top">
+                    <button class="btn btn-like ${isLiked ? 'btn-primary' : 'btn-outline-primary'}" 
+                            data-post-id="${post._id}">
+                        <i class="bi ${isLiked ? 'bi-heart-fill' : 'bi-heart'} me-1"></i>
+                        <span class="like-count">${likeCount}</span>
+                    </button>
+                    
+                    <button class="btn btn-outline-secondary btn-comment" 
+                            data-post-id="${post._id}">
+                        <i class="bi bi-chat me-1"></i>
+                        <span class="comment-count">${comments.length}</span>
+                    </button>
+                    
+                    <button class="btn btn-outline-secondary btn-share" 
+                            data-post-id="${post._id}">
+                        <i class="bi bi-share me-1"></i>
+                        Share
+                    </button>
+                </div>
+
+                <!-- Comments Section -->
+                <div class="comments-section mt-3" style="display: none;">
                     ${comments.map(comment => `
-                        <div class="d-flex align-items-start mb-2">
-                            <img src="${comment.user?.avatar || '/assets/images/default-avatar.png'}" alt="Avatar" class="rounded-circle me-2" width="30" height="30">
-                            <div>
-                                <div class="fw-bold small">${comment.user?.fullName || 'Unknown'}</div>
-                                <div class="text-muted small">@${comment.user?.username || 'unknown'} • ${new Date(comment.createdAt).toLocaleString()}</div>
-                                <div>${comment.content}</div>
+                        <div class="d-flex align-items-start mb-3">
+                            <img src="${comment.user?.avatar || '/assets/images/default-avatar.png'}" 
+                                 alt="Avatar" 
+                                 class="rounded-circle me-2" 
+                                 style="width: 32px; height: 32px; object-fit: cover;">
+                            <div class="flex-grow-1">
+                                <div class="bg-light rounded-3 p-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <strong class="small">${comment.user?.fullName || 'Unknown'}</strong>
+                                        <small class="text-muted">${new Date(comment.createdAt).toLocaleString()}</small>
+                                    </div>
+                                    <p class="mb-0">${comment.content}</p>
+                                </div>
                             </div>
                         </div>
                     `).join('')}
-                    <form class="add-comment-form mt-2" data-post-id="${post._id}">
+                    
+                    <form class="add-comment-form mt-3" data-post-id="${post._id}">
                         <div class="input-group">
-                            <input type="text" class="form-control form-control-sm comment-input" placeholder="Write a comment..." />
-                            <button type="submit" class="btn btn-success btn-sm">Post</button>
+                            <input type="text" 
+                                   class="form-control comment-input" 
+                                   placeholder="Write a comment..." 
+                                   style="border-radius: 20px 0 0 20px;">
+                            <button type="submit" 
+                                    class="btn btn-success" 
+                                    style="border-radius: 0 20px 20px 0;">
+                                <i class="bi bi-send"></i>
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -109,34 +199,98 @@ async function loadPosts() {
 
 // Attach like and comment event listeners
 function attachPostEventListeners() {
-    // Like
-    document.querySelectorAll('.like-btn').forEach(btn => {
+    // Like functionality
+    document.querySelectorAll('.btn-like').forEach(btn => {
         btn.onclick = async function(e) {
             e.preventDefault();
             const postId = btn.getAttribute('data-post-id');
             const token = localStorage.getItem('token');
+            
+            if (!token) {
+                alert('Please log in to like posts');
+                window.location.href = '/login';
+                return;
+            }
+
             try {
                 const response = await fetch(`/api/posts/${postId}/like`, {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
                 });
+
                 if (response.ok) {
-                    await loadPosts();
+                    const data = await response.json();
+                    // Update the like button state
+                    const likeCount = btn.querySelector('.like-count');
+                    if (likeCount) {
+                        likeCount.textContent = data.likes;
+                    }
+                    
+                    // Toggle button classes
+                    if (data.isLiked) {
+                        btn.classList.remove('btn-outline-primary');
+                        btn.classList.add('btn-primary');
+                        btn.querySelector('i').classList.remove('bi-heart');
+                        btn.querySelector('i').classList.add('bi-heart-fill');
+                    } else {
+                        btn.classList.remove('btn-primary');
+                        btn.classList.add('btn-outline-primary');
+                        btn.querySelector('i').classList.remove('bi-heart-fill');
+                        btn.querySelector('i').classList.add('bi-heart');
+                    }
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.message || 'Failed to like post');
                 }
             } catch (err) {
+                console.error('Error liking post:', err);
                 alert('Failed to like post');
             }
         };
     });
-    // Comment
+
+    // Comment functionality
+    document.querySelectorAll('.btn-comment').forEach(btn => {
+        btn.onclick = function(e) {
+            e.preventDefault();
+            const postId = btn.getAttribute('data-post-id');
+            const commentsSection = document.querySelector(`.post-card[data-post-id="${postId}"] .comments-section`);
+            
+            if (commentsSection) {
+                const isVisible = commentsSection.style.display === 'block';
+                commentsSection.style.display = isVisible ? 'none' : 'block';
+                
+                if (!isVisible) {
+                    // Focus the comment input when opening comments
+                    const commentInput = commentsSection.querySelector('.comment-input');
+                    if (commentInput) {
+                        commentInput.focus();
+                    }
+                }
+            }
+        };
+    });
+
+    // Comment submission
     document.querySelectorAll('.add-comment-form').forEach(form => {
         form.onsubmit = async function(e) {
             e.preventDefault();
             const postId = form.getAttribute('data-post-id');
             const input = form.querySelector('.comment-input');
             const content = input.value.trim();
+            
             if (!content) return;
+
             const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please log in to comment');
+                window.location.href = '/login';
+                return;
+            }
+
             try {
                 const response = await fetch(`/api/posts/${postId}/comment`, {
                     method: 'POST',
@@ -146,12 +300,80 @@ function attachPostEventListeners() {
                     },
                     body: JSON.stringify({ content })
                 });
+
                 if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Clear the input
                     input.value = '';
-                    await loadPosts();
+                    
+                    // Update comment count
+                    const commentBtn = document.querySelector(`.btn-comment[data-post-id="${postId}"] .comment-count`);
+                    if (commentBtn) {
+                        commentBtn.textContent = parseInt(commentBtn.textContent) + 1;
+                    }
+                    
+                    // Add the new comment to the UI
+                    const commentsSection = form.parentElement;
+                    const newComment = document.createElement('div');
+                    newComment.className = 'd-flex align-items-start mb-3';
+                    newComment.innerHTML = `
+                        <img src="${data.user.avatar || '/assets/images/default-avatar.png'}" 
+                             alt="Avatar" 
+                             class="rounded-circle me-2" 
+                             style="width: 32px; height: 32px; object-fit: cover;">
+                        <div class="flex-grow-1">
+                            <div class="bg-light rounded-3 p-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <strong class="small">${data.user.fullName || 'Unknown'}</strong>
+                                    <small class="text-muted">just now</small>
+                                </div>
+                                <p class="mb-0">${content}</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Insert the new comment before the comment form
+                    commentsSection.insertBefore(newComment, form);
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.message || 'Failed to add comment');
                 }
             } catch (err) {
-                alert('Failed to comment');
+                console.error('Error adding comment:', err);
+                alert('Failed to add comment');
+            }
+        };
+    });
+
+    // Share functionality
+    document.querySelectorAll('.btn-share').forEach(btn => {
+        btn.onclick = function(e) {
+            e.preventDefault();
+            const postId = btn.getAttribute('data-post-id');
+            const url = `${window.location.origin}/post/${postId}`;
+            
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('Post link copied to clipboard!');
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                    alert('Failed to copy link to clipboard');
+                });
+            } else {
+                // Fallback for browsers that don't support clipboard API
+                const textArea = document.createElement('textarea');
+                textArea.value = url;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert('Post link copied to clipboard!');
+                } catch (err) {
+                    console.error('Failed to copy:', err);
+                    alert('Failed to copy link to clipboard');
+                }
+                document.body.removeChild(textArea);
             }
         };
     });
@@ -271,29 +493,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
     
-    // Initialize emoji picker
-    try {
-        const emojiPicker = new window.EmojiMart.Picker({
-            onEmojiSelect: (emoji) => {
-                const postInput = document.querySelector(".post-input");
-                if (postInput) {
-                    postInput.value += emoji.native;
-                }
-            },
-        });
-
-        // Load posts
+    // Load posts after all initialization is complete
         await loadPosts();
-    } catch (error) {
-        console.error('Error initializing emoji picker or loading posts:', error);
-    }
 });
 
 // Emoji Picker Implementation
 let emojiPicker = null;
 const emojiPickerContainer = document.getElementById('emoji-picker-container');
 const emojiPickerBtn = document.getElementById('emojiPickerBtn');
-const postContent = document.getElementById('postContent');
 
 // Initialize emoji picker
 async function onEmojiSelect(emoji) {
@@ -421,6 +628,116 @@ function insertEmoji(emoji) {
     emojiPickerContainer.style.display = 'none';
 }
 
+// Add click handlers for upload buttons
+if (imageUploadBtn) {
+    imageUploadBtn.addEventListener('click', () => {
+        imageInput.click();
+    });
+}
+
+if (videoUploadBtn) {
+    videoUploadBtn.addEventListener('click', () => {
+        videoInput.click();
+    });
+}
+
+if (imageInput) {
+    imageInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('Please log in to upload images');
+            window.location.href = '/login';
+            return;
+        }
+
+        // Show preview before upload
+        const previewContainer = document.getElementById('mediaPreviewContainer');
+        if (!previewContainer) {
+            const container = document.createElement('div');
+            container.id = 'mediaPreviewContainer';
+            container.className = 'media-preview-container mb-3';
+            container.style.position = 'relative';
+            postContent.parentElement.insertBefore(container, postContent.nextSibling);
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const previewContainer = document.getElementById('mediaPreviewContainer');
+            previewContainer.innerHTML = `
+                <div class="position-relative">
+                    <img src="${e.target.result}" class="img-fluid rounded" style="max-height: 300px; width: auto;" alt="Preview">
+                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2" onclick="removeMediaPreview()">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+            `;
+        }
+        reader.readAsDataURL(file);
+
+        // Store the current media file for later upload
+        currentMediaFile = file;
+        currentMediaType = 'image';
+    });
+}
+
+if (videoInput) {
+    videoInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('Please log in to upload videos');
+                    window.location.href = '/login';
+                    return;
+                }
+
+        // Show preview before upload
+        const previewContainer = document.getElementById('mediaPreviewContainer');
+        if (!previewContainer) {
+            const container = document.createElement('div');
+            container.id = 'mediaPreviewContainer';
+            container.className = 'media-preview-container mb-3';
+            container.style.position = 'relative';
+            postContent.parentElement.insertBefore(container, postContent.nextSibling);
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const previewContainer = document.getElementById('mediaPreviewContainer');
+            previewContainer.innerHTML = `
+                <div class="position-relative">
+                    <video src="${e.target.result}" class="img-fluid rounded" style="max-height: 300px; width: auto;" controls></video>
+                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2" onclick="removeMediaPreview()">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+            `;
+        }
+        reader.readAsDataURL(file);
+
+        // Store the current media file for later upload
+        currentMediaFile = file;
+        currentMediaType = 'video';
+    });
+}
+
+// Function to remove media preview
+window.removeMediaPreview = function() {
+    const previewContainer = document.getElementById('mediaPreviewContainer');
+    if (previewContainer) {
+        previewContainer.remove();
+    }
+    currentMediaFile = null;
+    currentMediaType = null;
+    // Clear file inputs
+    if (imageInput) imageInput.value = '';
+    if (videoInput) videoInput.value = '';
+};
+
 // Handle post submission
 const createPostForm = document.getElementById('createPostForm');
 if (createPostForm) {
@@ -431,513 +748,152 @@ if (createPostForm) {
         const token = localStorage.getItem('token');
         
         if (!token) {
-            alert('Authentication token missing. Please log in again.');
+            alert('Please log in to create posts');
             window.location.href = '/login';
             return;
         }
 
-        if (!content) {
-            alert('Please enter some content for your post');
+        if (!content && !currentMediaFile) {
+            alert('Please enter some content or add media for your post');
             return;
         }
 
         try {
-            // Create form data with content
-            const formData = new FormData();
-            formData.append('content', content);
+            let mediaUrl = null;
+            let mediaType = null;
 
-            // Add media if present
-            const imageInput = document.getElementById('imageUpload');
-            const videoInput = document.getElementById('videoUpload');
-            
-            if (imageInput && imageInput.files[0]) {
-                formData.append('media', imageInput.files[0]);
-            } else if (videoInput && videoInput.files[0]) {
-                formData.append('media', videoInput.files[0]);
+            // Upload media first if present
+            if (currentMediaFile) {
+                const mediaFormData = new FormData();
+                mediaFormData.append('media', currentMediaFile);
+
+                console.log('Uploading media file:', currentMediaFile); // Debug log
+
+                const mediaResponse = await fetch('/api/uploads/post-media', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: mediaFormData
+                });
+
+                if (!mediaResponse.ok) {
+                    const errorData = await mediaResponse.json();
+                    throw new Error(errorData.message || 'Failed to upload media');
+                }
+
+                const mediaData = await mediaResponse.json();
+                console.log('Media upload response:', mediaData); // Debug log
+
+                mediaUrl = mediaData.filePath;
+                mediaType = mediaData.type;
             }
 
-            const response = await fetch('/api/posts/create', {
+            // Create post data
+            const postData = {
+                content: content
+            };
+
+            // Add media to post data based on type
+            if (mediaUrl && mediaType) {
+                if (mediaType === 'video') {
+                    postData.video = mediaUrl;
+                } else if (mediaType === 'image') {
+                    postData.image = mediaUrl;
+                }
+            }
+
+            console.log('Creating post with data:', postData); // Debug log
+
+            const postResponse = await fetch('/api/posts/create', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
                 },
-                body: formData
+                body: JSON.stringify(postData)
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
+            if (!postResponse.ok) {
+                const errorData = await postResponse.json();
                 if (errorData.message === 'Invalid Token') {
-                    localStorage.removeItem('token'); // Clear the invalid token
+                    localStorage.removeItem('token');
                     alert('Your session has expired. Please log in again.');
                     window.location.href = '/login';
                     return;
                 }
-                alert(errorData.message || 'Failed to create post');
-                return;
+                throw new Error(errorData.message || 'Failed to create post');
             }
 
+            const postResult = await postResponse.json();
+            console.log('Post creation response:', postResult); // Debug log
+
+            // Clear the form
             postContent.value = '';
-            // Clear file inputs
-            if (imageInput) imageInput.value = '';
-            if (videoInput) videoInput.value = '';
+            removeMediaPreview();
+            
             // Refresh the feed
             await loadPosts();
         } catch (error) {
             console.error('Error creating post:', error);
-            alert('An error occurred while creating your post');
-        }
-    });
-}
-function createPostCard(post) {
-    if (!post.user || typeof post.user !== "object") {
-        // Optionally, you can display a placeholder or skip the post
-        console.warn('Post missing user data, skipping:', post);
-        return document.createComment('Post skipped due to missing user');
-    }
-    const postCard = document.createElement("div");
-    postCard.className = "post-card";
-    postCard.dataset.postId = post._id;
-    const postDate = new Date(post.createdAt);
-    const formattedDate = postDate.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit"
-    });
-    // Create post header
-    const postHeader = document.createElement("div");
-    postHeader.className = "post-header";
-    const postAvatar = document.createElement("img");
-    postAvatar.className = "post-avatar";
-    if (post.user && post.user.avatar && post.user.avatar !== "undefined" && post.user.avatar !== "null") {
-        postAvatar.src = post.user.avatar;
-    } else {
-        postAvatar.src = "/assets/images/default-avatar.jpg";
-    }
-    postAvatar.alt = post.user.fullName || post.user.name || post.user.username || "User";
-    const postUserInfo = document.createElement("div");
-    const postUserName = document.createElement("h6");
-    postUserName.className = "mb-0 fw-bold";
-    postUserName.textContent = post.user.fullName || post.user.name || post.user.username || "User";
-    const postUserHandle = document.createElement("small");
-    postUserHandle.className = "text-muted";
-    postUserHandle.textContent = `@${post.user.username || "user"}`;
-    const postTime = document.createElement("small");
-    postTime.className = "text-muted ms-2";
-    postTime.textContent = formattedDate;
-    postUserInfo.appendChild(postUserName);
-    postUserInfo.appendChild(postUserHandle);
-    postUserInfo.appendChild(postTime);
-    postHeader.appendChild(postAvatar);
-    postHeader.appendChild(postUserInfo);
-    // Create post content
-    const postContent = document.createElement("div");
-    postContent.className = "post-content";
-    const postText = document.createElement("p");
-    postText.className = "mb-3";
-    postText.textContent = post.content;
-    postContent.appendChild(postText);
-    if (post.image) {
-        const postMedia = document.createElement("img");
-        postMedia.className = "post-media";
-        postMedia.src = post.image;
-        postMedia.alt = "Post media";
-        postContent.appendChild(postMedia);
-    } else if (post.video) {
-        const postMedia = document.createElement("video");
-        postMedia.className = "post-media";
-        postMedia.src = post.video;
-        postMedia.controls = true;
-        postContent.appendChild(postMedia);
-    }
-    // Create post actions
-    const postActions = document.createElement("div");
-    postActions.className = "post-actions";
-    const likeButton = document.createElement("button");
-    likeButton.className = "post-action-btn";
-    if (post.liked) {
-        likeButton.classList.add("liked");
-    }
-    likeButton.innerHTML = `<i class="bi bi-heart${post.liked ? "-fill" : ""}"></i> <span>${post.likes || 0}</span>`;
-    likeButton.addEventListener("click", () => toggleLike(post._id));
-    const commentButton = document.createElement("button");
-    commentButton.className = "post-action-btn";
-    commentButton.innerHTML = `<i class="bi bi-chat"></i> <span>${post.comments ? post.comments.length : 0}</span>`;
-    commentButton.addEventListener("click", () => toggleComments(post._id));
-    const shareButton = document.createElement("button");
-    shareButton.className = "post-action-btn";
-    shareButton.innerHTML = `<i class="bi bi-share"></i>`;
-    shareButton.addEventListener("click", () => sharePost(post._id));
-    postActions.appendChild(likeButton);
-    postActions.appendChild(commentButton);
-    postActions.appendChild(shareButton);
-    // Create comments section
-    const postComments = document.createElement("div");
-    postComments.className = "post-comments";
-    postComments.style.display = "none";
-    // Add existing comments
-    if (post.comments && post.comments.length > 0) {
-        post.comments.forEach(comment => {
-            const commentItem = document.createElement("div");
-            commentItem.className = "comment-item";
-            const commentAvatar = document.createElement("img");
-            commentAvatar.className = "comment-avatar";
-            // Set comment avatar with proper validation
-            if (comment.user && comment.user.avatar && comment.user.avatar !== "undefined" && comment.user.avatar !== "null") {
-                commentAvatar.src = comment.user.avatar;
-            } else {
-                commentAvatar.src = "/assets/images/default-avatar.jpg";
-            }
-            commentAvatar.alt = (comment.user && (comment.user.fullName || comment.user.name || comment.user.username)) || "User";
-            const commentContent = document.createElement("div");
-            const commentUserName = document.createElement("strong");
-            commentUserName.textContent = (comment.user && (comment.user.fullName || comment.user.name || comment.user.username)) || "User";
-            commentContent.appendChild(commentUserName);
-            commentContent.appendChild(document.createTextNode(`: ${comment.content}`));
-            commentItem.appendChild(commentAvatar);
-            commentItem.appendChild(commentContent);
-            postComments.appendChild(commentItem);
-        });
-    }
-    // Add comment input
-    const commentInput = document.createElement("div");
-    commentInput.className = "comment-input";
-    
-    const commentInputField = document.createElement("input");
-    commentInputField.className = "comment-input-field";
-    commentInputField.placeholder = "Write a comment...";
-    
-    const commentSubmitBtn = document.createElement("button");
-    commentSubmitBtn.className = "comment-submit-btn";
-    commentSubmitBtn.innerHTML = `<i class="bi bi-send"></i>`;
-    commentSubmitBtn.addEventListener("click", () => {
-        if (commentInputField.value.trim()) {
-            addComment(post._id, commentInputField.value);
-            commentInputField.value = "";
-        }
-    });
-    
-    commentInput.appendChild(commentInputField);
-    commentInput.appendChild(commentSubmitBtn);
-    
-    postComments.appendChild(commentInput);
-    
-    // Assemble post card
-    postCard.appendChild(postHeader);
-    postCard.appendChild(postContent);
-    postCard.appendChild(postActions);
-    postCard.appendChild(postComments);
-    
-    return postCard;
-}
-
-// Function to toggle comments visibility
-function toggleComments(postId) {
-    const postCard = document.querySelector(`.post-card[data-post-id="${postId}"]`);
-    if (!postCard) return;
-    
-    const commentsSection = postCard.querySelector(".post-comments");
-    if (commentsSection.style.display === "none") {
-        commentsSection.style.display = "block";
-    } else {
-        commentsSection.style.display = "none";
-    }
-}
-
-// Handle like functionality
-async function handleLike(postId) {
-    const uid = localStorage.getItem('uid');
-    if (!uid) {
-        alert('Please log in to like posts');
-        window.location.href = '/login';
-        return;
-    }
-
-    try {
-        const response = await fetch(`/api/posts/${postId}/like`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            // Update the like count in the UI
-            const likeButton = document.querySelector(`#post-${postId} .engagement-buttons button:first-child`);
-            if (likeButton) {
-                likeButton.innerHTML = `<i class="bi bi-heart${data.isLiked ? '-fill text-danger' : ''} me-2"></i>${data.likes}`;
-            }
-        } else {
-            const data = await response.json();
-            alert(data.message || 'Failed to like post');
-        }
-    } catch (error) {
-        console.error('Error liking post:', error);
-        alert('An error occurred while liking the post');
-    }
-}
-
-// Handle comment submission
-async function handleCommentSubmit(event, postId) {
-    if (event.key === 'Enter') {
-        event.preventDefault();
-        
-        const commentInput = document.getElementById(`comment-input-${postId}`);
-        const content = commentInput.value.trim();
-        
-        if (!content) return;
-        
-        const uid = localStorage.getItem('uid');
-        if (!uid) {
-            alert('Please log in to comment');
-            window.location.href = '/login';
-            return;
-        }
-        
-        try {
-            // Get user's MongoDB _id
-            const userResponse = await fetch(`/api/users/get-profile?userId=${uid}`);
-            const userData = await userResponse.json();
-            
-            if (!userResponse.ok || !userData._id) {
-                alert('Failed to get user information. Please try again.');
-                return;
-            }
-            
-            const response = await fetch(`/api/posts/${postId}/comment`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    content,
-                    userId: userData._id
-                })
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                
-                // Clear the input
-                commentInput.value = '';
-                
-                // Add the new comment to the UI
-                const commentList = document.getElementById(`comment-list-${postId}`);
-                if (commentList) {
-                    const currentUserAvatar = localStorage.getItem('userAvatar') || '/assets/images/default-avatar.jpg';
-                    const currentUserName = localStorage.getItem('userFullName') || 'You';
-                    
-                    const commentElement = document.createElement('div');
-                    commentElement.className = 'd-flex gap-2 mb-3';
-                    commentElement.innerHTML = `
-                        <img src="${currentUserAvatar}" 
-                             class="rounded-circle" 
-                             width="36" height="36" 
-                             alt="Your Avatar">
-                        <div class="flex-grow-1">
-                            <div class="bg-light rounded-3 p-3">
-                                <div class="d-flex justify-content-between mb-1">
-                                    <strong>${currentUserName}</strong>
-                                    <small class="text-muted">just now</small>
-                                </div>
-                                <p class="mb-0">${content}</p>
-                            </div>
-                        </div>
-                    `;
-                    
-                    // Remove "No comments yet" message if it exists
-                    const noCommentsMsg = commentList.querySelector('p.text-muted');
-                    if (noCommentsMsg) {
-                        commentList.removeChild(noCommentsMsg);
-                    }
-                    
-                    commentList.appendChild(commentElement);
-                    
-                    // Update comment count
-                    const commentButton = document.querySelector(`#post-${postId} .engagement-buttons button:nth-child(2)`);
-                    if (commentButton) {
-                        const currentCount = parseInt(commentButton.textContent.match(/\d+/)[0] || '0');
-                        commentButton.innerHTML = `<i class="bi bi-chat me-2"></i>${currentCount + 1}`;
-                    }
-                }
-            } else {
-                const data = await response.json();
-                alert(data.message || 'Failed to add comment');
-            }
-        } catch (error) {
-            console.error('Error adding comment:', error);
-            alert('An error occurred while adding your comment');
-        }
-    }
-}
-
-// Handle share functionality
-function handleShare(postId) {
-    // Get the current URL
-    const url = window.location.origin + '/post/' + postId;
-    
-    // Check if the browser supports the clipboard API
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(url).then(() => {
-            alert('Post link copied to clipboard!');
-        }).catch(err => {
-            console.error('Failed to copy: ', err);
-            alert('Failed to copy link to clipboard');
-        });
-    } else {
-        // Fallback for browsers that don't support clipboard API
-        const textArea = document.createElement('textarea');
-        textArea.value = url;
-        document.body.appendChild(textArea);
-        textArea.select();
-        try {
-            document.execCommand('copy');
-            alert('Post link copied to clipboard!');
-        } catch (err) {
-            console.error('Failed to copy: ', err);
-            alert('Failed to copy link to clipboard');
-        }
-        document.body.removeChild(textArea);
-    }
-}
-
-// Save post functionality
-function savePost(postId) {
-    // This would typically save the post to the user's saved posts
-    alert('Post saved!');
-}
-
-// Report post functionality
-async function reportPost(postId) {
-    const reason = prompt('Please enter the reason for reporting this post:');
-    if (reason) {
-        try {
-            const response = await fetch(`/api/posts/${postId}/report`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ reason })
-            });
-
-            if (response.ok) {
-                alert('Post reported. Thank you for your feedback.');
-            } else {
-                const data = await response.json();
-                alert(data.message || 'Failed to report post');
-            }
-        } catch (error) {
-            console.error('Error reporting post:', error);
-            alert('An error occurred while reporting the post');
-        }
-    }
-}
-
-// Handle image upload
-const imageUploadBtn = document.getElementById('imageUploadBtn');
-const imageInput = document.getElementById('imageUpload');
-
-if (imageUploadBtn) {
-    imageUploadBtn.addEventListener('click', () => {
-        imageInput.click();
-    });
-}
-
-if (imageInput) {
-    imageInput.addEventListener('change', async (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const uid = localStorage.getItem('uid');
-        if (!uid) {
-            alert('User not logged in. Please log in again.');
-            window.location.href = '/login';
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('image', file);
-        formData.append('userId', uid);
-
-        try {
-            const response = await fetch('/api/uploads/post-image', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                // Insert image URL into post content
-                const imageUrl = data.filePath;
-                const cursorPosition = postContent.selectionStart;
-                const textBeforeCursor = postContent.value.substring(0, cursorPosition);
-                const textAfterCursor = postContent.value.substring(cursorPosition);
-                postContent.value = textBeforeCursor + `\n[Image](${imageUrl})\n` + textAfterCursor;
-                postContent.focus();
-            } else {
-                const data = await response.json();
-                alert(data.message || 'Failed to upload image');
-            }
-        } catch (error) {
-            console.error('Error uploading image:', error);
-            alert('An error occurred while uploading the image');
-        }
-    });
-}
-
-// Handle video upload
-const videoUploadBtn = document.getElementById('videoUploadBtn');
-const videoInput = document.getElementById('videoUpload');
-        
-if (videoUploadBtn) {
-    videoUploadBtn.addEventListener('click', () => {
-        videoInput.click();
-    });
-}
-
-if (videoInput) {
-    videoInput.addEventListener('change', async (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const uid = localStorage.getItem('uid');
-        if (!uid) {
-            alert('User not logged in. Please log in again.');
-            window.location.href = '/login';
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('video', file);
-        formData.append('userId', uid);
-
-        try {
-            const response = await fetch('/api/uploads/post-video', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                // Insert video URL into post content
-                const videoUrl = data.filePath;
-                const cursorPosition = postContent.selectionStart;
-                const textBeforeCursor = postContent.value.substring(0, cursorPosition);
-                const textAfterCursor = postContent.value.substring(cursorPosition);
-                postContent.value = textBeforeCursor + `\n[Video](${videoUrl})\n` + textAfterCursor;
-                postContent.focus();
-            } else {
-                const data = await response.json();
-                alert(data.message || 'Failed to upload video');
-            }
-        } catch (error) {
-            console.error('Error uploading video:', error);
-            alert('An error occurred while uploading the video');
+            alert(error.message || 'An error occurred while creating your post');
         }
     });
 }
 
 // Initialize the emoji picker on page load
-document.addEventListener('DOMContentLoaded', initializeEmojiPicker);
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Content Loaded - Initializing emoji picker');
+    
+    // Check if required elements exist
+    const emojiPickerContainer = document.getElementById('emoji-picker-container');
+    const emojiPickerBtn = document.getElementById('emojiPickerBtn');
+    const postContent = document.getElementById('postContent');
+    
+    if (!emojiPickerContainer || !emojiPickerBtn || !postContent) {
+        console.error('Required elements for emoji picker not found');
+        return;
+    }
+    
+    // Initialize emoji picker
+    initializeEmojiPicker();
+    
+    // Add click handler for emoji picker button
+    emojiPickerBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleEmojiPicker();
+    });
+    
+    // Close emoji picker when clicking outside
+    document.addEventListener('click', (e) => {
+        if (emojiPickerContainer.style.display === 'block' && 
+            !emojiPickerContainer.contains(e.target) && 
+            !emojiPickerBtn.contains(e.target)) {
+            emojiPickerContainer.style.display = 'none';
+        }
+    });
+});
+
+// Handle image upload
+const handleImageUpload = async (file) => {
+    try {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const response = await fetch('/api/uploads/post-image', {
+                method: 'POST',
+                body: formData
+            });
+
+        if (!response.ok) {
+            throw new Error('Upload failed');
+        }
+
+        const data = await response.json();
+        return data.filePath;
+        } catch (error) {
+        console.error('Error uploading image:', error);
+        throw error;
+    }
+};
