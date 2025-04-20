@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confessions - JIZZ</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    :root {
+      --primary-bg: #ffffff;
+      --secondary-bg: #F4EFE6;
+      --text-primary: #1C160C;
+      --text-secondary: #6c757d;
+      --accent-color: #019863;
+      --accent-light: #e8f5e9;
+      --border-color: #E9DFCE;
+      --beige-light: #F4EFE6;
+      --beige-dark: #E9DFCE;
+      --card-radius: 1rem;
+      --hover-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      --transition-speed: 0.3s;
+    }
+    
+    [data-bs-theme="dark"] {
+      --primary-bg: #1C160C;
+      --secondary-bg: #2d2d2d;
+      --text-primary: #F4EFE6;
+      --text-secondary: #E9DFCE;
+      --border-color: #343a40;
+      --beige-light: #2d2d2d;
+      --beige-dark: #343a40;
+      --hover-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+
+    body {
+      background-color: var(--primary-bg);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .navbar {
+      background-color: var(--primary-bg) !important;
+      border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .confession-card {
+      border: 1px solid var(--border-color);
+      border-radius: var(--card-radius);
+      transition: all var(--transition-speed) ease;
+      background: var(--primary-bg);
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+
+    .confession-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--hover-shadow);
+      border-color: var(--beige-dark);
+    }
+
+    .confession-input {
+      border: none;
+      resize: none;
+      font-size: 1rem;
+      background: transparent;
+      color: var(--text-primary);
+    }
+
+    .confession-input:focus {
+      box-shadow: none;
+      outline: none;
+    }
+
+    .confession-input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .confession-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--beige-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--border-color);
+    }
+
+    .confession-avatar i {
+      color: var(--text-secondary);
+      font-size: 1.2rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: linear-gradient(135deg, var(--beige-light) 0%, var(--primary-bg) 100%);
+      border: 1px solid var(--border-color);
+      border-radius: var(--card-radius);
+      margin: 2rem 0;
+    }
+
+    .empty-state img {
+      width: 200px;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    .empty-state h3 {
+      color: var(--text-primary);
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .action-button {
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.9rem;
+      transition: all var(--transition-speed) ease;
+      border: 1px solid var(--border-color);
+      background-color: var(--primary-bg);
+      color: var(--text-primary);
+    }
+
+    .action-button:hover {
+      transform: translateY(-1px);
+      background-color: var(--beige-light);
+      border-color: var(--beige-dark);
+    }
+
+    .post-button {
+      background: linear-gradient(135deg, var(--accent-color), #018555);
+      color: white;
+      border: none;
+      padding: 0.5rem 1.5rem;
+      font-weight: 600;
+    }
+
+    .post-button:hover {
+      background: linear-gradient(135deg, #018555, var(--accent-color));
+      box-shadow: 0 4px 12px rgba(1, 152, 99, 0.2);
+      color: white;
+    }
+
+    .nav-link {
+      color: var(--text-primary);
+      position: relative;
+    }
+
+    .nav-link.active {
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--accent-color);
+    }
+
+    .confession-meta {
+      padding: 0.75rem;
+      background-color: var(--primary-bg);
+      border-top: 1px solid var(--border-color);
+      border-radius: 0 0 var(--card-radius) var(--card-radius);
+      margin-top: 1rem;
+    }
+
+    .confession-content {
+      padding: 1rem;
+      background-color: var(--primary-bg);
+    }
+
+    .like-button:hover {
+      color: #dc3545;
+      border-color: #dc3545;
+      background-color: rgba(220, 53, 69, 0.1);
+    }
+
+    .comment-button:hover {
+      color: var(--accent-color);
+      border-color: var(--accent-color);
+      background-color: var(--accent-light);
+    }
+
+    .confession-header {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      background-color: var(--beige-light);
+      border-radius: var(--card-radius) var(--card-radius) 0 0;
+    }
+
+    .badge-anonymous {
+      background-color: var(--beige-light);
+      color: var(--text-primary);
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      border: 1px solid var(--border-color);
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg fixed-top border-bottom">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand fw-bold" href="#">jizz</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/dashboard"><i class="bi bi-house-door me-2"></i>Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="bi bi-people me-2"></i>Communities</a>
+          </li>
+        
+            <li class="nav-item">
+              <a class="nav-link" href="/events"><i class="bi bi-calendar-event me-2"></i>Events</a>
+            </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="/confessions"><i class="bi bi-chat-quote me-2"></i>Confessions</a>
+          </li>
+        </ul>
+        <div class="d-flex align-items-center gap-3">
+          <div class="theme-toggle" id="themeToggle">
+            <i class="bi bi-moon"></i>
+          </div>
+          <div class="dropdown">
+            <button class="btn btn-link text-dark position-relative" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-bell"></i>
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end p-2" style="min-width: 300px;">
+              <h6 class="dropdown-header">Notifications</h6>
+              <div class="list-group border-0">
+                <a href="#" class="list-group-item list-group-item-action border-0">
+                  <div class="d-flex align-items-center">
+                    <i class="bi bi-person-check fs-5 me-3"></i>
+                    <div>
+                      <p class="mb-0 small">New connection request</p>
+                      <small class="text-muted">2m ago</small>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="dropdown">
+            <button class="btn rounded-circle border-0" id="chatButton" style="width: 40px; height: 40px; background-color: var(--accent-color); color: white; box-shadow: 0 2px 8px rgba(1, 152, 99, 0.3);">
+              <i class="bi bi-chat-dots-fill fs-5"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+              <a class="dropdown-item" href="/chat"><i class="bi bi-chat-dots me-2"></i>Messages</a>
+              <a class="dropdown-item" href="/chat/groups"><i class="bi bi-people me-2"></i>Group Chats</a>
+              <a class="dropdown-item" href="/chat/requests"><i class="bi bi-person-plus me-2"></i>Chat Requests</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#" onclick="logout(); return false;"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+  
+  <div class="container mt-5 pt-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+        <!-- Confession Creation Card -->
+        <div class="confession-card">
+          <div class="confession-header">
+            <div class="d-flex gap-3 align-items-center">
+              <div class="confession-avatar">
+                <i class="bi bi-person"></i>
+              </div>
+              <span class="badge-anonymous">
+                <i class="bi bi-incognito me-2"></i>
+                Anonymous
+              </span>
+            </div>
+          </div>
+          <div class="confession-content">
+            <form id="confessionForm">
+              <textarea 
+                class="form-control confession-input mb-3" 
+                id="confessionText" 
+                rows="3" 
+                placeholder="What's on your mind? Your secret is safe here..."
+              ></textarea>
+              <div class="confession-meta">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="d-flex gap-2">
+                    <button type="button" class="btn action-button" data-bs-toggle="tooltip" title="Add emoji">
+                      <i class="bi bi-emoji-smile"></i>
+                    </button>
+                    <button type="button" class="btn action-button" data-bs-toggle="tooltip" title="Add image">
+                      <i class="bi bi-image"></i>
+                    </button>
+                  </div>
+                  <div class="d-flex align-items-center gap-3">
+                    <small class="text-muted">0/500</small>
+                    <button type="submit" class="btn post-button">
+                      Share Anonymously
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Confessions Feed -->
+        <div id="confessionsFeed">
+          <!-- Empty state will be shown when there are no confessions -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
+    // Character counter
+    const confessionText = document.getElementById('confessionText');
+    const charCounter = confessionText.nextElementSibling.querySelector('small');
+    
+    confessionText.addEventListener('input', function() {
+      const charCount = this.value.length;
+      charCounter.textContent = `${charCount}/500`;
+    });
+
+    // Form submission
+    document.getElementById('confessionForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const confessionText = document.getElementById('confessionText').value;
+      
+      try {
+        const response = await fetch('/api/confessions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ text: confessionText })
+        });
+        
+        if (response.ok) {
+          document.getElementById('confessionText').value = '';
+          charCounter.textContent = '0/500';
+          loadConfessions();
+        } else {
+          alert('Failed to post confession. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+      }
+    });
+
+    // Load confessions
+    async function loadConfessions() {
+      try {
+        const response = await fetch('/api/confessions');
+        const confessions = await response.json();
+        
+        const feed = document.getElementById('confessionsFeed');
+        feed.innerHTML = '';
+        
+        if (confessions.length === 0) {
+          // Show empty state
+          feed.innerHTML = `
+            <div class="empty-state">
+              <img src="/assets/images/empty-confessions.svg" alt="No confessions yet">
+              <h3>No Confessions Yet</h3>
+              <p>Be the first to share your thoughts anonymously! Your secret is safe with us. 🤫</p>
+            </div>
+          `;
+          return;
+        }
+        
+        confessions.forEach(confession => {
+          const confessionElement = document.createElement('div');
+          confessionElement.className = 'confession-card p-3';
+          confessionElement.innerHTML = `
+            <div class="confession-header">
+              <div class="d-flex gap-3 align-items-center">
+                <div class="confession-avatar">
+                  <i class="bi bi-person"></i>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <span class="badge-anonymous">
+                    <i class="bi bi-incognito me-2"></i>
+                    Anonymous
+                  </span>
+                  <small class="text-muted">${new Date(confession.createdAt).toLocaleString()}</small>
+                </div>
+              </div>
+            </div>
+            <div class="confession-content">
+              <p class="mb-3">${confession.text}</p>
+              ${confession.image ? `<img src="${confession.image}" class="img-fluid rounded mb-3" alt="Confession image">` : ''}
+            </div>
+            <div class="confession-meta">
+              <div class="d-flex gap-3">
+                <button class="btn action-button like-button">
+                  <i class="bi bi-heart me-2"></i>
+                  <span>0</span>
+                </button>
+                <button class="btn action-button comment-button">
+                  <i class="bi bi-chat me-2"></i>
+                  <span>0</span>
+                </button>
+              </div>
+            </div>
+          `;
+          feed.appendChild(confessionElement);
+        });
+      } catch (error) {
+        console.error('Error loading confessions:', error);
+      }
+    }
+
+    // Initial load
+    loadConfessions();
+
+    // Theme toggle
+    document.getElementById('themeToggle').addEventListener('click', function() {
+      const body = document.body;
+      const isDark = body.getAttribute('data-bs-theme') === 'dark';
+      body.setAttribute('data-bs-theme', isDark ? 'light' : 'dark');
+      this.innerHTML = isDark ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon"></i>';
+    });
+  </script>
+</body>
+</html>

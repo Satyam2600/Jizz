@@ -3,6 +3,7 @@ const { Server } = require("socket.io");
 const app = require("./index"); // Import Express app
 const setupSocket = require("./socket"); // Import WebSocket setup
 const path = require("path");
+const express = require("express");
 
 // Import routes
 const authRoutes = require("./routes/authRoutes");
@@ -37,29 +38,36 @@ app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/uploads", uploadRoutes);
 
+// Static files
+app.use(express.static(path.join(__dirname, '../frontend')));
+
 // Routes
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/views/login.ejs'));
+    res.render("login", { title: "Login - JIZZ" });
 });
 
 app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/views/login.ejs'));
+    res.render("login", { title: "Login - JIZZ" });
 });
 
 app.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/views/register.ejs'));
+    res.render("register", { title: "Register - JIZZ" });
 });
 
 app.get('/forgot-password', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/views/forgotPassword.ejs'));
+    res.render("forgotPassword", { title: "Forgot Password - JIZZ" });
 });
 
 app.get('/dashboard', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/views/dashboard.ejs'));
+    res.render("dashboard", { title: "Dashboard - JIZZ" });
 });
 
 app.get('/edit-profile', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/views/editProfile.ejs'));
+    res.render("editProfile", { title: "Edit Profile - JIZZ" });
+});
+
+app.get('/confessions', (req, res) => {
+    res.render("confessions", { title: "Confessions - JIZZ" });
 });
 
 // Start the Server

@@ -82,6 +82,9 @@ app.get("/change-password", (req, res) => {
 app.get("/forgotpassword", (req, res) => {
   res.render("forgotpassword", { title: "Forgot Password - JIZZ" });
 });
+app.get("/confessions", (req, res) => {
+  res.render("confessions", { title: "Confessions - JIZZ" });
+});
 
 // API Routes
 const authRoutes = require("./routes/authRoutes");
@@ -107,7 +110,7 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/newsletter", newsletterRoutes);
 app.use("/api/password-reset", passwordResetRoutes);
-app.use("/api/uploads", uploadRoutes);
+app.use("/api/upload", uploadRoutes);
 
 // Health check route
 app.get("/health", (req, res) => res.send("🚀 JIZZ Social Media API Running..."));
