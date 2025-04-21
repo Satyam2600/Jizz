@@ -2,10 +2,9 @@ const express = require("express");
 const router = express.Router();
 const confessionController = require("../controllers/confessionController");
 const authMiddleware = require("../middleware/authMiddleware");
-const upload = require("../utils/upload");
 
 // Create a new confession
-router.post("/", authMiddleware, upload.single('image'), confessionController.createConfession);
+router.post("/", authMiddleware, confessionController.createConfession);
 
 // Get all confessions
 router.get("/", authMiddleware, confessionController.getConfessions);

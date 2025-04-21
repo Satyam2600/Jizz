@@ -40,10 +40,18 @@ app.use(express.static(path.join(__dirname, "../frontend"), {
 }));
 
 // Serve uploaded files
-app.use("/assets/uploads", express.static(path.join(__dirname, "../frontend/assets/uploads")));
+app.use("/assets/uploads", express.static(path.join(__dirname, "../frontend/assets/uploads"), {
+  setHeaders: (res, path) => {
+    // Set proper cache control headers
+    res.setHeader('Cache-Control', 'public, max-age=31536000');
+  }
+}));
 
 // Serve backend uploads
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Serve static files from frontend directory
+app.use(express.static(path.join(__dirname, '../frontend')));
 
 // Root route - must be first
 app.get("/", (req, res) => {

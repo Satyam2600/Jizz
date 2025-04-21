@@ -1,22 +1,14 @@
 const Confession = require("../models/Confession");
 const User = require("../models/User");
-const { uploadToCloudinary } = require("../utils/cloudinary");
 
 // Create a new confession
 exports.createConfession = async (req, res) => {
   try {
     const { content } = req.body;
-    let imageUrl = null;
-
-    if (req.file) {
-      const result = await uploadToCloudinary(req.file.path);
-      imageUrl = result.secure_url;
-    }
 
     const confession = new Confession({
       user: req.user.userId,
-      content,
-      image: imageUrl
+      content
     });
 
     await confession.save();

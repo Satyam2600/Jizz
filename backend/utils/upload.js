@@ -3,20 +3,24 @@ const path = require('path');
 const fs = require('fs');
 
 // Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, '../uploads');
+const uploadsDir = path.join(__dirname, '../../frontend/assets/uploads');
 if (!fs.existsSync(uploadsDir)) {
+  console.log('Creating uploads directory:', uploadsDir);
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
 // Configure storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    console.log('Saving file to directory:', uploadsDir);
     cb(null, uploadsDir);
   },
   filename: function (req, file, cb) {
     // Create a unique filename with timestamp and original extension
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    const filename = file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname);
+    console.log('Generated filename:', filename);
+    cb(null, filename);
   }
 });
 

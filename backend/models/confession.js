@@ -12,10 +12,6 @@ const ConfessionSchema = new mongoose.Schema({
     trim: true,
     maxlength: 5000
   },
-  image: {
-    type: String,
-    default: null
-  },
   likes: {
     type: Number,
     default: 0
