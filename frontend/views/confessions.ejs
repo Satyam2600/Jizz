@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <!-- Load emoji picker element -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.3/index.js"></script>
   <style>
     :root {
       --primary-bg: #ffffff;
@@ -243,98 +245,43 @@
       border: 1px solid var(--border-color);
     }
 
-    /* Emoji picker container styles */
+    /* Emoji picker styles */
     #emoji-picker-container {
-      background: white;
+      position: fixed;
+      z-index: 9999;
+      background: var(--primary-bg);
+      border: 1px solid var(--border-color);
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      position: fixed;
-      z-index: 1000;
-      max-height: 350px;
-      overflow-y: auto;
-      border: 1px solid var(--border-color);
+      display: none;
+    }
+
+    emoji-picker {
+      --background: var(--primary-bg);
+      --text-color: var(--text-primary);
+      --border-color: var(--border-color);
+      --category-emoji-size: 1.25rem;
+      --emoji-size: 1.5rem;
+      --num-columns: 8;
       width: 320px;
-    }
-    
-    /* Dark mode support */
-    [data-bs-theme="dark"] #emoji-picker-container {
-      background: #2d2d2d;
-      border-color: #444;
-    }
-    
-    /* Emoji mart overrides */
-    .em-emoji-picker {
-      --rgb-background: var(--primary-bg);
-      --rgb-input: var(--secondary-bg);
-      --rgb-color: var(--text-primary);
-    }
-    
-    /* Fallback emoji picker styles */
-    .emoji-grid {
-      display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      gap: 5px;
-      padding: 10px;
-    }
-    
-    .emoji-button {
-      font-size: 20px;
-      padding: 5px;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: background-color 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      height: 36px;
-    }
-    
-    .emoji-button:hover {
-      background-color: rgba(0, 0, 0, 0.1);
-    }
-    
-    [data-bs-theme="dark"] .emoji-button:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+      height: 350px;
+      font-family: inherit;
     }
 
-    /* Media preview styles */
-    .media-preview-container {
-      margin-bottom: 1rem;
-    }
-
-    .media-preview-container img {
-      max-height: 300px;
-      width: auto;
-      border-radius: 0.5rem;
-    }
-
-    .remove-media-btn {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.5rem;
-      background-color: rgba(220, 53, 69, 0.9);
-      border: none;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .remove-media-btn:hover {
-      background-color: #dc3545;
-      transform: scale(1.1);
+    [data-bs-theme="dark"] emoji-picker {
+      --background: #2d2d2d;
+      --text-color: #ffffff;
+      --border-color: #444;
+      --category-background: #1a1a1a;
     }
   </style>
 </head>
 <body>
+  <!-- Move emoji picker container here, right after body tag -->
+  <div id="emoji-picker-container">
+    <emoji-picker></emoji-picker>
+  </div>
+
   <nav class="navbar navbar-expand-lg fixed-top border-bottom">
     <div class="container-fluid px-4">
       <a class="navbar-brand fw-bold" href="#">jizz</a>
@@ -451,18 +398,96 @@
     </div>
   </div>
 
-  <!-- Emoji picker container -->
-  <div id="emoji-picker-container" style="display: none;"></div>
-
-  <!-- Load React first -->
-  <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
-  <!-- Then load emoji-mart with correct module type -->
-  <script src="https://cdn.jsdelivr.net/npm/emoji-mart@3.0.1/dist/emoji-mart.min.js"></script>
-
   <%- include('partials/footer') %>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    // Initialize emoji picker functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const emojiPickerBtn = document.getElementById('emojiPickerBtn');
+      const emojiPickerContainer = document.getElementById('emoji-picker-container');
+      const emojiPicker = emojiPickerContainer.querySelector('emoji-picker');
+      
+      console.log('Emoji picker elements:', { emojiPickerBtn, emojiPickerContainer, emojiPicker }); // Debug log
+      
+      if (emojiPickerBtn && emojiPickerContainer && emojiPicker) {
+        // Handle emoji selection
+        emojiPicker.addEventListener('emoji-click', event => {
+          console.log('Emoji clicked:', event.detail); // Debug log
+          const confessionText = document.getElementById('confessionText');
+          if (confessionText) {
+            const cursorPosition = confessionText.selectionStart;
+            const textBeforeCursor = confessionText.value.substring(0, cursorPosition);
+            const textAfterCursor = confessionText.value.substring(cursorPosition);
+            const emoji = event.detail.unicode;
+            confessionText.value = textBeforeCursor + emoji + textAfterCursor;
+            const newCursorPosition = cursorPosition + emoji.length;
+            confessionText.focus();
+            confessionText.setSelectionRange(newCursorPosition, newCursorPosition);
+          }
+          emojiPickerContainer.style.display = 'none';
+        });
+
+        // Handle emoji button click
+        emojiPickerBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('Emoji button clicked'); // Debug log
+          toggleEmojiPicker();
+        });
+
+        // Handle clicking outside of emoji picker
+        document.addEventListener('click', (e) => {
+          if (emojiPickerContainer.style.display === 'block' && 
+              !emojiPickerContainer.contains(e.target) && 
+              !emojiPickerBtn.contains(e.target)) {
+            emojiPickerContainer.style.display = 'none';
+          }
+        });
+      }
+    });
+
+    // Toggle emoji picker visibility
+    function toggleEmojiPicker() {
+      const emojiPickerContainer = document.getElementById('emoji-picker-container');
+      const emojiPickerBtn = document.getElementById('emojiPickerBtn');
+      
+      if (!emojiPickerContainer || !emojiPickerBtn) {
+        console.error('Emoji picker elements not found'); // Debug log
+        return;
+      }
+      
+      const isVisible = emojiPickerContainer.style.display === 'block';
+      console.log('Toggling emoji picker, current visibility:', isVisible); // Debug log
+      
+      if (isVisible) {
+        emojiPickerContainer.style.display = 'none';
+      } else {
+        const buttonRect = emojiPickerBtn.getBoundingClientRect();
+        console.log('Button position:', buttonRect); // Debug log
+        
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        // Calculate position to ensure the picker is always visible
+        let leftPosition = Math.min(
+          buttonRect.left,
+          viewportWidth - 320 - 10
+        );
+        leftPosition = Math.max(10, leftPosition);
+        
+        let topPosition = buttonRect.bottom + 10;
+        if (topPosition + 350 > viewportHeight) {
+          topPosition = Math.max(10, buttonRect.top - 350 - 10);
+        }
+        
+        console.log('Calculated position:', { leftPosition, topPosition }); // Debug log
+        
+        emojiPickerContainer.style.top = `${topPosition}px`;
+        emojiPickerContainer.style.left = `${leftPosition}px`;
+        emojiPickerContainer.style.display = 'block';
+      }
+    }
+
     // Theme handling
     document.addEventListener('DOMContentLoaded', function() {
       // Check for saved theme preference
@@ -498,28 +523,6 @@
         const charCount = this.value.length;
         charCounter.textContent = `${charCount}/500`;
       });
-
-      // Initialize emoji picker
-      const emojiPickerBtn = document.getElementById('emojiPickerBtn');
-      const emojiPickerContainer = document.getElementById('emoji-picker-container');
-      
-      if (emojiPickerBtn && emojiPickerContainer) {
-        initializeEmojiPicker();
-        
-        emojiPickerBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          toggleEmojiPicker();
-        });
-        
-        document.addEventListener('click', (e) => {
-          if (emojiPickerContainer.style.display === 'block' && 
-              !emojiPickerContainer.contains(e.target) && 
-              !emojiPickerBtn.contains(e.target)) {
-            emojiPickerContainer.style.display = 'none';
-          }
-        });
-      }
 
       // Initialize image upload
       const imageInput = document.getElementById('imageUpload');
@@ -567,83 +570,6 @@
     function logout() {
       localStorage.removeItem('token');
       window.location.href = '/login';
-    }
-
-    // Emoji picker implementation
-    let emojiPicker = null;
-
-    // Initialize emoji picker
-    function initializeEmojiPicker() {
-      if (typeof window.EmojiMart !== 'undefined') {
-        try {
-          emojiPicker = new window.EmojiMart.Picker({
-            onEmojiSelect: (emoji) => {
-              const confessionText = document.getElementById('confessionText');
-              if (confessionText) {
-                const cursorPosition = confessionText.selectionStart;
-                const textBeforeCursor = confessionText.value.substring(0, cursorPosition);
-                const textAfterCursor = confessionText.value.substring(cursorPosition);
-                confessionText.value = textBeforeCursor + emoji.native + textAfterCursor;
-                confessionText.focus();
-                confessionText.selectionStart = cursorPosition + emoji.native.length;
-                confessionText.selectionEnd = cursorPosition + emoji.native.length;
-              }
-            },
-            theme: document.body.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light',
-            autoFocus: true,
-            emojiSize: 24,
-            perLine: 8,
-            categories: ['people', 'nature', 'foods', 'activity', 'places', 'objects', 'symbols', 'flags'],
-            emojiButtonColors: ['rgba(1, 152, 99, 0.5)'],
-            emojiButtonRadius: '24px',
-            emojiButtonSize: '32px',
-            set: 'native'
-          });
-
-          const emojiPickerContainer = document.getElementById('emoji-picker-container');
-          if (emojiPicker && emojiPickerContainer) {
-            emojiPickerContainer.appendChild(emojiPicker);
-          }
-        } catch (error) {
-          console.error('Error initializing emoji picker:', error);
-        }
-      }
-    }
-
-    // Toggle emoji picker
-    function toggleEmojiPicker() {
-      const emojiPickerContainer = document.getElementById('emoji-picker-container');
-      const emojiPickerBtn = document.getElementById('emojiPickerBtn');
-      
-      if (!emojiPickerContainer || !emojiPickerBtn) return;
-      
-      const isVisible = emojiPickerContainer.style.display === 'block';
-      
-      if (isVisible) {
-        emojiPickerContainer.style.display = 'none';
-      } else {
-        const buttonRect = emojiPickerBtn.getBoundingClientRect();
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-        
-        let leftPosition = buttonRect.left;
-        if (leftPosition + 320 > viewportWidth) {
-          leftPosition = viewportWidth - 320 - 10;
-        }
-        
-        let topPosition = buttonRect.bottom + 10;
-        if (topPosition + 350 > viewportHeight) {
-          topPosition = buttonRect.top - 350 - 10;
-        }
-        
-        emojiPickerContainer.style.top = `${topPosition}px`;
-        emojiPickerContainer.style.left = `${leftPosition}px`;
-        emojiPickerContainer.style.display = 'block';
-        
-        if (emojiPicker && typeof emojiPicker.updateTheme === 'function') {
-          emojiPicker.updateTheme(document.body.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light');
-        }
-      }
     }
 
     // Remove image preview
@@ -749,6 +675,12 @@
         confessions.forEach(confession => {
           const confessionElement = document.createElement('div');
           confessionElement.className = 'confession-card';
+          
+          // Create a temporary div to properly escape HTML and handle emojis
+          const tempDiv = document.createElement('div');
+          tempDiv.textContent = confession.content;
+          const escapedContent = tempDiv.innerHTML;
+          
           confessionElement.innerHTML = `
             <div class="confession-header">
               <div class="d-flex gap-3 align-items-center">
@@ -765,7 +697,7 @@
               </div>
             </div>
             <div class="confession-content">
-              <p class="mb-3">${confession.content}</p>
+              <p class="mb-3">${escapedContent}</p>
               ${confession.image ? `<img src="${confession.image}" class="img-fluid rounded mb-3" alt="Confession image" style="max-height: 400px; width: auto; object-fit: contain;">` : ''}
             </div>
             <div class="confession-meta">
@@ -781,17 +713,22 @@
               </div>
               <div id="comments-${confession._id}" class="mt-3" style="display: none;">
                 <div class="comments-list">
-                  ${confession.comments.map(comment => `
-                    <div class="comment-item">
-                      <div class="confession-avatar">
-                        <i class="bi bi-person"></i>
+                  ${confession.comments.map(comment => {
+                    const tempCommentDiv = document.createElement('div');
+                    tempCommentDiv.textContent = comment.content;
+                    const escapedComment = tempCommentDiv.innerHTML;
+                    return `
+                      <div class="comment-item">
+                        <div class="confession-avatar">
+                          <i class="bi bi-person"></i>
+                        </div>
+                        <div class="comment-content">
+                          <p class="mb-0">${escapedComment}</p>
+                          <small class="text-muted">${new Date(comment.createdAt).toLocaleString()}</small>
+                        </div>
                       </div>
-                      <div class="comment-content">
-                        <p class="mb-0">${comment.content}</p>
-                        <small class="text-muted">${new Date(comment.createdAt).toLocaleString()}</small>
-                      </div>
-                    </div>
-                  `).join('')}
+                    `;
+                  }).join('')}
                 </div>
                 <form class="mt-2" onsubmit="handleComment(event, '${confession._id}')">
                   <input type="text" class="form-control" placeholder="Add a comment..." required>
