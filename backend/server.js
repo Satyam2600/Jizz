@@ -70,6 +70,10 @@ app.get('/confessions', (req, res) => {
     res.render("confessions", { title: "Confessions - JIZZ" });
 });
 
+app.get('/events', (req, res) => {
+    res.render("events", { title: "Events - JIZZ" });
+});
+
 // Start the Server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`🔥 Server running on port ${PORT}`));

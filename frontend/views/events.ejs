@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jizz - Events</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --primary-bg: #ffffff;
+      --secondary-bg: #f8f9fa;
+      --text-primary: #1C160C;
+      --text-secondary: #6c757d;
+      --accent-color: #019863;
+      --border-color: #e9ecef;
+      --card-radius: 1rem;
+      --hover-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      --transition-speed: 0.3s;
+    }
+    [data-bs-theme="dark"] {
+      --primary-bg: #1a1a1a;
+      --secondary-bg: #2d2d2d;
+      --text-primary: #ffffff;
+      --text-secondary: #adb5bd;
+      --border-color: #343a40;
+      --hover-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    body {
+      background-color: var(--primary-bg);
+      color: var(--text-primary);
+      padding-top: 56px;
+    }
+    .navbar {
+      background-color: var(--primary-bg) !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      height: 56px;
+      z-index: 1030;
+    }
+    .hero-section {
+      background: linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://cdn.usegalileo.ai/sdxl10/5fe346f1-0a76-441c-85c5-d527041023d0.png");
+      background-size: cover;
+      background-position: center;
+      min-height: 480px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      border-radius: 1rem;
+      margin-bottom: 2rem;
+    }
+    .search-container {
+      max-width: 480px;
+      width: 100%;
+    }
+    .search-input {
+      border: 1px solid var(--border-color);
+      border-right: none;
+      border-radius: 0.5rem 0 0 0.5rem;
+    }
+    .search-button {
+      border: 1px solid var(--border-color);
+      border-left: none;
+      border-radius: 0 0.5rem 0.5rem 0;
+    }
+    .event-card {
+      background-color: var(--primary-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--card-radius);
+      transition: all var(--transition-speed) ease;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .event-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--hover-shadow);
+    }
+    .event-image {
+      height: 200px;
+      object-fit: cover;
+      border-radius: 0.5rem;
+    }
+    .event-details {
+      padding: 1.5rem;
+    }
+    .event-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+    .event-meta {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .event-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+    .event-meta-item i {
+      color: var(--accent-color);
+    }
+    .event-description {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+    .event-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-color);
+    }
+    .event-participants {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+    .participant-avatars {
+      display: flex;
+    }
+    .participant-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid var(--primary-bg);
+      margin-left: -8px;
+    }
+    .event-tag {
+      background-color: #F4EFE6;
+      color: var(--text-primary);
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .nav-tabs {
+      border-bottom: 1px solid var(--border-color);
+    }
+    .nav-tabs .nav-link {
+      color: var(--text-secondary);
+      border: none;
+      padding: 1rem 2rem;
+      font-weight: 600;
+    }
+    .nav-tabs .nav-link.active {
+      color: var(--text-primary);
+      border-bottom: 3px solid var(--accent-color);
+    }
+    .btn-primary {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+    }
+    .btn-outline-primary {
+      color: var(--text-primary);
+      border-color: var(--border-color);
+      background-color: var(--secondary-bg);
+    }
+    .btn-outline-primary:hover {
+      background-color: var(--border-color);
+      color: var(--text-primary);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg fixed-top border-bottom">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand fw-bold" href="#">jizz</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="#"><i class="bi bi-house-door me-2"></i>Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="bi bi-people me-2"></i>Communities</a>
+          </li>
+        
+            <li class="nav-item">
+              <a class="nav-link" href="/events"><i class="bi bi-calendar-event me-2"></i>Events</a>
+            </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/confessions"><i class="bi bi-chat-quote me-2"></i>Confessions</a>
+          </li>
+        </ul>
+        <div class="d-flex align-items-center gap-3">
+          <div class="theme-toggle" id="themeToggle">
+            <i class="bi bi-moon"></i>
+          </div>
+          <div class="dropdown">
+            <button class="btn btn-link text-dark position-relative" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-bell"></i>
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end p-2" style="min-width: 300px;">
+              <h6 class="dropdown-header">Notifications</h6>
+              <div class="list-group border-0">
+                <a href="#" class="list-group-item list-group-item-action border-0">
+                  <div class="d-flex align-items-center">
+                    <i class="bi bi-person-check fs-5 me-3"></i>
+                    <div>
+                      <p class="mb-0 small">New connection request</p>
+                      <small class="text-muted">2m ago</small>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="dropdown">
+            <button class="btn rounded-circle border-0" id="chatButton" style="width: 40px; height: 40px; background-color: var(--accent-color); color: white; box-shadow: 0 2px 8px rgba(1, 152, 99, 0.3);">
+              <i class="bi bi-chat-dots-fill fs-5"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+              <a class="dropdown-item" href="/chat"><i class="bi bi-chat-dots me-2"></i>Messages</a>
+              <a class="dropdown-item" href="/chat/groups"><i class="bi bi-people me-2"></i>Group Chats</a>
+              <a class="dropdown-item" href="/chat/requests"><i class="bi bi-person-plus me-2"></i>Chat Requests</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#" onclick="logout(); return false;"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <!-- Main Content -->
+  <div class="container py-5">
+    <!-- Hero Section -->
+    <div class="hero-section text-white text-center">
+      <div class="search-container">
+        <h1 class="display-4 fw-bold mb-4">Explore and create events</h1>
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0">
+            <i class="bi bi-search text-muted"></i>
+          </span>
+          <input type="text" class="form-control search-input" placeholder="Search events">
+          <button class="btn btn-primary search-button">Filter</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Event Tabs -->
+    <ul class="nav nav-tabs mb-4">
+      <li class="nav-item">
+        <a class="nav-link active" href="#">All Events</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Your Events</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Saved Events</a>
+      </li>
+    </ul>
+
+    <!-- Events List -->
+    <div class="row">
+      <div class="col-md-6">
+        <div class="event-card">
+          <img src="https://cdn.usegalileo.ai/sdxl10/f4030730-af08-483e-8c66-cdd59c4392ab.png" 
+               class="event-image w-100" 
+               alt="College Tour">
+          <div class="event-details">
+            <h5 class="event-title">College Tour</h5>
+            <div class="event-meta">
+              <div class="event-meta-item">
+                <i class="bi bi-geo-alt"></i>
+                <span>Stanford University</span>
+              </div>
+              <div class="event-meta-item">
+                <i class="bi bi-calendar"></i>
+                <span>May 15, 2024</span>
+              </div>
+              <div class="event-meta-item">
+                <i class="bi bi-clock"></i>
+                <span>10:00 AM - 2:00 PM</span>
+              </div>
+            </div>
+            <div class="event-meta">
+              <div class="event-meta-item">
+                <i class="bi bi-person"></i>
+                <span>Organized by: Student Council</span>
+              </div>
+            </div>
+            <p class="event-description">
+              Join us for an exclusive tour of Stanford University's beautiful campus. Explore the historic buildings, 
+              state-of-the-art facilities, and learn about the university's rich academic heritage.
+            </p>
+            <div class="event-actions">
+              <div class="event-participants">
+                <div class="participant-avatars">
+                  <img src="https://randomuser.me/api/portraits/women/1.jpg" class="participant-avatar" alt="Participant">
+                  <img src="https://randomuser.me/api/portraits/men/2.jpg" class="participant-avatar" alt="Participant">
+                  <img src="https://randomuser.me/api/portraits/women/3.jpg" class="participant-avatar" alt="Participant">
+                </div>
+                <span>+24 participants</span>
+              </div>
+              <div class="d-flex gap-2">
+                <span class="event-tag">Campus Tour</span>
+                <button class="btn btn-primary rounded-pill">Join Event</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="event-card">
+          <img src="https://cdn.usegalileo.ai/sdxl10/6f8e6bd0-a1f0-49b9-985f-315b1432da13.png" 
+               class="event-image w-100" 
+               alt="Hiking">
+          <div class="event-details">
+            <h5 class="event-title">Hiking in the Mountains</h5>
+            <div class="event-meta">
+              <div class="event-meta-item">
+                <i class="bi bi-geo-alt"></i>
+                <span>Santa Cruz Mountains</span>
+              </div>
+              <div class="event-meta-item">
+                <i class="bi bi-calendar"></i>
+                <span>May 20, 2024</span>
+              </div>
+              <div class="event-meta-item">
+                <i class="bi bi-clock"></i>
+                <span>8:00 AM - 5:00 PM</span>
+              </div>
+            </div>
+            <div class="event-meta">
+              <div class="event-meta-item">
+                <i class="bi bi-person"></i>
+                <span>Organized by: Outdoor Club</span>
+              </div>
+            </div>
+            <p class="event-description">
+              Experience the breathtaking views of Santa Cruz Mountains. This moderate-level hike is perfect for 
+              nature enthusiasts looking to explore the local flora and fauna.
+            </p>
+            <div class="event-actions">
+              <div class="event-participants">
+                <div class="participant-avatars">
+                  <img src="https://randomuser.me/api/portraits/men/4.jpg" class="participant-avatar" alt="Participant">
+                  <img src="https://randomuser.me/api/portraits/women/5.jpg" class="participant-avatar" alt="Participant">
+                  <img src="https://randomuser.me/api/portraits/men/6.jpg" class="participant-avatar" alt="Participant">
+                </div>
+                <span>+18 participants</span>
+              </div>
+              <div class="d-flex gap-2">
+                <span class="event-tag">Outdoor</span>
+                <button class="btn btn-primary rounded-pill">Join Event</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="event-card">
+          <img src="https://cdn.usegalileo.ai/sdxl10/c29bc652-1a54-4564-b623-a14bfdd19324.png" 
+               class="event-image w-100" 
+               alt="Art Exhibition">
+          <div class="event-details">
+            <h5 class="event-title">Contemporary Art Exhibition</h5>
+            <div class="event-meta">
+              <div class="event-meta-item">
+                <i class="bi bi-geo-alt"></i>
+                <span>San Francisco Museum of Modern Art</span>
+              </div>
+              <div class="event-meta-item">
+                <i class="bi bi-calendar"></i>
+                <span>May 25, 2024</span>
+              </div>
+              <div class="event-meta-item">
+                <i class="bi bi-clock"></i>
+                <span>11:00 AM - 7:00 PM</span>
+              </div>
+            </div>
+            <div class="event-meta">
+              <div class="event-meta-item">
+                <i class="bi bi-person"></i>
+                <span>Organized by: Art Society</span>
+              </div>
+            </div>
+            <p class="event-description">
+              Explore the latest contemporary art pieces from emerging artists. This exhibition features 
+              innovative works across various mediums including digital art, installations, and mixed media.
+            </p>
+            <div class="event-actions">
+              <div class="event-participants">
+                <div class="participant-avatars">
+                  <img src="https://randomuser.me/api/portraits/women/7.jpg" class="participant-avatar" alt="Participant">
+                  <img src="https://randomuser.me/api/portraits/men/8.jpg" class="participant-avatar" alt="Participant">
+                  <img src="https://randomuser.me/api/portraits/women/9.jpg" class="participant-avatar" alt="Participant">
+                </div>
+                <span>+32 participants</span>
+              </div>
+              <div class="d-flex gap-2">
+                <span class="event-tag">Art & Culture</span>
+                <button class="btn btn-primary rounded-pill">Join Event</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="event-card">
+          <img src="https://cdn.usegalileo.ai/sdxl10/efb2c312-5a04-4c23-92c3-17c2868b468f.png" 
+               class="event-image w-100" 
+               alt="Career Fair">
+          <div class="event-details">
+            <h5 class="event-title">Tech Career Fair</h5>
+            <div class="event-meta">
+              <div class="event-meta-item">
+                <i class="bi bi-geo-alt"></i>
+                <span>UC Berkeley Career Center</span>
+              </div>
+              <div class="event-meta-item">
+                <i class="bi bi-calendar"></i>
+                <span>June 1, 2024</span>
+              </div>
+              <div class="event-meta-item">
+                <i class="bi bi-clock"></i>
+                <span>9:00 AM - 4:00 PM</span>
+              </div>
+            </div>
+            <div class="event-meta">
+              <div class="event-meta-item">
+                <i class="bi bi-person"></i>
+                <span>Organized by: Career Services</span>
+              </div>
+            </div>
+            <p class="event-description">
+              Connect with top tech companies and startups. This career fair is your opportunity to network with 
+              industry professionals, learn about job opportunities, and get career advice.
+            </p>
+            <div class="event-actions">
+              <div class="event-participants">
+                <div class="participant-avatars">
+                  <img src="https://randomuser.me/api/portraits/men/10.jpg" class="participant-avatar" alt="Participant">
+                  <img src="https://randomuser.me/api/portraits/women/11.jpg" class="participant-avatar" alt="Participant">
+                  <img src="https://randomuser.me/api/portraits/men/12.jpg" class="participant-avatar" alt="Participant">
+                </div>
+                <span>+45 participants</span>
+              </div>
+              <div class="d-flex gap-2">
+                <span class="event-tag">Career</span>
+                <button class="btn btn-primary rounded-pill">Join Event</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Event Section -->
+    <div class="mt-5">
+      <h2 class="fw-bold mb-4">Create an event</h2>
+      <button class="btn btn-outline-primary w-100 rounded-pill py-2 mb-3">Create Event</button>
+      <p class="text-muted">
+        Or find an event that interests you and join it. You can also save events to your list and share them with friends.
+      </p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
