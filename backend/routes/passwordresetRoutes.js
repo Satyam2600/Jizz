@@ -8,20 +8,20 @@ const sendEmail = require("../utils/emailService");
 const router = express.Router();
 
 // POST /api/password-reset/request-reset
-// Accepts a UID, checks if a user exists, generates a new random password, updates the user record, and sends the new password via email.
+// Accepts a rollNumber, checks if a user exists, generates a new random password, updates the user record, and sends the new password via email.
 router.post("/request-reset", async (req, res) => {
   try {
-    const { uid } = req.body;
-    if (!uid) return res.status(400).json({ message: "UID is required" });
+    const { rollNumber } = req.body;
+    if (!rollNumber) return res.status(400).json({ message: "Roll number is required" });
 
-    console.log("UID received:", uid);
+    console.log("Roll number received:", rollNumber);
 
-    // Find the user by rollNo
-    const user = await User.findOne({ rollNo: uid });
+    // Find the user by rollNumber
+    const user = await User.findOne({ rollNumber });
     console.log("User found:", user);
 
     if (!user) {
-      console.log("No user found with rollNo:", uid);
+      console.log("No user found with rollNumber:", rollNumber);
       return res.status(404).json({ message: "No account found with the provided roll number" });
     }
 

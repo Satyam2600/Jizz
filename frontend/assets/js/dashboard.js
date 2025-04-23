@@ -292,13 +292,16 @@ function attachPostEventListeners() {
             }
 
             try {
-                const response = await fetch(`/api/posts/${postId}/comment`, {
+                const response = await fetch(`/api/comments`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ content })
+                    body: JSON.stringify({ 
+                        content,
+                        postId
+                    })
                 });
 
                 if (response.ok) {
@@ -317,15 +320,20 @@ function attachPostEventListeners() {
                     const commentsSection = form.parentElement;
                     const newComment = document.createElement('div');
                     newComment.className = 'd-flex align-items-start mb-3';
+                    
+                    // Get current user info from localStorage
+                    const userFullName = localStorage.getItem('userFullName');
+                    const userAvatar = localStorage.getItem('userProfilePhoto') || '/assets/images/default-avatar.png';
+                    
                     newComment.innerHTML = `
-                        <img src="${data.user.avatar || '/assets/images/default-avatar.png'}" 
+                        <img src="${userAvatar}" 
                              alt="Avatar" 
                              class="rounded-circle me-2" 
                              style="width: 32px; height: 32px; object-fit: cover;">
                         <div class="flex-grow-1">
                             <div class="bg-light rounded-3 p-3">
                                 <div class="d-flex justify-content-between mb-1">
-                                    <strong class="small">${data.user.fullName || 'Unknown'}</strong>
+                                    <strong class="small">${userFullName}</strong>
                                     <small class="text-muted">just now</small>
                                 </div>
                                 <p class="mb-0">${content}</p>

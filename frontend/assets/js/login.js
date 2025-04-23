@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("loginForm");
-  const rollNoInput = document.getElementById("rollNumber");
+  const rollNumberInput = document.getElementById("rollNumber");
   const passwordInput = document.getElementById("password");
   const togglePassword = document.getElementById("togglePassword");
   const rememberMe = document.getElementById("rememberMe") || { checked: false };
@@ -17,11 +17,18 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Handle form submission
-  loginForm.addEventListener("submit", async (e) => {
+  loginForm.addEventListener("submit", async function(e) {
     e.preventDefault();
-    const rollNo = rollNoInput.value.trim();
+    
+    const rollNumber = rollNumberInput.value.trim();
     const password = passwordInput.value.trim();
-    if (!rollNo || !password) {
+    
+    console.log("Login attempt with:", {
+      rollNumber,
+      hasPassword: !!password
+    });
+
+    if (!rollNumber || !password) {
       alert("Please fill in all required fields.");
       return;
     }
@@ -33,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ rollNo, password })
+        body: JSON.stringify({ rollNumber, password })
       });
       
       console.log("Response status:", response.status);

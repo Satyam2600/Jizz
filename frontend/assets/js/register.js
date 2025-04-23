@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     const registerForm = document.getElementById("registerForm");
     const fullNameInput = document.getElementById("fullName");
-    const uidInput = document.getElementById("uid");
+    const rollNumberInput = document.getElementById("rollNumber");
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
     const passwordToggle = document.querySelector(".password-toggle");
@@ -20,16 +20,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Get input values and trim spaces
             const fullName = fullNameInput.value.trim();
-            const rollNo = uidInput.value.trim();
+            const rollNumber = rollNumberInput.value.trim();
             const email = emailInput.value.trim();
             const password = passwordInput.value.trim();
 
             console.log("Entered Full Name:", fullName);
-            console.log("Entered Roll Number:", rollNo);
+            console.log("Entered Roll Number:", rollNumber);
             console.log("Entered Email:", email);
 
             // Validate required fields
-            if (!fullName || !rollNo || !email || !password) {
+            if (!fullName || !rollNumber || !email || !password) {
                 alert("⚠ Please fill in all required fields.");
                 return;
             }
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             // Prepare data for API
-            const userData = { fullName, rollNo, email, password };
+            const userData = { fullName, rollNumber, email, password };
 
             try {
                 console.log("Sending request to API...");

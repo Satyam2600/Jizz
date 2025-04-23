@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
         trim: true,
         lowercase: true
     },
-    rollNo: {
+    rollNumber: {
         type: String,
         required: true,
         unique: true,

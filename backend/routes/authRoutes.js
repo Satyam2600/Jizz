@@ -8,15 +8,29 @@ const router = express.Router();
 // 📌 Register a New User
 router.post("/register", async (req, res) => {
   try {
-    const { fullName, email, password, rollNo } = req.body;
+    const { fullName, email, password, rollNumber } = req.body;
+    
+    // Debug logging
+    console.log("Registration request received:", {
+      fullName,
+      email,
+      rollNumber,
+      hasPassword: !!password // Log if password exists without exposing it
+    });
 
     // Validate required fields
-    if (!fullName || !email || !password || !rollNo) {
+    if (!fullName || !email || !password || !rollNumber) {
+      console.log("Missing fields:", {
+        fullName: !fullName,
+        email: !email,
+        password: !password,
+        rollNumber: !rollNumber
+      });
       return res.status(400).json({ message: "All fields are required" });
     }
 
     // Check if user already exists
-    const existingUser = await User.findOne({ $or: [{ email }, { rollNo }] });
+    const existingUser = await User.findOne({ $or: [{ email }, { rollNumber }] });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists with this email or roll number" });
     }
@@ -26,7 +40,7 @@ router.post("/register", async (req, res) => {
       fullName,
       email,
       password,
-      rollNo
+      rollNumber
     });
 
     await user.save();
@@ -44,23 +58,35 @@ router.post("/register", async (req, res) => {
 // 📌 User Login
 router.post("/login", async (req, res) => {
   try {
-    const { rollNo, password } = req.body;
-    const user = await User.findOne({ rollNo });
+    const { rollNumber, password } = req.body;
+    
+    // Debug logging
+    console.log("Login attempt received:", {
+      rollNumber,
+      hasPassword: !!password
+    });
+
+    // Find user by rollNumber
+    const user = await User.findOne({ rollNumber });
     
     if (!user) {
+      console.log("No user found with rollNumber:", rollNumber);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
     
+    // Compare password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
+      console.log("Password mismatch for user:", rollNumber);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     // Check if this is first login (no username or profile photo set)
     const isFirstLogin = !user.username || !user.avatar;
 
+    // Generate JWT token
     const token = jwt.sign(
-      { userId: user._id, rollNo: user.rollNo },
+      { userId: user._id, rollNumber: user.rollNumber },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -70,12 +96,13 @@ router.post("/login", async (req, res) => {
       _id: user._id,
       fullName: user.fullName,
       username: user.username,
-      rollNo: user.rollNo,
+      rollNumber: user.rollNumber,
       avatar: user.avatar,
       banner: user.banner,
       isFirstLogin: isFirstLogin
     };
 
+    console.log("Login successful for user:", userData.rollNumber);
     res.json({
       token,
       user: userData

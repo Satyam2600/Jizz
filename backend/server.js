@@ -4,6 +4,8 @@ const app = require("./index"); // Import Express app
 const setupSocket = require("./socket"); // Import WebSocket setup
 const path = require("path");
 const express = require("express");
+const Event = require("./models/Event");
+const authMiddleware = require('./middleware/authMiddleware');
 
 // Import routes
 const authRoutes = require("./routes/authRoutes");
@@ -11,6 +13,7 @@ const userRoutes = require("./routes/userRoutes");
 const postRoutes = require("./routes/postRoutes");
 const commentRoutes = require("./routes/commentRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
+const eventRoutes = require("./routes/eventRoutes");
 
 // Create HTTP Server
 const server = http.createServer(app);
@@ -37,6 +40,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/uploads", uploadRoutes);
+app.use("/api/events", eventRoutes);
 
 // Static files
 app.use(express.static(path.join(__dirname, '../frontend')));
@@ -70,8 +74,27 @@ app.get('/confessions', (req, res) => {
     res.render("confessions", { title: "Confessions - JIZZ" });
 });
 
-app.get('/events', (req, res) => {
-    res.render("events", { title: "Events - JIZZ" });
+// Events page with proper data loading
+app.get('/events', authMiddleware, async (req, res) => {
+    try {
+        const events = await Event.find()
+            .populate('organizer', 'name profilePicture')
+            .populate('participants.user', 'name profilePicture')
+            .sort({ date: 1 });
+
+        res.render("events", { 
+            title: "Events - JIZZ",
+            user: req.user,
+            events
+        });
+    } catch (error) {
+        console.error('Error loading events:', error);
+        res.status(500).render('error', {
+            message: 'Failed to load events',
+
+            error: error.message
+        });
+    }
 });
 
 // Start the Server

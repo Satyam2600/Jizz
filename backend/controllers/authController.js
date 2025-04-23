@@ -7,6 +7,11 @@ exports.register = async (req, res) => {
   try {
     const { name, rollNo, email, password, branch, year, semester } = req.body;
 
+    // Validate rollNumber is not null
+    if (!req.body.rollNumber) {
+        return res.status(400).json({ message: "Roll Number is required" });
+    }
+
     // Check if UID/Roll No. already exists
     const existingUser = await User.findOne({ rollNo });
     if (existingUser) return res.status(400).json({ message: "Roll No. already registered" });

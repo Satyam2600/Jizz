@@ -125,32 +125,32 @@ router.get("/get-profile", async (req, res) => {
 // Login route
 router.post("/login", async (req, res) => {
   try {
-    const { uid, password } = req.body;
-    console.log("Login attempt with uid:", uid);
+    const { rollNumber, password } = req.body;
+    console.log("Login attempt with rollNumber:", rollNumber);
     
-    // Find user by rollNo (which is stored as uid in the database)
-    const user = await User.findOne({ rollNo: uid });
+    // Find user by rollNumber
+    const user = await User.findOne({ rollNumber });
     
     if (!user) {
-      console.log("User not found with rollNo:", uid);
+      console.log("User not found with rollNumber:", rollNumber);
       return res.status(404).json({ message: "User not found" });
     }
 
     // Compare password using the User model's comparePassword method
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      console.log("Password mismatch for user:", uid);
+      console.log("Password mismatch for user:", rollNumber);
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
     // Set user session
-    req.session.userId = user.rollNo;
+    req.session.userId = user.rollNumber;
     req.session.isAuthenticated = true;
 
     // Generate JWT token
     const jwt = require('jsonwebtoken');
     const token = jwt.sign(
-      { id: user._id, rollNo: user.rollNo },
+      { id: user._id, rollNumber: user.rollNumber },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -160,7 +160,7 @@ router.post("/login", async (req, res) => {
       message: "Login successful",
       token: token,
       user: {
-        uid: user.rollNo,
+        rollNumber: user.rollNumber,
         fullName: user.fullName,
         username: user.username,
         avatar: user.avatar,
