@@ -30,17 +30,22 @@ router.post("/register", async (req, res) => {
     }
 
     // Check if user already exists
-    const existingUser = await User.findOne({ $or: [{ email }, { rollNumber }] });
+    const existingUser = await User.findOne({ 
+      $or: [
+        { email },
+        { rollNumber }
+      ]
+    });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists with this email or roll number" });
     }
 
-    // Create new user
+    // Create new user - password will be hashed by the pre-save hook
     const user = new User({
       fullName,
       email,
-      password,
-      rollNumber
+      rollNumber,
+      password // Password will be hashed by the pre-save hook
     });
 
     await user.save();
@@ -60,33 +65,42 @@ router.post("/login", async (req, res) => {
   try {
     const { rollNumber, password } = req.body;
     
+    // Validate input
+    if (!rollNumber || !password) {
+      return res.status(400).json({ message: 'Roll number and password are required' });
+    }
+
+    // Clean the roll number (trim whitespace and convert to string)
+    const cleanRollNumber = String(rollNumber).trim();
+
     // Debug logging
-    console.log("Login attempt received:", {
-      rollNumber,
-      hasPassword: !!password
-    });
+    console.log('Login attempt with rollNumber:', cleanRollNumber);
 
     // Find user by rollNumber
-    const user = await User.findOne({ rollNumber });
+    const user = await User.findOne({ rollNumber: cleanRollNumber });
+    
+    // Debug logging
+    console.log('User found:', user ? 'Yes' : 'No');
     
     if (!user) {
-      console.log("No user found with rollNumber:", rollNumber);
-      return res.status(401).json({ message: 'Invalid credentials' });
+      console.log('No user found with rollNumber:', cleanRollNumber);
+      return res.status(401).json({ message: 'Invalid roll number or password' });
     }
     
     // Compare password
-    const isMatch = await user.comparePassword(password);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.log("Password mismatch for user:", rollNumber);
-      return res.status(401).json({ message: 'Invalid credentials' });
+      console.log('Password mismatch for user:', cleanRollNumber);
+      return res.status(401).json({ message: 'Invalid roll number or password' });
     }
-
-    // Check if this is first login (no username or profile photo set)
-    const isFirstLogin = !user.username || !user.avatar;
 
     // Generate JWT token
     const token = jwt.sign(
-      { userId: user._id, rollNumber: user.rollNumber },
+      { 
+        id: user._id,
+        rollNumber: user.rollNumber,
+        role: user.role || 'user'
+      },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -94,16 +108,14 @@ router.post("/login", async (req, res) => {
     // Return user data without password
     const userData = {
       _id: user._id,
-      fullName: user.fullName,
-      username: user.username,
       rollNumber: user.rollNumber,
-      avatar: user.avatar,
-      banner: user.banner,
-      isFirstLogin: isFirstLogin
+      email: user.email,
+      fullName: user.fullName,
+      role: user.role || 'user'
     };
 
-    console.log("Login successful for user:", userData.rollNumber);
     res.json({
+      message: "Login successful",
       token,
       user: userData
     });
@@ -132,57 +144,70 @@ router.post("/logout", (req, res) => {
 // Forgot password route
 router.post('/forgot-password', async (req, res) => {
   try {
-      const { rollNumber } = req.body;
-      
-      if (!rollNumber) {
-          return res.status(400).json({ message: 'Roll number is required' });
-      }
-      
-      // Find user by roll number
-      const user = await User.findOne({ rollNumber });
-      
-      // For security reasons, we don't reveal whether a user exists or not
-      // Instead, we always return a success message
-      res.status(200).json({ 
-          message: 'If an account exists with the provided roll number, password reset instructions will be sent.',
-          success: true
-      });
-      
-      // If user exists, generate a random password and send it via email
-      if (user && user.email) {
-          // Generate a random password (8 characters)
-          const crypto = require('crypto');
-          const newPassword = crypto.randomBytes(4).toString('hex');
-          
-          // Hash the new password
-          const hashedPassword = await bcrypt.hash(newPassword, 10);
-          
-          // Update the user's password
-          await User.updateOne(
-              { _id: user._id },
-              { $set: { password: hashedPassword } }
-          );
-          
-          // Send email with the new password
-          const sendEmail = require('../utils/emailService');
-          const htmlContent = `
-              <h2>Password Reset</h2>
-              <p>Hello ${user.fullName || 'User'},</p>
-              <p>Your password has been reset. Your new password is: <strong>${newPassword}</strong></p>
-              <p>Please log in using this password and change it immediately for security.</p>
-              <p>If you did not request this password reset, please contact support immediately.</p>
-          `;
-          
-          await sendEmail(user.email, "Your New Password", htmlContent);
-          
-          console.log(`Password reset completed for user: ${user.fullName || user.rollNumber} (${user.rollNumber})`);
-      } else if (user) {
-          console.error('User found but email is missing:', user);
-      }
+    const { rollNumber } = req.body;
+    
+    if (!rollNumber) {
+      return res.status(400).json({ message: 'Roll number is required' });
+    }
+    
+    // Clean and convert rollNumber to string
+    const cleanRollNumber = String(rollNumber).trim();
+    
+    // Debug log
+    console.log('Looking for user with roll number:', cleanRollNumber);
+    
+    // Find user by roll number
+    const user = await User.findOne({ rollNumber: cleanRollNumber });
+    
+    // Debug log
+    console.log('User found:', user ? 'Yes' : 'No');
+    
+    if (!user) {
+      console.log('No user found with roll number:', cleanRollNumber);
+      return res.status(404).json({ message: 'No account found with the provided roll number' });
+    }
+    
+    if (!user.email) {
+      console.log('User found but email is missing');
+      return res.status(400).json({ message: 'No email associated with this account' });
+    }
+    
+    // Generate a random password (8 characters)
+    const crypto = require('crypto');
+    const newPassword = crypto.randomBytes(4).toString('hex');
+    
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    
+    // Update the user's password
+    await User.updateOne(
+      { _id: user._id },
+      { $set: { password: hashedPassword } }
+    );
+    
+    // Send email with the new password
+    const sendEmail = require('../utils/emailService');
+    const htmlContent = `
+      <h2>Password Reset</h2>
+      <p>Hello ${user.fullName || 'User'},</p>
+      <p>Your password has been reset. Your new password is: <strong>${newPassword}</strong></p>
+      <p>Please log in using this password and change it immediately for security.</p>
+      <p>If you did not request this password reset, please contact support immediately.</p>
+    `;
+    
+    await sendEmail(user.email, "Your New Password", htmlContent);
+    
+    console.log(`Password reset completed for user: ${user.fullName || user.rollNumber} (${user.rollNumber})`);
+    
+    res.status(200).json({ 
+      message: 'Password reset instructions have been sent to your email.',
+      success: true
+    });
   } catch (error) {
-      console.error('Forgot password error:', error);
-      // Don't send a response here since we already sent one above
+    console.error('Forgot password error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
+
 module.exports = router;
 

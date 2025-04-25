@@ -5,36 +5,34 @@ const User = require("../models/User");
 // User Registration
 exports.register = async (req, res) => {
   try {
-    const { name, rollNo, email, password, branch, year, semester } = req.body;
+    const { name, rollNumber, email, password, branch, year, semester } = req.body;
 
-    // Validate rollNumber is not null
-    if (!req.body.rollNumber) {
-        return res.status(400).json({ message: "Roll Number is required" });
+    // Validate required fields
+    if (!name || !rollNumber || !email || !password) {
+      return res.status(400).json({ message: 'All fields are required' });
     }
 
-    // Check if UID/Roll No. already exists
-    const existingUser = await User.findOne({ rollNo });
-    if (existingUser) return res.status(400).json({ message: "Roll No. already registered" });
-
-    // Check if Email already exists
-    const existingEmail = await User.findOne({ email });
-    if (existingEmail) return res.status(400).json({ message: "Email already registered" });
+    // Check if user exists
+    const existingUser = await User.findOne({ rollNumber });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
-    const newUser = new User({
+    // Create new user
+    const user = new User({
       name,
-      rollNo,
+      rollNumber,
       email,
       password: hashedPassword,
       branch,
       year,
-      semester,
+      semester
     });
 
-    await newUser.save();
+    await user.save();
     res.status(201).json({ message: "User registered successfully" });
 
   } catch (error) {
@@ -47,25 +45,47 @@ exports.login = async (req, res) => {
   try {
     const { identifier, password } = req.body;
 
-    // Check if the user exists (by rollNo or email)
+    // Debug logging
+    console.log('Login attempt:', { identifier });
+
+    // Check if the user exists (by rollNumber or email)
     const user = await User.findOne({
-      $or: [{ rollNo: identifier }, { email: identifier }],
+      $or: [{ rollNumber: identifier }, { email: identifier }],
     });
 
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
+    // Debug logging
+    console.log('User found:', user ? 'Yes' : 'No');
 
-    // Compare password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+    if (!user) {
+      console.log('No user found with identifier:', identifier);
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Compare password using the model's method
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      console.log('Password mismatch for user:', user.rollNumber);
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
 
     // Generate JWT Token
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user.rollNumber, role: user.role }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
 
-    res.status(200).json({ message: "Login successful", token, user });
+    res.status(200).json({ 
+      message: "Login successful", 
+      token, 
+      user: {
+        rollNumber: user.rollNumber,
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role
+      } 
+    });
 
   } catch (error) {
-    res.status(500).json({ message: "Error logging in", error });
+    console.error('Login error:', error);
+    res.status(500).json({ message: "Error logging in", error: error.message });
   }
 };

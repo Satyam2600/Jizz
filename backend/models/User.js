@@ -82,20 +82,31 @@ const userSchema = new mongoose.Schema({
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {
+    // Only hash the password if it has been modified (or is new)
     if (!this.isModified('password')) return next();
     
     try {
+        // Generate a salt
         const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
+        // Hash the password with the salt
+        const hashedPassword = await bcrypt.hash(this.password, salt);
+        // Replace the plain text password with the hashed one
+        this.password = hashedPassword;
         next();
     } catch (error) {
+        console.error('Error hashing password:', error);
         next(error);
     }
 });
 
-// Compare password method
+// Add comparePassword method
 userSchema.methods.comparePassword = async function(candidatePassword) {
-    return await bcrypt.compare(candidatePassword, this.password);
+    try {
+        return await bcrypt.compare(candidatePassword, this.password);
+    } catch (error) {
+        console.error('Error comparing passwords:', error);
+        throw error;
+    }
 };
 
 // Check if the model already exists before creating it

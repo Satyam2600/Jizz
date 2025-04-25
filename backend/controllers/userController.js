@@ -1,50 +1,54 @@
 const User = require("../models/User");
 
-// Get User Profile
-exports.getUserProfile = async (req, res) => {
-  try {
-    const user = await User.findOne({ rollNo: req.user.id }).select("-password");
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching profile", error });
-  }
+// Get user profile
+exports.getProfile = async (req, res) => {
+    try {
+        const user = await User.findOne({ rollNumber: req.user.id }).select("-password");
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
+    }
 };
 
-// Update User Profile (Including UID)
-exports.updateUserProfile = async (req, res) => {
-  try {
-    const { name, bio, profilePic, rollNo } = req.body;
-    const user = await User.findOne({ rollNo: req.user.id });
+// Update user profile
+exports.updateProfile = async (req, res) => {
+    try {
+        const { name, bio, profilePic, rollNumber } = req.body;
+        const user = await User.findOne({ rollNumber: req.user.id });
 
-    if (!user) return res.status(404).json({ message: "User not found" });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
 
-    // Ensure UID/Roll No. is unique if changed
-    if (rollNo && rollNo !== user.rollNo) {
-      const existingUser = await User.findOne({ rollNo });
-      if (existingUser) return res.status(400).json({ message: "Roll No. already taken" });
+        // Check if new rollNumber is already taken
+        if (rollNumber && rollNumber !== user.rollNumber) {
+            const existingUser = await User.findOne({ rollNumber });
+            if (existingUser) {
+                return res.status(400).json({ message: "Roll number already taken" });
+            }
+        }
+
+        // Update user fields
+        user.name = name || user.name;
+        user.bio = bio || user.bio;
+        user.profilePic = profilePic || user.profilePic;
+        user.rollNumber = rollNumber || user.rollNumber;
+
+        await user.save();
+        res.json({ message: "Profile updated successfully", user });
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
     }
-
-    // Update fields
-    user.name = name || user.name;
-    user.bio = bio || user.bio;
-    user.profilePic = profilePic || user.profilePic;
-    user.rollNo = rollNo || user.rollNo;
-
-    await user.save();
-    res.status(200).json({ message: "Profile updated successfully", user });
-
-  } catch (error) {
-    res.status(500).json({ message: "Error updating profile", error });
-  }
 };
 
 exports.updateProfile = async (req, res) => {
     try {
         const { fullName, username, department, year, semester, bio, skills, interests, portfolio, linkedin, isPublic } = req.body;
         
-        const user = await User.findOne({ rollNo: req.user.rollNo });
+        const user = await User.findOne({ rollNumber: req.user.rollNumber });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }

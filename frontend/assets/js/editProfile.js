@@ -27,20 +27,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (response.ok) {
             // Pre-fill form fields
             const fullNameInput = document.getElementById('fullName');
-            const usernameInput = document.getElementById('username');
-            const rollNoInput = document.getElementById('rollNo');
+            const emailInput = document.getElementById('email');
+            const rollNumberInput = document.getElementById('rollNumber');
             const departmentSelect = document.getElementById('department');
             const yearSelect = document.getElementById('year');
             const semesterSelect = document.getElementById('semester');
-            const bioTextarea = document.getElementById('bio');
+            const bioInput = document.getElementById('bio');
             const skillsInput = document.getElementById('skills');
             const interestsInput = document.getElementById('interests');
             const portfolioInput = document.getElementById('portfolio');
             const linkedinInput = document.getElementById('linkedin');
             
             if (fullNameInput) fullNameInput.value = userData.fullName || '';
-            if (usernameInput) usernameInput.value = userData.username || '';
-            if (rollNoInput) rollNoInput.value = userData.rollNumber || '';
+            if (emailInput) emailInput.value = userData.email || '';
+            if (rollNumberInput) rollNumberInput.value = userData.rollNumber || '';
             
             if (departmentSelect) {
                 for (let i = 0; i < departmentSelect.options.length; i++) {
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }
             
-            if (bioTextarea) bioTextarea.value = userData.bio || '';
+            if (bioInput) bioInput.value = userData.bio || '';
             if (skillsInput) skillsInput.value = userData.skills?.join(', ') || '';
             if (interestsInput) interestsInput.value = userData.interests?.join(', ') || '';
             if (portfolioInput) portfolioInput.value = userData.portfolio || '';
@@ -112,12 +112,12 @@ if (profileForm) {
         
         // Add form fields
         const fullNameInput = document.getElementById('fullName');
-        const usernameInput = document.getElementById('username');
-        const rollNoInput = document.getElementById('rollNo');
+        const emailInput = document.getElementById('email');
+        const rollNumberInput = document.getElementById('rollNumber');
         const departmentSelect = document.getElementById('department');
         const yearSelect = document.getElementById('year');
         const semesterSelect = document.getElementById('semester');
-        const bioTextarea = document.getElementById('bio');
+        const bioInput = document.getElementById('bio');
         const skillsInput = document.getElementById('skills');
         const interestsInput = document.getElementById('interests');
         const portfolioInput = document.getElementById('portfolio');
@@ -130,12 +130,12 @@ if (profileForm) {
         
         // Add all form fields to formData
         if (fullNameInput) formData.append('fullName', fullNameInput.value);
-        if (usernameInput) formData.append('username', usernameInput.value);
-        if (rollNoInput) formData.append('rollNumber', rollNoInput.value);
+        if (emailInput) formData.append('email', emailInput.value);
+        if (rollNumberInput) formData.append('rollNumber', rollNumberInput.value);
         if (departmentSelect) formData.append('department', departmentSelect.value);
         if (yearSelect) formData.append('year', yearSelect.value);
         if (semesterSelect) formData.append('semester', semesterSelect.value);
-        if (bioTextarea) formData.append('bio', bioTextarea.value);
+        if (bioInput) formData.append('bio', bioInput.value);
         if (skillsInput) formData.append('skills', skillsInput.value);
         if (interestsInput) formData.append('interests', interestsInput.value);
         if (portfolioInput) formData.append('portfolio', portfolioInput.value);
@@ -174,9 +174,9 @@ if (profileForm) {
             
             if (response.ok) {
                 // Update localStorage with new data
-                localStorage.setItem('userFullName', data.user.fullName);
-                localStorage.setItem('userUsername', data.user.username);
-                localStorage.setItem('userRollNo', data.user.rollNumber);
+                localStorage.setItem('userName', data.user.fullName);
+                localStorage.setItem('userEmail', data.user.email);
+                localStorage.setItem('userRollNumber', data.user.rollNumber);
                 localStorage.setItem('userDepartment', data.user.department);
                 localStorage.setItem('userYear', data.user.year);
                 localStorage.setItem('userSemester', data.user.semester);

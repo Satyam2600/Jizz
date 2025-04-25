@@ -14,10 +14,18 @@ const authMiddleware = async (req, res, next) => {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
+    // Find user by ID
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({ message: 'User not found' });
+    }
+    
     // Add user info to request
     req.user = {
-      userId: decoded.userId,
-      rollNumber: decoded.rollNumber
+      id: user._id,
+      userId: user._id, // Add userId for compatibility
+      rollNumber: user.rollNumber,
+      role: user.role || 'user'
     };
     
     next();

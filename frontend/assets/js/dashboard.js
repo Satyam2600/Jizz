@@ -391,31 +391,27 @@ function attachPostEventListeners() {
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("Dashboard initialization started");
     
-    // Check if user is logged in
-    const token = localStorage.getItem("token");
-    if (!token) {
-        console.log("No token found, redirecting to login");
-        window.location.href = "/login";
-        return;
+    // Get user data from localStorage
+    const storedUser = localStorage.getItem('user');
+    let userData = null;
+    if (storedUser) {
+        try {
+            userData = JSON.parse(storedUser);
+            console.log('Retrieved user data:', userData);
+        } catch (error) {
+            console.error('Error parsing user data:', error);
+        }
     }
     
-    // Get user info from localStorage
-    const userFullName = localStorage.getItem("userFullName");
-    const userUsername = localStorage.getItem("userUsername");
-    const userProfilePhoto = localStorage.getItem("userProfilePhoto");
-    
-    console.log("User data from localStorage:", {
-        fullName: userFullName,
-        username: userUsername,
-        profilePhoto: userProfilePhoto
-    });
+    const userFullName = userData?.fullName || null;
+    const userUsername = userData?.username || null;
+    const userProfilePhoto = userData?.avatar || null;
     
     // Update sidebar user info
     const sidebarUserAvatar = document.getElementById("sidebarUserAvatar");
     const userName = document.getElementById("userName");
     const userHandle = document.getElementById("userHandle");
     
-    // Set user avatar in sidebar
     if (sidebarUserAvatar) {
         if (userProfilePhoto && userProfilePhoto !== 'undefined' && userProfilePhoto !== 'null') {
             sidebarUserAvatar.src = userProfilePhoto;
@@ -427,16 +423,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         sidebarUserAvatar.alt = userFullName || 'User Avatar';
     }
     
-    // Set user name in sidebar
     if (userName) {
         userName.textContent = userFullName || 'User';
         console.log('Setting user name to:', userFullName || 'User');
     }
     
-    // Set username/handle in sidebar
     if (userHandle) {
-        userHandle.textContent = userUsername ? `@${userUsername}` : '@user';
-        console.log('Setting user handle to:', userUsername ? `@${userUsername}` : '@user');
+        const displayUsername = userUsername || userData?.rollNumber || 'user';
+        userHandle.textContent = `@${displayUsername}`;
+        console.log('Setting user handle to:', `@${displayUsername}`);
     }
     
     // Update post creation area
@@ -444,7 +439,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const postUserName = document.getElementById("postUserName");
     const postUserHandle = document.getElementById("postUserHandle");
     
-    // Set user avatar in post creation area
     if (postUserAvatar) {
         if (userProfilePhoto && userProfilePhoto !== 'undefined' && userProfilePhoto !== 'null') {
             postUserAvatar.src = userProfilePhoto;
@@ -456,16 +450,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         postUserAvatar.alt = userFullName || 'User Avatar';
     }
     
-    // Set user name in post creation area
     if (postUserName) {
         postUserName.textContent = userFullName || 'User';
         console.log('Setting post user name to:', userFullName || 'User');
     }
     
-    // Set username/handle in post creation area
     if (postUserHandle) {
-        postUserHandle.textContent = userUsername ? `@${userUsername}` : '@user';
-        console.log('Setting post user handle to:', userUsername ? `@${userUsername}` : '@user');
+        const displayUsername = userUsername || 'user';
+        postUserHandle.textContent = `@${displayUsername}`;
+        console.log('Setting post user handle to:', `@${displayUsername}`);
     }
     
     // If we don't have user data in localStorage, fetch it from the server
@@ -473,7 +466,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         try {
             const response = await fetch('/api/users/my-profile', {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
             });
             
@@ -502,7 +495,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     
     // Load posts after all initialization is complete
-        await loadPosts();
+    await loadPosts();
 });
 
 // Emoji Picker Implementation

@@ -103,8 +103,8 @@ router.post("/profile-photo", authMiddleware, async (req, res) => {
 
             try {
                 const user = await User.findByIdAndUpdate(
-                    req.user.userId,
-                    { avatar: `/assets/uploads/${req.file.filename}` },
+                    req.user.id,
+                    { avatar: `/uploads/${req.file.filename}` },
                     { new: true }
                 );
 
@@ -116,7 +116,7 @@ router.post("/profile-photo", authMiddleware, async (req, res) => {
 
                 res.json({ 
                     message: "Profile photo uploaded successfully",
-                    filePath: `/assets/uploads/${req.file.filename}` 
+                    filePath: `/uploads/${req.file.filename}` 
                 });
             } catch (error) {
                 // Delete the uploaded file if database update fails
@@ -150,8 +150,8 @@ router.post("/cover-photo", authMiddleware, async (req, res) => {
 
             try {
                 const user = await User.findByIdAndUpdate(
-                    req.user.userId,
-                    { banner: `/assets/uploads/${req.file.filename}` },
+                    req.user.id,
+                    { banner: `/uploads/${req.file.filename}` },
                     { new: true }
                 );
 
@@ -163,7 +163,7 @@ router.post("/cover-photo", authMiddleware, async (req, res) => {
 
                 res.json({ 
                     message: "Cover photo uploaded successfully",
-                    filePath: `/assets/uploads/${req.file.filename}` 
+                    filePath: `/uploads/${req.file.filename}` 
                 });
             } catch (error) {
                 // Delete the uploaded file if database update fails
