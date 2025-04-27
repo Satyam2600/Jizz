@@ -171,6 +171,22 @@
       background-color: var(--border-color);
       color: var(--text-primary);
     }
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .loading-spinner {
+      width: 3rem;
+      height: 3rem;
+    }
   </style>
 </head>
 <body>
@@ -184,15 +200,14 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link active" href="#"><i class="bi bi-house-door me-2"></i>Home</a>
+            <a class="nav-link active" href="/dashboard"><i class="bi bi-house-door me-2"></i>Home</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#"><i class="bi bi-people me-2"></i>Communities</a>
           </li>
-        
-            <li class="nav-item">
-              <a class="nav-link" href="/events"><i class="bi bi-calendar-event me-2"></i>Events</a>
-            </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/events"><i class="bi bi-calendar-event me-2"></i>Events</a>
+          </li>
           <li class="nav-item">
             <a class="nav-link" href="/confessions"><i class="bi bi-chat-quote me-2"></i>Confessions</a>
           </li>
@@ -230,7 +245,7 @@
               <a class="dropdown-item" href="/chat/groups"><i class="bi bi-people me-2"></i>Group Chats</a>
               <a class="dropdown-item" href="/chat/requests"><i class="bi bi-person-plus me-2"></i>Chat Requests</a>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#" onclick="logout(); return false;"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+              <a class="dropdown-item" href="#" id="logoutButton"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
             </div>
           </div>
         </div>
@@ -243,12 +258,39 @@
     <div class="hero-section text-white text-center">
       <div class="search-container">
         <h1 class="display-4 fw-bold mb-4">Explore and create events</h1>
-        <div class="input-group">
-          <span class="input-group-text bg-white border-end-0">
-            <i class="bi bi-search text-muted"></i>
-          </span>
-          <input type="text" class="form-control search-input" placeholder="Search events">
-          <button class="btn btn-primary search-button">Filter</button>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0">
+                <i class="bi bi-search text-muted"></i>
+              </span>
+              <input type="text" class="form-control search-input" placeholder="Search events">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <select class="form-select" id="categoryFilter">
+              <option value="">All Categories</option>
+              <option value="campus">Campus Tour</option>
+              <option value="outdoor">Outdoor</option>
+              <option value="art">Art & Culture</option>
+              <option value="career">Career</option>
+              <option value="social">Social</option>
+              <option value="sports">Sports</option>
+              <option value="academic">Academic</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <select class="form-select" id="statusFilter">
+              <option value="">All Status</option>
+              <option value="upcoming">Upcoming</option>
+              <option value="ongoing">Ongoing</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-primary w-100 search-button">Filter</button>
+          </div>
         </div>
       </div>
     </div>
@@ -256,86 +298,19 @@
     <!-- Event Tabs -->
     <ul class="nav nav-tabs mb-4">
       <li class="nav-item">
-        <a class="nav-link active" href="#">All Events</a>
+        <a class="nav-link active" href="#" data-tab="all">All Events</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Your Events</a>
+        <a class="nav-link" href="#" data-tab="your-events">Your Events</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Saved Events</a>
+        <a class="nav-link" href="#" data-tab="saved-events">Saved Events</a>
       </li>
     </ul>
 
     <!-- Events List -->
     <div class="row" id="eventsContainer">
-      <% if (events && events.length > 0) { %>
-        <% events.forEach(event => { %>
-          <div class="col-md-6 mb-4">
-            <div class="event-card" data-event-id="<%= event._id %>">
-              <img src="<%= event.coverImage %>" 
-                   class="event-image w-100" 
-                   alt="<%= event.title %>">
-              <div class="event-details">
-                <h5 class="event-title"><%= event.title %></h5>
-                <div class="event-meta">
-                  <div class="event-meta-item">
-                    <i class="bi bi-geo-alt"></i>
-                    <span><%= event.location %></span>
-                  </div>
-                  <div class="event-meta-item">
-                    <i class="bi bi-calendar"></i>
-                    <span><%= new Date(event.date).toLocaleDateString() %></span>
-                  </div>
-                  <div class="event-meta-item">
-                    <i class="bi bi-clock"></i>
-                    <span><%= event.time %> - <%= event.duration %> hours</span>
-                  </div>
-                </div>
-                <div class="event-meta">
-                  <div class="event-meta-item">
-                    <i class="bi bi-person"></i>
-                    <span>Organized by: <%= event.organizer.name %></span>
-                  </div>
-                </div>
-                <p class="event-description">
-                  <%= event.description %>
-                </p>
-                <div class="event-actions">
-                  <div class="event-participants">
-                    <div class="participant-avatars">
-                      <% event.participants.slice(0, 3).forEach(participant => { %>
-                        <img src="<%= participant.user.profilePicture %>" 
-                             class="participant-avatar" 
-                             alt="<%= participant.user.name %>">
-                      <% }); %>
-                    </div>
-                    <span>+<%= event.participants.length - 3 %> participants</span>
-                  </div>
-                  <div class="d-flex gap-2">
-                    <span class="event-tag"><%= event.category %></span>
-                    <button class="btn btn-primary rounded-pill join-event-btn" 
-                            data-event-id="<%= event._id %>"
-                            <%= event.participants.some(p => p.user._id.toString() === user._id.toString()) ? 'disabled' : '' %>>
-                      <%= event.participants.some(p => p.user._id.toString() === user._id.toString()) ? 'Joined' : 'Join Event' %>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        <% }); %>
-      <% } else { %>
-        <div class="col-12 text-center py-5">
-          <div class="empty-state">
-            <i class="bi bi-calendar-event display-1 text-muted"></i>
-            <h3 class="mt-4">No Events Yet</h3>
-            <p class="text-muted">Be the first to create an event and showcase your skills!</p>
-            <button class="btn btn-primary rounded-pill mt-3" data-bs-toggle="modal" data-bs-target="#createEventModal">
-              Create Event
-            </button>
-          </div>
-        </div>
-      <% } %>
+      <!-- Events will be dynamically loaded here -->
     </div>
 
     <!-- Create Event Section -->
@@ -376,7 +351,7 @@
                     </label>
                   </div>
                 </div>
-                <input type="file" class="form-control d-none" id="eventCover" accept="image/*">
+                <input type="file" class="form-control d-none" id="eventCover" accept="image/*" required>
               </div>
             </div>
 
@@ -455,130 +430,12 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="createEvent()">Create Event</button>
+          <button type="button" class="btn btn-primary" id="createEventButton">Create Event</button>
         </div>
       </div>
     </div>
   </div>
-
-  <script>
-    // Handle cover image preview
-    document.getElementById('eventCover').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          document.getElementById('coverPreview').src = e.target.result;
-        }
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Function to create event
-    async function createEvent() {
-      const form = document.getElementById('createEventForm');
-      if (form.checkValidity()) {
-        const formData = new FormData();
-        formData.append('cover', document.getElementById('eventCover').files[0]);
-        formData.append('title', document.getElementById('eventTitle').value);
-        formData.append('location', document.getElementById('eventLocation').value);
-        formData.append('date', document.getElementById('eventDate').value);
-        formData.append('time', document.getElementById('eventTime').value);
-        formData.append('duration', document.getElementById('eventDuration').value);
-        formData.append('category', document.getElementById('eventCategory').value);
-        formData.append('description', document.getElementById('eventDescription').value);
-        formData.append('maxParticipants', document.getElementById('maxParticipants').value);
-        formData.append('tags', document.getElementById('eventTags').value);
-        formData.append('requirements', document.getElementById('eventRequirements').value);
-
-        try {
-          const response = await fetch('/api/events', {
-            method: 'POST',
-            body: formData,
-            credentials: 'include'
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            // Close modal and refresh page to show new event
-            const modal = bootstrap.Modal.getInstance(document.getElementById('createEventModal'));
-            modal.hide();
-            window.location.reload();
-          } else {
-            const error = await response.json();
-            alert(error.error || 'Failed to create event');
-          }
-        } catch (error) {
-          alert('Failed to create event. Please try again.');
-        }
-      } else {
-        form.reportValidity();
-      }
-    }
-
-    // Handle join event
-    document.addEventListener('click', async function(e) {
-      if (e.target.classList.contains('join-event-btn')) {
-        const eventId = e.target.dataset.eventId;
-        try {
-          const response = await fetch(`/api/events/${eventId}/join`, {
-            method: 'POST',
-            credentials: 'include'
-          });
-
-          if (response.ok) {
-            window.location.reload();
-          } else {
-            const error = await response.json();
-            alert(error.error || 'Failed to join event');
-          }
-        } catch (error) {
-          alert('Failed to join event. Please try again.');
-        }
-      }
-    });
-
-    // Handle search and filter
-    const searchInput = document.querySelector('.search-input');
-    const filterButton = document.querySelector('.search-button');
-
-    filterButton.addEventListener('click', async function() {
-      const searchTerm = searchInput.value;
-      try {
-        const response = await fetch(`/api/events?search=${encodeURIComponent(searchTerm)}`, {
-          credentials: 'include'
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          // Update events container with filtered results
-          updateEventsContainer(data.data);
-        }
-      } catch (error) {
-        alert('Failed to search events. Please try again.');
-      }
-    });
-
-    // Function to update events container
-    function updateEventsContainer(events) {
-      const container = document.getElementById('eventsContainer');
-      if (events.length === 0) {
-        container.innerHTML = `
-          <div class="col-12 text-center py-5">
-            <div class="empty-state">
-              <i class="bi bi-calendar-event display-1 text-muted"></i>
-              <h3 class="mt-4">No Events Found</h3>
-              <p class="text-muted">Try adjusting your search criteria</p>
-            </div>
-          </div>
-        `;
-      } else {
-        // Update with filtered events
-        // This would require a more complex template rendering system
-        // For now, we'll just reload the page
-        window.location.reload();
-      }
-    }
-  </script>
+  <script src="/assets/js/events.js"></script>
 </body>
 </html>
+    

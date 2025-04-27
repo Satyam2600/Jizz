@@ -1,27 +1,22 @@
 // backend/routes/contactRoutes.js
 const express = require("express");
 const router = express.Router();
-const Contact = require("../models/Contact");
+const { authenticate } = require("../middleware/authMiddleware");
+const contactController = require("../controllers/contactController");
 
-// POST route to handle contact form submission
-router.post("/", async (req, res) => {
-  try {
-    const { name, email, message } = req.body;
+// Send contact message
+router.post("/", authenticate, contactController.sendContactMessage);
 
-    // Validate required fields
-    if (!name || !email || !message) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
+// Get all contact messages (admin only)
+router.get("/", authenticate, contactController.getAllContactMessages);
 
-    // Create and save new contact message
-    const newContact = new Contact({ name, email, message });
-    await newContact.save();
+// Get user's contact messages
+router.get("/user", authenticate, contactController.getUserContactMessages);
 
-    res.status(201).json({ message: "Message sent successfully!" });
-  } catch (error) {
-    console.error("Error saving contact form:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
-  }
-});
+// Update contact message status (admin only)
+router.put("/:contactId", authenticate, contactController.updateContactStatus);
+
+// Delete contact message
+router.delete("/:contactId", authenticate, contactController.deleteContactMessage);
 
 module.exports = router;

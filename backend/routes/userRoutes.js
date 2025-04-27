@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const authMiddleware = require("../middleware/authMiddleware");
+const { authenticate } = require("../middleware/authMiddleware");
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const multer = require("multer");
@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Get user profile
-router.get('/profile', authMiddleware, async (req, res) => {
+router.get('/profile', authenticate, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId).select('-password');
     if (!user) {
@@ -33,7 +33,7 @@ router.get('/profile', authMiddleware, async (req, res) => {
 });
 
 // Update user profile
-router.post('/update-profile', authMiddleware, upload.fields([
+router.post('/update-profile', authenticate, upload.fields([
   { name: 'avatar', maxCount: 1 },
   { name: 'banner', maxCount: 1 }
 ]), async (req, res) => {
@@ -80,6 +80,12 @@ router.post('/update-profile', authMiddleware, upload.fields([
       { new: true }
     );
 
+    // Set profileCompleted to true if not already
+    if (!updatedUser.profileCompleted) {
+      updatedUser.profileCompleted = true;
+      await updatedUser.save();
+    }
+
     res.json({ 
       message: 'Profile updated successfully',
       user: {
@@ -94,7 +100,8 @@ router.post('/update-profile', authMiddleware, upload.fields([
         socialLinks: updatedUser.socialLinks,
         avatar: updatedUser.avatar,
         banner: updatedUser.banner,
-        rollNumber: updatedUser.rollNumber
+        rollNumber: updatedUser.rollNumber,
+        profileCompleted: updatedUser.profileCompleted
       }
     });
   } catch (error) {
@@ -174,7 +181,8 @@ router.post('/login', async (req, res) => {
             rollNumber: user.rollNumber,
             username: user.username || user.rollNumber,
             avatar: user.avatar || '/assets/images/default-avatar.png',
-            banner: user.banner || '/assets/images/default-banner.jpg'
+            banner: user.banner || '/assets/images/default-banner.jpg',
+            profileCompleted: user.profileCompleted
         };
 
         // Return user data including isFirstLogin flag and token
@@ -190,7 +198,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Get authenticated user's profile
-router.get("/my-profile", authMiddleware, async (req, res) => {
+router.get("/my-profile", authenticate, async (req, res) => {
   try {
     console.log("Fetching authenticated user profile for ID:", req.user.id);
     
@@ -225,7 +233,7 @@ router.get("/my-profile", authMiddleware, async (req, res) => {
 });
 
 // Change password route
-router.post("/change-password", authMiddleware, async (req, res) => {
+router.post("/change-password", authenticate, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
     const rollNo = req.user.rollNo;

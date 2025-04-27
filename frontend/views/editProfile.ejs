@@ -336,6 +336,7 @@ document.getElementById('profileForm').addEventListener('submit', async (e) => {
 
     if (response.ok) {
       // Save updated user data to localStorage
+      localStorage.setItem('user', JSON.stringify(data.user));
       localStorage.setItem('userFullName', data.user.fullName);
       localStorage.setItem('userUsername', data.user.username);
       if (data.user.avatar) {

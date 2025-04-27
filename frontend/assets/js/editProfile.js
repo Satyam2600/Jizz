@@ -112,6 +112,7 @@ if (profileForm) {
         
         // Add form fields
         const fullNameInput = document.getElementById('fullName');
+        const usernameInput = document.getElementById('username');
         const emailInput = document.getElementById('email');
         const rollNumberInput = document.getElementById('rollNumber');
         const departmentSelect = document.getElementById('department');
@@ -130,6 +131,7 @@ if (profileForm) {
         
         // Add all form fields to formData
         if (fullNameInput) formData.append('fullName', fullNameInput.value);
+        if (usernameInput) formData.append('username', usernameInput.value);
         if (emailInput) formData.append('email', emailInput.value);
         if (rollNumberInput) formData.append('rollNumber', rollNumberInput.value);
         if (departmentSelect) formData.append('department', departmentSelect.value);
@@ -174,6 +176,7 @@ if (profileForm) {
             
             if (response.ok) {
                 // Update localStorage with new data
+                localStorage.setItem('user', JSON.stringify(data.user));
                 localStorage.setItem('userName', data.user.fullName);
                 localStorage.setItem('userEmail', data.user.email);
                 localStorage.setItem('userRollNumber', data.user.rollNumber);
@@ -182,6 +185,7 @@ if (profileForm) {
                 localStorage.setItem('userSemester', data.user.semester);
                 if (data.user.avatar) localStorage.setItem('userProfilePhoto', data.user.avatar);
                 if (data.user.banner) localStorage.setItem('userBanner', data.user.banner);
+                if (typeof data.user.profileCompleted !== 'undefined') localStorage.setItem('profileCompleted', data.user.profileCompleted);
                 
                 console.log('Profile updated successfully:', data.user);
                 alert('Profile updated successfully!');

@@ -2,18 +2,24 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, '../../frontend/assets/uploads');
-if (!fs.existsSync(uploadsDir)) {
-  console.log('Creating uploads directory:', uploadsDir);
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
+// Create uploads directories if they don't exist
+const baseUploadsDir = path.join(__dirname, '../../frontend/assets/uploads');
+const eventsUploadsDir = path.join(baseUploadsDir, 'events');
+
+[baseUploadsDir, eventsUploadsDir].forEach(dir => {
+  if (!fs.existsSync(dir)) {
+    console.log('Creating directory:', dir);
+    fs.mkdirSync(dir, { recursive: true });
+  }
+});
 
 // Configure storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    console.log('Saving file to directory:', uploadsDir);
-    cb(null, uploadsDir);
+    // Determine the destination based on the field name
+    const dest = file.fieldname === 'coverImage' ? eventsUploadsDir : baseUploadsDir;
+    console.log('Saving file to directory:', dest);
+    cb(null, dest);
   },
   filename: function (req, file, cb) {
     // Create a unique filename with timestamp and original extension
@@ -60,7 +66,7 @@ const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 100 * 1024 * 1024 // 100MB max file size
+    fileSize: 5 * 1024 * 1024 // 5MB max file size
   }
 });
 

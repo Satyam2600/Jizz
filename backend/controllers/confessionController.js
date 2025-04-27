@@ -7,7 +7,7 @@ exports.createConfession = async (req, res) => {
     const { content } = req.body;
 
     const confession = new Confession({
-      user: req.user.userId,
+      user: req.user._id,
       content
     });
 
@@ -30,7 +30,7 @@ exports.getConfessions = async (req, res) => {
       .sort({ createdAt: -1 })
       .populate({
         path: "comments.user",
-        select: "name profilePicture"
+        select: "name avatar"
       });
 
     // Remove user information from confessions to maintain anonymity
@@ -96,7 +96,7 @@ exports.addComment = async (req, res) => {
     // Populate the comment user details
     const populatedComment = await Confession.populate(confession.comments[confession.comments.length - 1], {
       path: "user",
-      select: "name profilePicture"
+      select: "name avatar"
     });
 
     // Remove user information from the confession

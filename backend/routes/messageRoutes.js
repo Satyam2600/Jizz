@@ -1,54 +1,18 @@
 const express = require("express");
-const Message = require("../models/Message");
-const authMiddleware = require("../middleware/authMiddleware");
-const upload = require("../middleware/uploadMiddleware");
-
 const router = express.Router();
+const { authenticate } = require("../middleware/authMiddleware");
+const messageController = require("../controllers/messageController");
 
-// Send a Message (Text and Media)
-router.post("/", authMiddleware, upload.single("media"), async (req, res) => {
-  try {
-    const { receiver, content } = req.body;
-    let mediaUrl = null;
-    let mediaType = null;
-    if (req.file) {
-      mediaUrl = req.file.path;
-      mediaType = req.file.mimetype.startsWith("image")
-        ? "image"
-        : req.file.mimetype.startsWith("video")
-        ? "video"
-        : "document";
-    }
-    if (!receiver || (!content && !mediaUrl)) {
-      return res.status(400).json({ message: "Message must contain text or media" });
-    }
-    const message = new Message({
-      sender: req.user.id,
-      receiver,
-      content,
-      media: mediaUrl,
-      mediaType,
-    });
-    await message.save();
-    res.status(201).json({ message: "Message sent successfully", messageData: message });
-  } catch (error) {
-    res.status(500).json({ message: "Server Error", error });
-  }
-});
+// Send a message
+router.post("/", authenticate, messageController.sendMessage);
 
-// Get Messages between Two Users
-router.get("/:userId", authMiddleware, async (req, res) => {
-  try {
-    const messages = await Message.find({
-      $or: [
-        { sender: req.user.id, receiver: req.params.userId },
-        { sender: req.params.userId, receiver: req.user.id },
-      ],
-    }).sort({ createdAt: 1 });
-    res.status(200).json(messages);
-  } catch (error) {
-    res.status(500).json({ message: "Server Error", error });
-  }
-});
+// Get messages between two users
+router.get("/:userId", authenticate, messageController.getMessages);
+
+// Mark messages as read
+router.put("/:userId/read", authenticate, messageController.markAsRead);
+
+// Delete a message
+router.delete("/:messageId", authenticate, messageController.deleteMessage);
 
 module.exports = router;

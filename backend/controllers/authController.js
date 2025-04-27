@@ -1,91 +1,133 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { validationResult } = require('express-validator');
 
-// User Registration
+// @desc    Register user
+// @route   POST /api/auth/register
+// @access  Public
 exports.register = async (req, res) => {
   try {
-    const { name, rollNumber, email, password, branch, year, semester } = req.body;
-
-    // Validate required fields
-    if (!name || !rollNumber || !email || !password) {
-      return res.status(400).json({ message: 'All fields are required' });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    // Check if user exists
-    const existingUser = await User.findOne({ rollNumber });
-    if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
+    const { username, email, password } = req.body;
+
+    // Check if user already exists
+    let user = await User.findOne({ $or: [{ email }, { username }] });
+    if (user) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'User with this email or username already exists' 
+      });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create new user
-    const user = new User({
-      name,
-      rollNumber,
+    // Create user
+    user = await User.create({
+      username,
       email,
-      password: hashedPassword,
-      branch,
-      year,
-      semester
+      password
     });
 
-    await user.save();
-    res.status(201).json({ message: "User registered successfully" });
+    // Create token
+    const token = user.getSignedJwtToken();
 
+    res.status(201).json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        avatar: user.avatar
+      }
+    });
   } catch (error) {
-    res.status(500).json({ message: "Error registering user", error });
+    console.error(error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Server error' 
+    });
   }
 };
 
-// User Login (By Roll No. or Email)
+// @desc    Login user
+// @route   POST /api/auth/login
+// @access  Public
 exports.login = async (req, res) => {
   try {
-    const { identifier, password } = req.body;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-    // Debug logging
-    console.log('Login attempt:', { identifier });
+    const { email, password } = req.body;
 
-    // Check if the user exists (by rollNumber or email)
-    const user = await User.findOne({
-      $or: [{ rollNumber: identifier }, { email: identifier }],
-    });
-
-    // Debug logging
-    console.log('User found:', user ? 'Yes' : 'No');
-
+    // Check if user exists
+    const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      console.log('No user found with identifier:', identifier);
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(401).json({ 
+        success: false, 
+        error: 'Invalid credentials' 
+      });
     }
 
-    // Compare password using the model's method
-    const isMatch = await user.comparePassword(password);
+    // Check if password matches
+    const isMatch = await user.matchPassword(password);
     if (!isMatch) {
-      console.log('Password mismatch for user:', user.rollNumber);
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(401).json({ 
+        success: false, 
+        error: 'Invalid credentials' 
+      });
     }
 
-    // Generate JWT Token
-    const token = jwt.sign({ id: user.rollNumber, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
-    });
+    // Create token
+    const token = user.getSignedJwtToken();
 
-    res.status(200).json({ 
-      message: "Login successful", 
-      token, 
+    res.status(200).json({
+      success: true,
+      token,
       user: {
-        rollNumber: user.rollNumber,
+        id: user._id,
+        username: user.username,
         email: user.email,
-        fullName: user.fullName,
-        role: user.role
-      } 
+        avatar: user.avatar
+      }
     });
-
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ message: "Error logging in", error: error.message });
+    console.error(error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Server error' 
+    });
+  }
+};
+
+// @desc    Get current logged in user
+// @route   GET /api/auth/me
+// @access  Private
+exports.getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    
+    res.status(200).json({
+      success: true,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        avatar: user.avatar,
+        bio: user.bio,
+        interests: user.interests
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Server error' 
+    });
   }
 };

@@ -1,7 +1,7 @@
 const express = require("express");
 const Post = require("../models/Post");
 const User = require("../models/User");
-const authMiddleware = require("../middleware/authMiddleware");
+const { authenticate } = require("../middleware/authMiddleware");
 const adminMiddleware = require("../middleware/adminMiddleware"); // For admin-only actions
 const multer = require('multer');
 const path = require('path');
@@ -46,7 +46,7 @@ function checkFileType(file, cb) {
 }
 
 // 📌 Create a Post (With Mentions)
-router.post("/", authMiddleware, async (req, res) => {
+router.post("/", authenticate, async (req, res) => {
   try {
     const { content, image } = req.body;
 
@@ -76,7 +76,7 @@ router.post("/", authMiddleware, async (req, res) => {
 });
 
 // 📌 Get All Posts (Latest First)
-router.get("/", authMiddleware, postController.getAllPosts); // Always returns all posts with user info, paginated if query params provided
+router.get("/", authenticate, postController.getAllPosts); // Always returns all posts with user info, paginated if query params provided
 
 // 📌 Get Posts by User ID
 router.get("/user/:userId", async (req, res) => {
@@ -93,24 +93,24 @@ router.get("/user/:userId", async (req, res) => {
 });
 
 // 📌 Like/Unlike a Post
-router.post("/:id/like", authMiddleware, postController.toggleLike);
+router.post("/:id/like", authenticate, postController.toggleLike);
 
 // 📌 Delete a Post (Only Owner Can Delete)
-router.delete("/:id", authMiddleware, postController.deletePost);
+router.delete("/:id", authenticate, postController.deletePost);
 
 // 📌 Report a Post
-router.post("/:id/report", authMiddleware, postController.reportPost);
+router.post("/:id/report", authenticate, postController.reportPost);
 
 // Create a new post
-router.post("/create", authMiddleware, upload.single("media"), postController.createPost);
+router.post("/create", authenticate, upload.single("media"), postController.createPost);
 
 
 
 // Add a comment to a post
-router.post("/:id/comment", authMiddleware, postController.addComment);
+router.post("/:id/comment", authenticate, postController.addComment);
 
 // 📌 Get All Reported Posts (Admin Only)
-router.get("/reports", authMiddleware, adminMiddleware, async (req, res) => {
+router.get("/reports", authenticate, adminMiddleware, async (req, res) => {
   try {
     const reportedPosts = await Post.find({ "reports.0": { $exists: true } })
       .populate("user", "name profilePicture")

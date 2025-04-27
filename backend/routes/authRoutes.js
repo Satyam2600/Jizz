@@ -76,8 +76,8 @@ router.post("/login", async (req, res) => {
     // Debug logging
     console.log('Login attempt with rollNumber:', cleanRollNumber);
 
-    // Find user by rollNumber
-    const user = await User.findOne({ rollNumber: cleanRollNumber });
+    // Find user by rollNumber and explicitly select the password field
+    const user = await User.findOne({ rollNumber: cleanRollNumber }).select('+password');
     
     // Debug logging
     console.log('User found:', user ? 'Yes' : 'No');
@@ -99,29 +99,26 @@ router.post("/login", async (req, res) => {
       { 
         id: user._id,
         rollNumber: user.rollNumber,
-        role: user.role || 'user'
+        role: user.role
       },
       process.env.JWT_SECRET,
-      { expiresIn: '24h' }
+      { expiresIn: '1d' }
     );
 
-    // Return user data without password
-    const userData = {
-      _id: user._id,
-      rollNumber: user.rollNumber,
-      email: user.email,
-      fullName: user.fullName,
-      role: user.role || 'user'
-    };
-
-    res.json({
+    res.status(200).json({
       message: "Login successful",
       token,
-      user: userData
+      user: {
+        id: user._id,
+        rollNumber: user.rollNumber,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role
+      }
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Error logging in", error: error.message });
   }
 });
 

@@ -1,8 +1,8 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
-const User = require("../models/User"); // Ensure User model is imported
-const authMiddleware = require("../middleware/authMiddleware");
+const User = require("../models/User");
+const { authenticate } = require("../middleware/authMiddleware");
 const fs = require('fs');
 
 const router = express.Router();
@@ -48,11 +48,12 @@ const upload = multer({
 // Update Profile Route: Use rollNo (uid) sent in req.body.userId
 router.post(
   "/profile",
+  authenticate,
   upload.fields([{ name: "avatar" }, { name: "banner" }]),
   async (req, res) => {
     try {
       const user = await User.findOneAndUpdate(
-        { rollNo: req.body.userId }, // Use the uid (roll number) as the identifier
+        { rollNo: req.body.userId },
         {
           fullName: req.body.fullName,
           username: req.body.username,
@@ -75,7 +76,7 @@ router.post(
         return res.status(404).send("User not found");
       }
 
-      res.redirect("/dashboard"); // Redirect to the dashboard after successful update
+      res.redirect("/dashboard");
     } catch (error) {
       console.error("Error updating profile:", error);
       res.status(500).send("Error updating profile");
@@ -84,7 +85,7 @@ router.post(
 );
 
 // Profile photo upload endpoint
-router.post("/profile-photo", authMiddleware, async (req, res) => {
+router.post("/profile-photo", authenticate, async (req, res) => {
     try {
         upload.single("profilePhoto")(req, res, async (err) => {
             if (err) {
@@ -131,7 +132,7 @@ router.post("/profile-photo", authMiddleware, async (req, res) => {
 });
 
 // Cover photo upload endpoint
-router.post("/cover-photo", authMiddleware, async (req, res) => {
+router.post("/cover-photo", authenticate, async (req, res) => {
     try {
         upload.single("coverPhoto")(req, res, async (err) => {
             if (err) {
@@ -178,7 +179,7 @@ router.post("/cover-photo", authMiddleware, async (req, res) => {
 });
 
 // Post media upload endpoint (handles both images and videos)
-router.post("/post-media", authMiddleware, upload.single("media"), async (req, res) => {
+router.post("/post-media", authenticate, upload.single("media"), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ message: "No file uploaded" });
@@ -199,15 +200,14 @@ router.post("/post-media", authMiddleware, upload.single("media"), async (req, r
             contentType: contentType
         });
 
-        // Return the file information
-        res.json({ 
-            message: `${contentType} uploaded successfully`,
+        res.json({
+            message: "File uploaded successfully",
             filePath: filePath,
-            type: contentType
+            contentType: contentType
         });
     } catch (error) {
-        console.error(`Error uploading media:`, error);
-        res.status(500).json({ message: `Server error while uploading media` });
+        console.error("Error in post media upload:", error);
+        res.status(500).json({ message: "Server error while uploading media" });
     }
 });
 

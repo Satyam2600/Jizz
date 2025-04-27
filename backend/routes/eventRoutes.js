@@ -1,22 +1,27 @@
 const express = require('express');
 const router = express.Router();
-const authMiddleware = require('../middleware/authMiddleware');
-const {
-  createEvent,
-  getEvents,
-  joinEvent,
-  leaveEvent,
-  getUserEvents
-} = require('../controllers/eventController');
+const { getAllEvents, getYourEvents, getSavedEvents, createEvent, joinEvent, leaveEvent, saveEvent } = require('../controllers/eventController');
+const { authenticate } = require('../middleware/authMiddleware');
 
-// All routes are protected (require authentication)
-router.use(authMiddleware);
+// Get all events
+router.get('/', authenticate, getAllEvents);
 
-// Event routes
-router.post('/', createEvent);
-router.get('/', getEvents);
-router.get('/my-events', getUserEvents);
-router.post('/:id/join', joinEvent);
-router.post('/:id/leave', leaveEvent);
+// Get events the user has joined
+router.get('/your-events', authenticate, getYourEvents);
 
-module.exports = router; 
+// Get saved events
+router.get('/saved-events', authenticate, getSavedEvents);
+
+// Create a new event
+router.post('/', authenticate, createEvent);
+
+// Join an event
+router.post('/:id/join', authenticate, joinEvent);
+
+// Leave an event
+router.post('/:id/leave', authenticate, leaveEvent);
+
+// Save an event
+router.post('/:id/save', authenticate, saveEvent);
+
+module.exports = router;

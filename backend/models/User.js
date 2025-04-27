@@ -1,115 +1,71 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-const userSchema = new mongoose.Schema({
-    fullName: {
+const UserSchema = new mongoose.Schema({
+    username: {
         type: String,
-        required: true,
-        trim: true
+        required: [true, 'Please provide a username'],
+        unique: true,
+        trim: true,
+        minlength: [3, 'Username must be at least 3 characters long']
     },
     email: {
         type: String,
-        required: true,
+        required: [true, 'Please provide an email'],
         unique: true,
-        trim: true,
-        lowercase: true
-    },
-    rollNumber: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true
+        match: [
+            /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+            'Please provide a valid email'
+        ]
     },
     password: {
         type: String,
-        required: true
+        required: [true, 'Please provide a password'],
+        minlength: [6, 'Password must be at least 6 characters long'],
+        select: false
     },
-    username: {
+    fullName: {
         type: String,
-        unique: true,
-        sparse: true,  // This allows multiple documents to have no username
+        required: [true, 'Please provide your full name'],
         trim: true
     },
     avatar: {
         type: String,
-        default: '/assets/images/default-avatar.png'
-    },
-    banner: {
-        type: String,
-        default: '/assets/images/default-banner.jpg'
+        default: 'default.jpg'
     },
     bio: {
         type: String,
-        trim: true
+        maxlength: [500, 'Bio cannot be more than 500 characters']
     },
-    department: {
-        type: String,
-        trim: true
-    },
-    year: {
-        type: String,
-        trim: true
-    },
-    semester: {
-        type: String,
-        trim: true
-    },
-    skills: [{
-        type: String,
-        trim: true
-    }],
     interests: [{
-        type: String,
-        trim: true
+        type: String
     }],
-    socialLinks: {
-        linkedin: String,
-        github: String,
-        twitter: String,
-        instagram: String
-    },
-    phoneNumber: {
-        type: String,
-        trim: true
-    },
-    isPublic: {
-        type: Boolean,
-        default: true
+    createdAt: {
+        type: Date,
+        default: Date.now
     }
-}, {
-    timestamps: true
 });
 
 // Hash password before saving
-userSchema.pre('save', async function(next) {
-    // Only hash the password if it has been modified (or is new)
-    if (!this.isModified('password')) return next();
-    
-    try {
-        // Generate a salt
-        const salt = await bcrypt.genSalt(10);
-        // Hash the password with the salt
-        const hashedPassword = await bcrypt.hash(this.password, salt);
-        // Replace the plain text password with the hashed one
-        this.password = hashedPassword;
+UserSchema.pre('save', async function(next) {
+    if (!this.isModified('password')) {
         next();
-    } catch (error) {
-        console.error('Error hashing password:', error);
-        next(error);
     }
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Add comparePassword method
-userSchema.methods.comparePassword = async function(candidatePassword) {
-    try {
-        return await bcrypt.compare(candidatePassword, this.password);
-    } catch (error) {
-        console.error('Error comparing passwords:', error);
-        throw error;
-    }
+// Sign JWT and return
+UserSchema.methods.getSignedJwtToken = function() {
+    return jwt.sign({ userId: this._id }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRE
+    });
 };
 
-// Check if the model already exists before creating it
-const User = mongoose.models.User || mongoose.model('User', userSchema);
+// Match user entered password to hashed password in database
+UserSchema.methods.matchPassword = async function(enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
+};
 
-module.exports = User;
+module.exports = mongoose.model('User', UserSchema);

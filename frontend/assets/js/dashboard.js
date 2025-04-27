@@ -429,7 +429,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     
     if (userHandle) {
-        const displayUsername = userUsername || userData?.rollNumber || 'user';
+        const displayUsername = userData?.username || userData?.rollNumber || 'user';
         userHandle.textContent = `@${displayUsername}`;
         console.log('Setting user handle to:', `@${displayUsername}`);
     }
@@ -456,7 +456,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     
     if (postUserHandle) {
-        const displayUsername = userUsername || 'user';
+        const displayUsername = userData?.username || 'user';
         postUserHandle.textContent = `@${displayUsername}`;
         console.log('Setting post user handle to:', `@${displayUsername}`);
     }
@@ -473,12 +473,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (response.ok) {
                 const data = await response.json();
                 console.log('Fetched user data from server:', data);
-                
                 // Update localStorage with fetched data
+                localStorage.setItem('user', JSON.stringify(data));
                 localStorage.setItem('userFullName', data.fullName || '');
                 localStorage.setItem('userUsername', data.username || '');
                 localStorage.setItem('userProfilePhoto', data.avatar || '/assets/images/default-avatar.png');
-                
                 // Update UI with fetched data
                 if (userName) userName.textContent = data.fullName || 'User';
                 if (userHandle) userHandle.textContent = data.username ? `@${data.username}` : '@user';

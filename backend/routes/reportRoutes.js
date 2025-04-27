@@ -2,13 +2,14 @@ const express = require("express");
 const Report = require("../models/Report");
 const Post = require("../models/Post");
 const User = require("../models/User");
-const authMiddleware = require("../middleware/authMiddleware");
+const { authenticate } = require("../middleware/authMiddleware");
 const adminMiddleware = require("../middleware/adminMiddleware");
+const reportController = require("../controllers/reportController");
 
 const router = express.Router();
 
 // 📌 Report a Post or User
-router.post("/", authMiddleware, async (req, res) => {
+router.post("/", authenticate, async (req, res) => {
   try {
     const { reportType, reportedPost, reportedUser, reason } = req.body;
 
@@ -32,7 +33,7 @@ router.post("/", authMiddleware, async (req, res) => {
 });
 
 // 📌 Get All Reports (Admin Only)
-router.get("/", authMiddleware, adminMiddleware, async (req, res) => {
+router.get("/", authenticate, adminMiddleware, async (req, res) => {
   try {
     const reports = await Report.find()
       .populate("reportedBy", "name email")
@@ -46,7 +47,7 @@ router.get("/", authMiddleware, adminMiddleware, async (req, res) => {
 });
 
 // 📌 Update Report Status (Admin Only)
-router.put("/:id", authMiddleware, adminMiddleware, async (req, res) => {
+router.put("/:id", authenticate, adminMiddleware, async (req, res) => {
   try {
     const report = await Report.findById(req.params.id);
     if (!report) {
@@ -63,7 +64,7 @@ router.put("/:id", authMiddleware, adminMiddleware, async (req, res) => {
 });
 
 // 📌 Delete Report (Admin Only)
-router.delete("/:id", authMiddleware, adminMiddleware, async (req, res) => {
+router.delete("/:id", authenticate, adminMiddleware, async (req, res) => {
   try {
     const report = await Report.findByIdAndDelete(req.params.id);
     if (!report) {
@@ -75,5 +76,14 @@ router.delete("/:id", authMiddleware, adminMiddleware, async (req, res) => {
     res.status(500).json({ message: "Server Error", error });
   }
 });
+
+// Report a post
+router.post("/post/:postId", authenticate, reportController.reportPost);
+
+// Report a user
+router.post("/user/:userId", authenticate, reportController.reportUser);
+
+// Handle a report (admin only)
+router.put("/:reportId", authenticate, reportController.handleReport);
 
 module.exports = router;

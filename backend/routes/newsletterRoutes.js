@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const { authenticate } = require("../middleware/authMiddleware");
+const newsletterController = require("../controllers/newsletterController");
 const SibApiV3Sdk = require("sib-api-v3-sdk");
 require("dotenv").config();
 const Newsletter = require("../models/Newsletter"); // Import the Newsletter model
@@ -9,6 +11,18 @@ const client = SibApiV3Sdk.ApiClient.instance;
 const apiKey = client.authentications["api-key"];
 apiKey.apiKey = process.env.BREVO_API_KEY;
 const emailAPI = new SibApiV3Sdk.TransactionalEmailsApi();
+
+// Newsletter Subscription Route
+router.post("/subscribe", authenticate, newsletterController.subscribe);
+
+// Unsubscribe from newsletter
+router.post("/unsubscribe", authenticate, newsletterController.unsubscribe);
+
+// Get newsletter preferences
+router.get("/preferences", authenticate, newsletterController.getPreferences);
+
+// Update newsletter preferences
+router.put("/preferences", authenticate, newsletterController.updatePreferences);
 
 // Newsletter Subscription Route
 router.post("/subscribe", async (req, res) => {

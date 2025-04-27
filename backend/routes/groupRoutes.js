@@ -1,24 +1,33 @@
 const express = require("express");
 const Group = require("../models/Group");
-const authMiddleware = require("../middleware/authMiddleware");
+const { authenticate } = require("../middleware/authMiddleware");
+const groupController = require("../controllers/groupController");
 
 const router = express.Router();
 
 // Create a Group
-router.post("/", authMiddleware, async (req, res) => {
-  try {
-    const { name, description } = req.body;
-    if (!name) return res.status(400).json({ message: "Group name is required" });
-    const group = new Group({ name, description, admin: req.user.id, members: [req.user.id] });
-    await group.save();
-    res.status(201).json({ message: "Group created successfully", group });
-  } catch (error) {
-    res.status(500).json({ message: "Server Error", error });
-  }
-});
+router.post("/", authenticate, groupController.createGroup);
+
+// Get all groups
+router.get("/", authenticate, groupController.getGroups);
+
+// Get group by ID
+router.get("/:groupId", authenticate, groupController.getGroup);
+
+// Update group
+router.put("/:groupId", authenticate, groupController.updateGroup);
+
+// Delete group
+router.delete("/:groupId", authenticate, groupController.deleteGroup);
+
+// Add member to group
+router.post("/:groupId/members", authenticate, groupController.addMember);
+
+// Remove member from group
+router.delete("/:groupId/members/:userId", authenticate, groupController.removeMember);
 
 // Join a Group
-router.post("/:groupId/join", authMiddleware, async (req, res) => {
+router.post("/:groupId/join", authenticate, async (req, res) => {
   try {
     const group = await Group.findById(req.params.groupId);
     if (!group) return res.status(404).json({ message: "Group not found" });
@@ -33,7 +42,7 @@ router.post("/:groupId/join", authMiddleware, async (req, res) => {
 });
 
 // Leave a Group
-router.post("/:groupId/leave", authMiddleware, async (req, res) => {
+router.post("/:groupId/leave", authenticate, async (req, res) => {
   try {
     const group = await Group.findById(req.params.groupId);
     if (!group) return res.status(404).json({ message: "Group not found" });

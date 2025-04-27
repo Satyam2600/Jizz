@@ -4,80 +4,55 @@ const eventSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
-    trim: true
-  },
-  description: {
-    type: String,
-    required: true,
-    trim: true
   },
   location: {
     type: String,
     required: true,
-    trim: true
   },
   date: {
     type: Date,
-    required: true
+    required: true,
   },
   time: {
     type: String,
-    required: true
+    required: true,
   },
   duration: {
     type: Number,
     required: true,
-    min: 1,
-    max: 24
   },
   category: {
     type: String,
     required: true,
-    enum: ['campus', 'outdoor', 'art', 'career', 'social', 'sports', 'academic']
   },
-  coverImage: {
+  description: {
     type: String,
-    required: true
+    required: true,
   },
   maxParticipants: {
     type: Number,
     required: true,
-    min: 1
   },
-  tags: [{
-    type: String,
-    trim: true
-  }],
-  requirements: {
-    type: String,
-    trim: true
-  },
-  organizer: {
+  tags: [String],
+  requirements: String,
+  coverImage: String,
+  participants: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
+  savedBy: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
+  createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: true,
   },
-  participants: [{
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    },
-    joinedAt: {
-      type: Date,
-      default: Date.now
-    }
-  }],
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-});
+}, { timestamps: true });
 
-// Index for better query performance
-eventSchema.index({ date: 1 });
-eventSchema.index({ category: 1 });
-eventSchema.index({ organizer: 1 });
-
-const Event = mongoose.model('Event', eventSchema);
-
-module.exports = Event; 
+module.exports = mongoose.model('Event', eventSchema);

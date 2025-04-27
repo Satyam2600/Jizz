@@ -16,7 +16,7 @@ exports.getProfile = async (req, res) => {
 // Update user profile
 exports.updateProfile = async (req, res) => {
     try {
-        const { name, bio, profilePic, rollNumber } = req.body;
+        const { name, bio, avatar, rollNumber } = req.body;
         const user = await User.findOne({ rollNumber: req.user.id });
 
         if (!user) {
@@ -34,7 +34,7 @@ exports.updateProfile = async (req, res) => {
         // Update user fields
         user.name = name || user.name;
         user.bio = bio || user.bio;
-        user.profilePic = profilePic || user.profilePic;
+        user.avatar = avatar || user.avatar;
         user.rollNumber = rollNumber || user.rollNumber;
 
         await user.save();

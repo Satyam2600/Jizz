@@ -64,8 +64,12 @@ document.addEventListener("DOMContentLoaded", () => {
           localStorage.removeItem('rememberedRollNumber');
         }
 
-        // Redirect to dashboard
-        window.location.href = '/dashboard';
+        // Redirect based on profileCompleted
+        if (data.user && data.user.profileCompleted === false) {
+          window.location.href = '/edit-profile';
+        } else {
+          window.location.href = '/dashboard';
+        }
       } else {
         showError(data.message || 'Login failed. Please check your credentials.');
       }
