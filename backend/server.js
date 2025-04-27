@@ -14,6 +14,7 @@ const postRoutes = require("./routes/postRoutes");
 const commentRoutes = require("./routes/commentRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const eventRoutes = require('./routes/eventRoutes');
+const communityRoutes = require('./routes/communityRoutes');
 
 // Create HTTP Server
 const server = http.createServer(app);
@@ -43,6 +44,7 @@ app.use("/api/uploads", uploadRoutes);
 
 // Events routes
 app.use('/api/events', eventRoutes);
+app.use('/api/communities', communityRoutes);
 
 // Static files
 app.use(express.static(path.join(__dirname, '../frontend')));

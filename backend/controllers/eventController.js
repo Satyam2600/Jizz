@@ -35,7 +35,29 @@ const upload = multer({
 // Fetch all events
 const getAllEvents = async (req, res) => {
   try {
-    const events = await Event.find().populate('participants', 'name').populate('createdBy', 'name').sort({ createdAt: -1 });
+    const { search, category, status } = req.query;
+    let query = {};
+
+    // Add search filter
+    if (search) {
+      query.title = { $regex: search, $options: 'i' };
+    }
+
+    // Add category filter
+    if (category) {
+      query.category = category;
+    }
+
+    // Add status filter
+    if (status) {
+      query.status = status;
+    }
+
+    const events = await Event.find(query)
+      .populate('participants', 'name')
+      .populate('createdBy', 'name')
+      .sort({ createdAt: -1 });
+    
     res.status(200).json({ success: true, data: events });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to fetch events', error: error.message });
@@ -45,7 +67,34 @@ const getAllEvents = async (req, res) => {
 // Fetch events created by the user
 const getYourEvents = async (req, res) => {
   try {
-    const events = await Event.find({ participants: req.user._id }).populate('participants', 'name').populate('createdBy', 'name').sort({ createdAt: -1 });
+    const { search, category, status } = req.query;
+    let query = {
+      $or: [
+        { createdBy: req.user._id },
+        { participants: req.user._id }
+      ]
+    };
+
+    // Add search filter
+    if (search) {
+      query.title = { $regex: search, $options: 'i' };
+    }
+
+    // Add category filter
+    if (category) {
+      query.category = category;
+    }
+
+    // Add status filter
+    if (status) {
+      query.status = status;
+    }
+
+    const events = await Event.find(query)
+      .populate('participants', 'name')
+      .populate('createdBy', 'name')
+      .sort({ createdAt: -1 });
+    
     res.status(200).json({ success: true, data: events });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to fetch your events', error: error.message });
@@ -238,16 +287,34 @@ const leaveEvent = async (req, res) => {
 const saveEvent = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
-    if (!event) return res.status(404).json({ success: false, message: 'Event not found' });
-
-    if (!event.savedBy.includes(req.user._id)) {
-      event.savedBy.push(req.user._id);
-      await event.save();
+    if (!event) {
+      return res.status(404).json({ success: false, message: 'Event not found' });
     }
 
-    res.status(200).json({ success: true, message: 'Event saved successfully' });
+    // Check if user has already saved the event
+    const isSaved = event.savedBy.includes(req.user._id);
+    
+    if (isSaved) {
+      // Remove from saved events
+      event.savedBy = event.savedBy.filter(id => id.toString() !== req.user._id.toString());
+    } else {
+      // Add to saved events
+      event.savedBy.push(req.user._id);
+    }
+
+    await event.save();
+
+    res.status(200).json({ 
+      success: true, 
+      message: isSaved ? 'Event removed from saved events' : 'Event saved successfully',
+      data: event
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to save event', error: error.message });
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to save event', 
+      error: error.message 
+    });
   }
 };
 

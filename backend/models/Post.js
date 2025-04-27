@@ -9,7 +9,9 @@ const PostSchema = new mongoose.Schema(
     },
     content: {
       type: String,
-      required: true,
+      required: function() {
+        return !this.image && !this.video;
+      },
       trim: true,
       maxlength: 5000
     },

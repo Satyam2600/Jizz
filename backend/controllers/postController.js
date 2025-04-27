@@ -40,9 +40,9 @@ exports.getAllPosts = async (req, res) => {
 // Validation chain for post creation
 exports.validatePost = [
   body('content')
+    .optional()
     .trim()
-    .notEmpty().withMessage('Post content is required')
-    .isLength({ max: 1000 }).withMessage('Post must be less than 1000 characters')
+    .isLength({ max: 5000 }).withMessage('Post must be less than 5000 characters')
     .escape(),
 ];
 
@@ -58,16 +58,12 @@ exports.createPost = async (req, res) => {
 
   try {
     const { content, image, video } = req.body;
-    const userId = req.user.userId;
-
-    if (!content && !image && !video) {
-      return res.status(400).json({ message: "Post content or media is required" });
-    }
+    const userId = req.user._id;
 
     // Create post with media
     const newPost = new Post({
       user: userId,
-      content,
+      content: content || '',
       image: image || null,
       video: video || null,
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
@@ -79,10 +75,18 @@ exports.createPost = async (req, res) => {
       .populate("user", "fullName username avatar department")
       .populate("comments.user", "fullName username avatar");
 
-    res.status(201).json(populatedPost);
+    res.status(201).json({
+      success: true,
+      message: "Post created successfully",
+      post: populatedPost
+    });
   } catch (error) {
     console.error("Error creating post:", error);
-    res.status(500).json({ message: "Server Error", error: error.message });
+    res.status(500).json({ 
+      success: false,
+      message: "Server Error", 
+      error: error.message 
+    });
   }
 };
 

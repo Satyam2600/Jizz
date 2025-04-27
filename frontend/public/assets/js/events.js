@@ -16,9 +16,39 @@ function checkAuth() {
   return true;
 }
 
+// Theme management
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-bs-theme', savedTheme);
+  updateThemeIcon(savedTheme);
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  
+  document.documentElement.setAttribute('data-bs-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  updateThemeIcon(newTheme);
+}
+
+function updateThemeIcon(theme) {
+  const themeIcon = document.querySelector('#themeToggle i');
+  if (!themeIcon) return;
+  
+  if (theme === 'dark') {
+    themeIcon.classList.remove('bi-moon-fill');
+    themeIcon.classList.add('bi-sun-fill');
+  } else {
+    themeIcon.classList.remove('bi-sun-fill');
+    themeIcon.classList.add('bi-moon-fill');
+  }
+}
+
 // Load events when page loads
 document.addEventListener('DOMContentLoaded', () => {
   if (checkAuth()) {
+    initTheme();
     loadEvents();
     setupEventListeners();
   }
@@ -26,23 +56,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Setup event listeners
 function setupEventListeners() {
+  // Theme toggle
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleTheme();
+    });
+  }
+
   // Search input
-  document.querySelector('.search-input').addEventListener('input', (e) => {
-    currentFilters.search = e.target.value;
-    loadEvents();
-  });
+  const searchInput = document.querySelector('.search-input');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      currentFilters.search = e.target.value.trim();
+      loadEvents();
+    });
+  }
 
   // Category filter
-  document.getElementById('categoryFilter').addEventListener('change', (e) => {
-    currentFilters.category = e.target.value;
-    loadEvents();
-  });
+  const categoryFilter = document.getElementById('categoryFilter');
+  if (categoryFilter) {
+    categoryFilter.addEventListener('change', (e) => {
+      currentFilters.category = e.target.value;
+      loadEvents();
+    });
+  }
 
   // Status filter
-  document.getElementById('statusFilter').addEventListener('change', (e) => {
-    currentFilters.status = e.target.value;
-    loadEvents();
-  });
+  const statusFilter = document.getElementById('statusFilter');
+  if (statusFilter) {
+    statusFilter.addEventListener('change', (e) => {
+      currentFilters.status = e.target.value;
+      loadEvents();
+    });
+  }
+
+  // Filter button
+  const filterButton = document.querySelector('.filter-button');
+  if (filterButton) {
+    filterButton.addEventListener('click', () => {
+      loadEvents();
+    });
+  }
 
   // Tab navigation
   document.querySelectorAll('.nav-tabs .nav-link').forEach(tab => {
@@ -51,6 +108,16 @@ function setupEventListeners() {
       document.querySelectorAll('.nav-tabs .nav-link').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       currentTab = tab.dataset.tab;
+      // Reset filters when changing tabs
+      currentFilters = {
+        search: '',
+        category: '',
+        status: ''
+      };
+      // Reset form inputs
+      if (searchInput) searchInput.value = '';
+      if (categoryFilter) categoryFilter.value = '';
+      if (statusFilter) statusFilter.value = '';
       loadEvents();
     });
   });
@@ -83,13 +150,34 @@ async function loadEvents() {
   if (!checkAuth()) return;
 
   try {
-    const queryParams = new URLSearchParams({
-      ...currentFilters,
-      tab: currentTab
-    });
+    const queryParams = new URLSearchParams();
+    
+    // Add search term if exists
+    if (currentFilters.search) {
+      queryParams.append('search', currentFilters.search);
+    }
+    
+    // Add category filter if exists
+    if (currentFilters.category) {
+      queryParams.append('category', currentFilters.category);
+    }
+    
+    // Add status filter if exists
+    if (currentFilters.status) {
+      queryParams.append('status', currentFilters.status);
+    }
 
     const token = localStorage.getItem('token');
-    const response = await fetch(`/api/events?${queryParams}`, {
+    let url = '/api/events';
+    
+    // Change endpoint based on current tab
+    if (currentTab === 'your-events') {
+      url = '/api/events/your-events';
+    } else if (currentTab === 'saved-events') {
+      url = '/api/events/saved-events';
+    }
+
+    const response = await fetch(`${url}?${queryParams}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -108,8 +196,12 @@ async function loadEvents() {
       throw new Error(`Failed to load events: ${response.status} ${response.statusText} - ${errorData.message || 'Unknown error'}`);
     }
 
-    const events = await response.json();
-    displayEvents(events);
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error(data.message || 'Failed to load events');
+    }
+
+    displayEvents(data.data);
   } catch (error) {
     console.error('Error loading events:', error);
     showError(`Failed to load events: ${error.message}`);
@@ -143,6 +235,9 @@ function createEventCard(event) {
     month: 'short',
     day: 'numeric'
   });
+
+  // Check if event is saved by current user
+  const isSaved = event.savedBy && event.savedBy.includes(getCurrentUserId());
 
   col.innerHTML = `
     <div class="event-card">
@@ -179,9 +274,14 @@ function createEventCard(event) {
               ` : ''}
             </div>
           </div>
-          <button class="btn btn-primary" onclick="joinEvent('${event._id}')">
-            Join Event
-          </button>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" onclick="saveEvent('${event._id}')">
+              <i class="bi ${isSaved ? 'bi-bookmark-fill' : 'bi-bookmark'}"></i>
+            </button>
+            <button class="btn btn-primary" onclick="joinEvent('${event._id}')">
+              Join Event
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -281,6 +381,52 @@ async function joinEvent(eventId) {
   } catch (error) {
     console.error('Error joining event:', error);
     showError('Failed to join event. Please try again.');
+  }
+}
+
+// Save event
+async function saveEvent(eventId) {
+  if (!checkAuth()) return;
+
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`/api/events/${eventId}/save`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+      return;
+    }
+
+    if (!response.ok) {
+      throw new Error('Failed to save event');
+    }
+
+    // Reload events to update the UI
+    loadEvents();
+  } catch (error) {
+    console.error('Error saving event:', error);
+    showError('Failed to save event. Please try again.');
+  }
+}
+
+// Get current user ID
+function getCurrentUserId() {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+  
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.id;
+  } catch (error) {
+    console.error('Error parsing token:', error);
+    return null;
   }
 }
 

@@ -5,6 +5,7 @@ const path = require("path");
 const session = require("express-session");
 const connectDB = require("./config/db");
 const User = require("./models/User");
+const Community = require('./models/Community');
 
 dotenv.config();
 connectDB();
@@ -94,6 +95,35 @@ app.get("/confessions", (req, res) => {
   res.render("confessions", { title: "Confessions - JIZZ" });
 });
 
+app.get("/communities", async (req, res) => {
+  try {
+    const communities = await Community.find()
+      .populate('members', 'name avatar')
+      .sort({ createdAt: -1 });
+
+    // Add isMember property for each community if user is logged in
+    const userId = req.session.user?._id;
+    const communitiesWithMembership = communities.map(community => ({
+      ...community.toObject(),
+      isMember: userId ? community.members.some(m => m._id.toString() === userId.toString()) : false
+    }));
+
+    res.render("communities", { 
+      title: "Communities - JIZZ",
+      communities: communitiesWithMembership,
+      user: req.session.user || null
+    });
+  } catch (error) {
+    console.error('Error fetching communities:', error);
+    res.render("communities", { 
+      title: "Communities - JIZZ",
+      communities: [],
+      user: req.session.user || null,
+      error: "Failed to load communities. Please try again later."
+    });
+  }
+});
+
 // API Routes
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
@@ -106,6 +136,7 @@ const contactRoutes = require("./routes/contactRoutes");
 const newsletterRoutes = require("./routes/newsletterRoutes");
 const passwordResetRoutes = require("./routes/passwordresetRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
+const communityRoutes = require("./routes/communityRoutes");
 
 // Mount API routes
 app.use("/api/auth", authRoutes);
@@ -119,6 +150,7 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/newsletter", newsletterRoutes);
 app.use("/api/password-reset", passwordResetRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/communities", communityRoutes);
 
 // Health check route
 app.get("/health", (req, res) => res.send("🚀 JIZZ Social Media API Running..."));

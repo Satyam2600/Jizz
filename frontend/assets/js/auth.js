@@ -9,6 +9,12 @@ function getToken() {
     return localStorage.getItem("token");
 }
 
+// Function to clear authentication data
+function clearAuth() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+}
+
 // Function to handle API requests
 async function apiRequest(endpoint, method, data = null) {
     try {
@@ -31,16 +37,23 @@ async function apiRequest(endpoint, method, data = null) {
         const result = await response.json();
         
         if (!response.ok) {
+            if (response.status === 401) {
+                // Token expired or invalid
+                clearAuth();
+                window.location.href = '/login.html';
+                throw new Error('Session expired. Please login again.');
+            }
             throw new Error(result.error || 'Request failed');
         }
         
         return result;
     } catch (error) {
         console.error('API Request Error:', error);
-        return { error: error.message };
+        throw error;
     }
 }
 
+// Login form handler
 document.getElementById("loginForm").addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -55,18 +68,23 @@ document.getElementById("loginForm").addEventListener("submit", async (event) =>
             submitButton.innerHTML = 'Logging in...';
         }
 
+        // Clear any existing auth data
+        clearAuth();
+
         const response = await apiRequest("/auth/login", "POST", { email, password });
 
         if (response.token) {
+            // Store new token and user data
             localStorage.setItem("token", response.token);
             localStorage.setItem("user", JSON.stringify(response.user));
             
             // Verify token is stored
-            if (isAuthenticated()) {
-                window.location.href = "pages/feed.html"; // Redirect to feed
-            } else {
+            if (!isAuthenticated()) {
                 throw new Error("Failed to store authentication token");
             }
+
+            // Redirect to feed
+            window.location.href = "pages/feed.html";
         } else {
             throw new Error(response.error || "Login failed!");
         }
@@ -80,4 +98,10 @@ document.getElementById("loginForm").addEventListener("submit", async (event) =>
             submitButton.innerHTML = 'Login';
         }
     }
+});
+
+// Logout handler
+document.getElementById("logoutBtn")?.addEventListener("click", () => {
+    clearAuth();
+    window.location.href = '/login.html';
 });

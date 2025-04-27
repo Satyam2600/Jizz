@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,12 +30,14 @@
       background-color: var(--primary-bg);
       color: var(--text-primary);
       padding-top: 56px;
+      transition: background-color var(--transition-speed), color var(--transition-speed);
     }
     .navbar {
       background-color: var(--primary-bg) !important;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       height: 56px;
       z-index: 1030;
+      transition: background-color var(--transition-speed);
     }
     .hero-section {
       background: linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://cdn.usegalileo.ai/sdxl10/5fe346f1-0a76-441c-85c5-d527041023d0.png");
@@ -50,18 +52,86 @@
       margin-bottom: 2rem;
     }
     .search-container {
-      max-width: 480px;
+      max-width: 800px;
       width: 100%;
+      margin: 0 auto;
+    }
+    .search-section {
+      background-color: var(--primary-bg);
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+    .search-input-group {
+      position: relative;
+      margin-bottom: 1rem;
     }
     .search-input {
-      border: 1px solid var(--border-color);
-      border-right: none;
-      border-radius: 0.5rem 0 0 0.5rem;
+      width: 100%;
+      padding: 1rem 1.5rem;
+      padding-left: 3rem;
+      border: 2px solid var(--border-color);
+      border-radius: 0.75rem;
+      background-color: var(--primary-bg);
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: all var(--transition-speed);
     }
-    .search-button {
-      border: 1px solid var(--border-color);
-      border-left: none;
-      border-radius: 0 0.5rem 0.5rem 0;
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 0.25rem rgba(1, 152, 99, 0.15);
+    }
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      font-size: 1.25rem;
+      pointer-events: none;
+      transition: color var(--transition-speed);
+    }
+    .search-input:focus + .search-icon {
+      color: var(--accent-color);
+    }
+    .filter-row {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .filter-select {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 2px solid var(--border-color);
+      border-radius: 0.75rem;
+      background-color: var(--primary-bg);
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: all var(--transition-speed);
+    }
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 0.25rem rgba(1, 152, 99, 0.15);
+    }
+    .filter-button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.75rem;
+      background-color: var(--accent-color);
+      color: white;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all var(--transition-speed);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .filter-button:hover {
+      background-color: #018055;
+      transform: translateY(-1px);
     }
     .event-card {
       background-color: var(--primary-bg);
@@ -137,6 +207,30 @@
       border: 2px solid var(--primary-bg);
       margin-left: -8px;
     }
+    .theme-toggle {
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 1.25rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      transition: color var(--transition-speed);
+    }
+    .theme-toggle:hover {
+      color: var(--accent-color);
+    }
+    .form-control, .form-select {
+      background-color: var(--primary-bg);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+      transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed);
+    }
+    .form-control:focus, .form-select:focus {
+      background-color: var(--primary-bg);
+      color: var(--text-primary);
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 0.25rem rgba(1, 152, 99, 0.25);
+    }
     .event-tag {
       background-color: #F4EFE6;
       color: var(--text-primary);
@@ -191,64 +285,29 @@
 </head>
 <body>
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg fixed-top border-bottom">
-    <div class="container-fluid px-4">
-      <a class="navbar-brand fw-bold" href="#">jizz</a>
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">Jizz</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto">
+        <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a class="nav-link active" href="/dashboard"><i class="bi bi-house-door me-2"></i>Home</a>
+            <button class="theme-toggle" id="themeToggle">
+              <i class="bi bi-moon-fill"></i>
+            </button>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#"><i class="bi bi-people me-2"></i>Communities</a>
+            <a class="nav-link" href="/dashboard">Dashboard</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/events"><i class="bi bi-calendar-event me-2"></i>Events</a>
+            <a class="nav-link" href="/profile">Profile</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/confessions"><i class="bi bi-chat-quote me-2"></i>Confessions</a>
+            <a class="nav-link" href="#" id="logoutButton">Logout</a>
           </li>
         </ul>
-        <div class="d-flex align-items-center gap-3">
-          <div class="theme-toggle" id="themeToggle">
-            <i class="bi bi-moon"></i>
-          </div>
-          <div class="dropdown">
-            <button class="btn btn-link text-dark position-relative" type="button" data-bs-toggle="dropdown">
-              <i class="bi bi-bell"></i>
-              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
-            </button>
-            <div class="dropdown-menu dropdown-menu-end p-2" style="min-width: 300px;">
-              <h6 class="dropdown-header">Notifications</h6>
-              <div class="list-group border-0">
-                <a href="#" class="list-group-item list-group-item-action border-0">
-                  <div class="d-flex align-items-center">
-                    <i class="bi bi-person-check fs-5 me-3"></i>
-                    <div>
-                      <p class="mb-0 small">New connection request</p>
-                      <small class="text-muted">2m ago</small>
-                    </div>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div class="dropdown">
-            <button class="btn rounded-circle border-0" id="chatButton" style="width: 40px; height: 40px; background-color: var(--accent-color); color: white; box-shadow: 0 2px 8px rgba(1, 152, 99, 0.3);">
-              <i class="bi bi-chat-dots-fill fs-5"></i>
-            </button>
-            <div class="dropdown-menu dropdown-menu-end">
-              <a class="dropdown-item" href="/chat"><i class="bi bi-chat-dots me-2"></i>Messages</a>
-              <a class="dropdown-item" href="/chat/groups"><i class="bi bi-people me-2"></i>Group Chats</a>
-              <a class="dropdown-item" href="/chat/requests"><i class="bi bi-person-plus me-2"></i>Chat Requests</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#" id="logoutButton"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </nav>
@@ -258,17 +317,13 @@
     <div class="hero-section text-white text-center">
       <div class="search-container">
         <h1 class="display-4 fw-bold mb-4">Explore and create events</h1>
-        <div class="row g-3">
-          <div class="col-md-4">
-            <div class="input-group">
-              <span class="input-group-text bg-white border-end-0">
-                <i class="bi bi-search text-muted"></i>
-              </span>
-              <input type="text" class="form-control search-input" placeholder="Search events">
-            </div>
+        <div class="search-section">
+          <div class="search-input-group">
+            <input type="text" class="search-input" placeholder="Search events...">
+            <i class="bi bi-search search-icon"></i>
           </div>
-          <div class="col-md-3">
-            <select class="form-select" id="categoryFilter">
+          <div class="filter-row">
+            <select class="filter-select" id="categoryFilter">
               <option value="">All Categories</option>
               <option value="campus">Campus Tour</option>
               <option value="outdoor">Outdoor</option>
@@ -278,18 +333,17 @@
               <option value="sports">Sports</option>
               <option value="academic">Academic</option>
             </select>
-          </div>
-          <div class="col-md-3">
-            <select class="form-select" id="statusFilter">
+            <select class="filter-select" id="statusFilter">
               <option value="">All Status</option>
               <option value="upcoming">Upcoming</option>
               <option value="ongoing">Ongoing</option>
               <option value="completed">Completed</option>
               <option value="cancelled">Cancelled</option>
             </select>
-          </div>
-          <div class="col-md-2">
-            <button class="btn btn-primary w-100 search-button">Filter</button>
+            <button class="filter-button">
+              <i class="bi bi-funnel"></i>
+              Filter
+            </button>
           </div>
         </div>
       </div>

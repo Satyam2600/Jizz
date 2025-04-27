@@ -94,16 +94,23 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: 'Invalid roll number or password' });
     }
 
-    // Generate JWT token
+    // Generate unique JWT token with timestamp
     const token = jwt.sign(
       { 
         id: user._id,
         rollNumber: user.rollNumber,
-        role: user.role
+        role: user.role,
+        iat: Math.floor(Date.now() / 1000) // Add issued at timestamp
       },
       process.env.JWT_SECRET,
-      { expiresIn: '1d' }
+      { 
+        expiresIn: '1d',
+        algorithm: 'HS256' // Explicitly specify algorithm
+      }
     );
+
+    // Log successful login
+    console.log(`User ${user.rollNumber} logged in successfully`);
 
     res.status(200).json({
       message: "Login successful",

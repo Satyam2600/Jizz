@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <title>Communities</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="stylesheet" href="/assets/css/communities.css">
+</head>
+<body>
+  <!-- Sleek Navbar -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="/dashboard">jizz</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/dashboard"><i class="bi bi-house-door me-2"></i>Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/communities"><i class="bi bi-people me-2"></i>Communities</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/events"><i class="bi bi-calendar-event me-2"></i>Events</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/confessions"><i class="bi bi-chat-quote me-2"></i>Confessions</a>
+          </li>
+        </ul>
+        <div class="d-flex align-items-center gap-3">
+          <!-- Theme Toggle Button -->
+          <div class="theme-toggle" id="themeToggle">
+            <i class="bi bi-moon-fill"></i>
+          </div>
+          <!-- Notifications -->
+          <div class="dropdown">
+            <button class="btn profile-button" type="button" data-bs-toggle="dropdown" style="background-color: #6c757d;">
+              <i class="bi bi-bell-fill"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end p-2" style="min-width: 300px;">
+              <h6 class="dropdown-header">Notifications</h6>
+              <div class="list-group border-0">
+                <a href="#" class="list-group-item list-group-item-action border-0">
+                  <div class="d-flex align-items-center">
+                    <i class="bi bi-person-check fs-5 me-3 text-success"></i>
+                    <div>
+                      <p class="mb-0 small">New connection request</p>
+                      <small class="text-muted">2m ago</small>
+                    </div>
+                  </div>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action border-0">
+                  <div class="d-flex align-items-center">
+                    <i class="bi bi-chat-left-text fs-5 me-3 text-primary"></i>
+                    <div>
+                      <p class="mb-0 small">New message from Alex</p>
+                      <small class="text-muted">15m ago</small>
+                    </div>
+                  </div>
+                </a>
+              </div>
+              <div class="dropdown-divider"></div>
+              <a href="#" class="dropdown-item text-center small text-muted">View all notifications</a>
+            </div>
+          </div>
+          <!-- Profile -->
+          <div class="dropdown">
+            <button class="profile-button" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-person-fill"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+              <a class="dropdown-item" href="/edit-profile"><i class="bi bi-person-gear me-2"></i>Edit Profile</a>
+              <a class="dropdown-item" href="/chat"><i class="bi bi-chat-dots me-2"></i>Messages</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#" onclick="logout(); return false;"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container communities-container">
+    <div class="communities-header">
+      <h1 class="mb-2">Communities</h1>
+      <p class="text-muted mb-4">Find and join communities that share your interests.</p>
+      
+      <!-- Update the search input and tabs with IDs -->
+      <div class="search-container">
+        <i class="bi bi-search"></i>
+        <input type="text" class="form-control" id="communitySearch" placeholder="Search for communities...">
+      </div>
+      
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link active" href="#" data-tab="all">All Communities</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-tab="trending">Trending</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-tab="newest">Newest</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-tab="category">Categories</a>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Add a container for category filters that will show when "Categories" tab is clicked -->
+    <div id="categoryFilters" class="mb-4 d-none">
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-sm btn-outline-secondary category-filter" data-category="all">All</button>
+        <button class="btn btn-sm btn-outline-secondary category-filter" data-category="academic">Academic</button>
+        <button class="btn btn-sm btn-outline-secondary category-filter" data-category="sports">Sports</button>
+        <button class="btn btn-sm btn-outline-secondary category-filter" data-category="arts">Arts & Culture</button>
+        <button class="btn btn-sm btn-outline-secondary category-filter" data-category="technology">Technology</button>
+        <button class="btn btn-sm btn-outline-secondary category-filter" data-category="social">Social</button>
+        <button class="btn btn-sm btn-outline-secondary category-filter" data-category="other">Other</button>
+      </div>
+    </div>
+    
+    .creator-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: var(--accent-color);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(1, 152, 99, 0.3);
+      display: flex;
+      align-items: center;
+      z-index: 1;
+    }
+    
+    .btn-manage {
+      border-radius: 50px;
+      padding: 0.5rem 1.25rem;
+      font-weight: 500;
+      background-color: transparent;
+      border-color: var(--accent-color);
+      color: var(--accent-color);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-manage:hover {
+      background-color: rgba(1, 152, 99, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(1, 152, 99, 0.2);
+    }
+    
+    .btn-join {
+      border-radius: 50px;
+      padding: 0.5rem 1.25rem;
+      font-weight: 500;
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-join:hover {
+      background-color: #018555;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(1, 152, 99, 0.3);
+    }
+    
+    .btn-leave {
+      border-radius: 50px;
+      padding: 0.5rem 1.25rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-leave:hover {
+      background-color: var(--secondary-bg);
+      transform: translateY(-2px);
+    }
+    
+    .create-community-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 50%;
+      background-color: var(--accent-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      border: none;
+      z-index: 1000;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    
+    .create-community-btn:hover {
+      transform: scale(1.1);
+      background-color: #018555;
+      box-shadow: 0 6px 15px rgba(1, 152, 99, 0.4);
+    }
+    
+    /* Theme toggle styles */
+    .theme-toggle {
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      background-color: var(--secondary-bg);
+    }
+    
+    .theme-toggle:hover {
+      background-color: var(--border-color);
+      transform: translateY(-2px);
+    }
+    
+    .theme-toggle i {
+      font-size: 1.2rem;
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+    }
+    
+    /* Navbar styles */
+    .navbar {
+      background-color: var(--primary-bg);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      transition: all var(--transition-speed) ease;
+    }
+    
+    .navbar-brand {
+      color: var(--accent-color);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      transition: all 0.3s ease;
+    }
+    
+    .navbar-brand:hover {
+      transform: scale(1.05);
+      color: var(--accent-color);
+    }
+    
+    .navbar .nav-link {
+      color: var(--text-secondary);
+      font-weight: 500;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      margin: 0 0.25rem;
+    }
+    
+    .navbar .nav-link:hover {
+      color: var(--accent-color);
+      background-color: var(--secondary-bg);
+      transform: translateY(-2px);
+    }
+    
+    .navbar .nav-link.active {
+      color: var(--accent-color);
+      background-color: rgba(1, 152, 99, 0.1);
+    }
+    
+    .navbar .nav-link i {
+      transition: all 0.3s ease;
+    }
+    
+    .navbar .nav-link:hover i {
+      transform: translateY(-2px);
+    }
+    
+    .profile-button {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--accent-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(1, 152, 99, 0.3);
+      border: none;
+    }
+    
+    .profile-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(1, 152, 99, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <!-- Sleek Navbar -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="/dashboard">jizz</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/dashboard"><i class="bi bi-house-door me-2"></i>Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/communities"><i class="bi bi-people me-2"></i>Communities</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/events"><i class="bi bi-calendar-event me-2"></i>Events</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/confessions"><i class="bi bi-chat-quote me-2"></i>Confessions</a>
+          </li>
+        </ul>
+        <div class="d-flex align-items-center gap-3">
+          <!-- Theme Toggle Button -->
+          <div class="theme-toggle" id="themeToggle">
+            <i class="bi bi-moon-fill"></i>
+          </div>
+          <!-- Notifications -->
+          <div class="dropdown">
+            <button class="btn profile-button" type="button" data-bs-toggle="dropdown" style="background-color: #6c757d;">
+              <i class="bi bi-bell-fill"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end p-2" style="min-width: 300px;">
+              <h6 class="dropdown-header">Notifications</h6>
+              <div class="list-group border-0">
+                <a href="#" class="list-group-item list-group-item-action border-0">
+                  <div class="d-flex align-items-center">
+                    <i class="bi bi-person-check fs-5 me-3 text-success"></i>
+                    <div>
+                      <p class="mb-0 small">New connection request</p>
+                      <small class="text-muted">2m ago</small>
+                    </div>
+                  </div>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action border-0">
+                  <div class="d-flex align-items-center">
+                    <i class="bi bi-chat-left-text fs-5 me-3 text-primary"></i>
+                    <div>
+                      <p class="mb-0 small">New message from Alex</p>
+                      <small class="text-muted">15m ago</small>
+                    </div>
+                  </div>
+                </a>
+              </div>
+              <div class="dropdown-divider"></div>
+              <a href="#" class="dropdown-item text-center small text-muted">View all notifications</a>
+            </div>
+          </div>
+          <!-- Profile -->
+          <div class="dropdown">
+            <button class="profile-button" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-person-fill"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+              <a class="dropdown-item" href="/edit-profile"><i class="bi bi-person-gear me-2"></i>Edit Profile</a>
+              <a class="dropdown-item" href="/chat"><i class="bi bi-chat-dots me-2"></i>Messages</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#" onclick="logout(); return false;"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container communities-container">
+    <div class="communities-header">
+      <h1 class="mb-2">Communities</h1>
+      <p class="text-muted mb-4">Find and join communities that share your interests.</p>
+      
+      <!-- Update the search input and tabs with IDs -->
+      <div class="search-container">
+        <i class="bi bi-search"></i>
+        <input type="text" class="form-control" id="communitySearch" placeholder="Search for communities...">
+      </div>
+      
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link active" href="#" data-tab="all">All Communities</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-tab="trending">Trending</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-tab="newest">Newest</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-tab="category">Categories</a>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Add a container for category filters that will show when "Categories" tab is clicked -->
+    <div id="categoryFilters" class="mb-4 d-none">
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-sm btn-outline-secondary category-filter" data-category="all">All</button>
+        <button class="btn btn-sm btn-outline-secondary category-filter" data-category="academic">Academic</button>
+        <button class="btn btn-sm btn-outline-secondary category-filter" data-category="sports">Sports</button>
+        <button class="btn btn-sm btn-outline-secondary category-filter" data-category="arts">Arts & Culture</button>
+        <button class="btn btn-sm btn-outline-secondary category-filter" data-category="technology">Technology</button>
+        <button class="btn btn-sm btn-outline-secondary category-filter" data-category="social">Social</button>
+        <button class="btn btn-sm btn-outline-secondary category-filter" data-category="other">Other</button>
+      </div>
+    </div>
+    
+    <h2 class="mb-4" id="communitiesTitle">All Communities</h2>
+    
+    <!-- Add this toast container for notifications -->
+    <div class="toast-container position-fixed top-0 end-0 p-3"></div>
+    
+    <div class="communities-grid" id="communities-container">
+      <% if (communities && communities.length > 0) { %>
+        <% communities.forEach(function(community) { %>
+          <div class="community-card">
+            <div class="community-image" style="background-image: url('<%= community.coverImage || "/assets/images/default-cover.jpg" %>');">
+              <img src="<%= community.avatar || '/assets/images/default-avatar.jpg' %>" class="community-logo" alt="<%= community.name %>">
+              <% if (community.isCreator) { %>
+                <div class="creator-badge">
+                  <i class="bi bi-star-fill me-1"></i> Creator
+                </div>
+              <% } %>
+            </div>
+            <div class="community-content">
+              <span class="category-badge"><i class="bi bi-tag"></i> <%= community.category %></span>
+              <h3 class="community-title"><%= community.name %></h3>
+              <p class="community-description"><%= community.description %></p>
+              <div class="community-meta">
+                <span><i class="bi bi-people"></i> <%= community.members.length %> members</span>
+                <span><i class="bi bi-calendar"></i> <%= new Date(community.createdAt).toLocaleDateString() %></span>
+              </div>
+              <div>
+                <% if (community.isCreator) { %>
+                  <button class="btn btn-outline-success btn-manage" onclick="manageCommunity('<%= community._id %>')">
+                    <i class="bi bi-gear me-1"></i>Manage
+                  </button>
+                <% } else if (community.isMember) { %>
+                  <button class="btn btn-outline-primary btn-leave" onclick="leaveCommunity('<%= community._id %>')">
+                    <i class="bi bi-box-arrow-left me-1"></i>Leave
+                  </button>
+                <% } else { %>
+                  <button class="btn btn-primary btn-join" onclick="joinCommunity('<%= community._id %>')">
+                    <i class="bi bi-box-arrow-in-right me-1"></i>Join
+                  </button>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <!-- Empty state remains the same -->
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Create Community Button -->
+  <button class="create-community-btn" data-bs-toggle="modal" data-bs-target="#createCommunityModal">
+    <i class="bi bi-plus-lg"></i>
+  </button>
+
+  <!-- Create Community Modal -->
+  <div class="modal fade" id="createCommunityModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create New Community</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="createCommunityForm">
+            <div class="mb-3">
+              <label class="form-label">Community Name</label>
+              <input type="text" class="form-control" name="name" required>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" name="description" rows="3" required></textarea>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Category</label>
+              <select class="form-select" name="category" required>
+                <option value="">Select a category</option>
+                <option value="academic">Academic</option>
+                <option value="sports">Sports</option>
+                <option value="arts">Arts & Culture</option>
+                <option value="technology">Technology</option>
+                <option value="social">Social</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Community Avatar</label>
+              <div class="upload-area" id="avatarUpload">
+                <div class="upload-icon">
+                  <i class="bi bi-image"></i>
+                </div>
+                <p class="mb-0">Click to upload avatar image</p>
+                <input type="file" name="avatar" accept="image/*" class="d-none" id="avatarInput">
+                <img id="avatarPreview" class="preview-image d-none mt-3 img-fluid rounded">
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Cover Image</label>
+              <div class="upload-area" id="coverUpload">
+                <div class="upload-icon">
+                  <i class="bi bi-image"></i>
+                </div>
+                <p class="mb-0">Click to upload cover image</p>
+                <input type="file" name="coverImage" accept="image/*" class="d-none" id="coverInput">
+                <img id="coverPreview" class="preview-image d-none mt-3 img-fluid rounded">
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Privacy Settings</label>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="privacy" value="public" checked>
+                <label class="form-check-label">Public - Anyone can join</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="privacy" value="private">
+                <label class="form-check-label">Private - Requires approval</label>
+              </div>
+            </div>
+            
+            <div class="text-end mt-4">
+              <button type="button" class="btn btn-light me-2" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-primary">Create Community</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="/js/communities.js"></script>
+  <script>
+    // Initialize file upload previews
+    document.addEventListener('DOMContentLoaded', function() {
+      const avatarUpload = document.getElementById('avatarUpload');
+      const avatarInput = document.getElementById('avatarInput');
+      const avatarPreview = document.getElementById('avatarPreview');
+      
+      if (avatarUpload && avatarInput && avatarPreview) {
+        avatarUpload.addEventListener('click', function() {
+          avatarInput.click();
+        });
+        
+        avatarInput.addEventListener('change', function() {
+          if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              avatarPreview.src = e.target.result;
+              avatarPreview.classList.remove('d-none');
+            };
+            reader.readAsDataURL(this.files[0]);
+          }
+        });
+      }
+      
+      const coverUpload = document.getElementById('coverUpload');
+      const coverInput = document.getElementById('coverInput');
+      const coverPreview = document.getElementById('coverPreview');
+      
+      if (coverUpload && coverInput && coverPreview) {
+        coverUpload.addEventListener('click', function() {
+          coverInput.click();
+        });
+        
+        coverInput.addEventListener('change', function() {
+          if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              coverPreview.src = e.target.result;
+              coverPreview.classList.remove('d-none');
+            };
+            reader.readAsDataURL(this.files[0]);
+          }
+        });
+      }
+      
+      // Theme toggle functionality
+      const themeToggle = document.getElementById('themeToggle');
+      const htmlElement = document.documentElement;
+      const themeIcon = themeToggle.querySelector('i');
+      
+      // Set initial theme based on localStorage
+      const currentTheme = localStorage.getItem('theme') || 'light';
+      htmlElement.setAttribute('data-bs-theme', currentTheme);
+      
+      // Update icon based on current theme
+      if (currentTheme === 'dark') {
+        themeIcon.classList.remove('bi-moon-fill');
+        themeIcon.classList.add('bi-sun-fill');
+      } else {
+        themeIcon.classList.remove('bi-sun-fill');
+        themeIcon.classList.add('bi-moon-fill');
+      }
+      
+      // Toggle theme on click
+      themeToggle.addEventListener('click', function() {
+        const currentTheme = htmlElement.getAttribute('data-bs-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        
+        // Update theme
+        htmlElement.setAttribute('data-bs-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        
+        // Update icon
+        if (newTheme === 'dark') {
+          themeIcon.classList.remove('bi-moon-fill');
+          themeIcon.classList.add('bi-sun-fill');
+        } else {
+          themeIcon.classList.remove('bi-sun-fill');
+          themeIcon.classList.add('bi-moon-fill');
+        }
+      });
+    });
+    
+    // Logout function
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+  </script>
+</body>
+</html>

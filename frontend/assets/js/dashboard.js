@@ -753,11 +753,6 @@ if (createPostForm) {
             return;
         }
 
-        if (!content && !currentMediaFile) {
-            alert('Please enter some content or add media for your post');
-            return;
-        }
-
         try {
             let mediaUrl = null;
             let mediaType = null;
@@ -766,8 +761,6 @@ if (createPostForm) {
             if (currentMediaFile) {
                 const mediaFormData = new FormData();
                 mediaFormData.append('media', currentMediaFile);
-
-                console.log('Uploading media file:', currentMediaFile); // Debug log
 
                 const mediaResponse = await fetch('/api/uploads/post-media', {
                     method: 'POST',
@@ -783,15 +776,13 @@ if (createPostForm) {
                 }
 
                 const mediaData = await mediaResponse.json();
-                console.log('Media upload response:', mediaData); // Debug log
-
                 mediaUrl = mediaData.filePath;
                 mediaType = mediaData.type;
             }
 
             // Create post data
             const postData = {
-                content: content
+                content: content || ''
             };
 
             // Add media to post data based on type
@@ -802,8 +793,6 @@ if (createPostForm) {
                     postData.image = mediaUrl;
                 }
             }
-
-            console.log('Creating post with data:', postData); // Debug log
 
             const postResponse = await fetch('/api/posts/create', {
                 method: 'POST',
@@ -826,7 +815,10 @@ if (createPostForm) {
             }
 
             const postResult = await postResponse.json();
-            console.log('Post creation response:', postResult); // Debug log
+            
+            if (!postResult.success) {
+                throw new Error(postResult.message || 'Failed to create post');
+            }
 
             // Clear the form
             postContent.value = '';
@@ -834,11 +826,44 @@ if (createPostForm) {
             
             // Refresh the feed
             await loadPosts();
+
+            // Show success message
+            showSuccess('Post created successfully!');
         } catch (error) {
             console.error('Error creating post:', error);
-            alert(error.message || 'An error occurred while creating your post');
+            showError(error.message || 'An error occurred while creating your post');
         }
     });
+}
+
+// Show success message
+function showSuccess(message) {
+    const container = document.querySelector('.container');
+    if (!container) return;
+    
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-success alert-dismissible fade show';
+    alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    container.insertBefore(alert, container.firstChild);
+    setTimeout(() => alert.remove(), 5000);
+}
+
+// Show error message
+function showError(message) {
+    const container = document.querySelector('.container');
+    if (!container) return;
+    
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-danger alert-dismissible fade show';
+    alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    container.insertBefore(alert, container.firstChild);
+    setTimeout(() => alert.remove(), 5000);
 }
 
 // Initialize the emoji picker on page load
