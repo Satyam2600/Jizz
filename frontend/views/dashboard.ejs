@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -899,5 +899,44 @@
   </script>
 
   <script src="/assets/js/dashboard.js"></script>
+  
+  <!-- Add theme toggle script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get theme toggle button
+      const themeToggle = document.getElementById('themeToggle');
+      const themeIcon = themeToggle.querySelector('i');
+      
+      // Check for saved theme preference or use default light theme
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-bs-theme', savedTheme);
+      
+      // Update icon based on current theme
+      updateThemeIcon(savedTheme);
+      
+      // Add click event to theme toggle button
+      themeToggle.addEventListener('click', function() {
+        const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        // Update theme
+        document.documentElement.setAttribute('data-bs-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        
+        // Update icon
+        updateThemeIcon(newTheme);
+      });
+      
+      function updateThemeIcon(theme) {
+        if (theme === 'dark') {
+          themeIcon.classList.remove('bi-moon');
+          themeIcon.classList.add('bi-sun');
+        } else {
+          themeIcon.classList.remove('bi-sun');
+          themeIcon.classList.add('bi-moon');
+        }
+      }
+    });
+  </script>
 </body>
 </html>

@@ -1,0 +1,71 @@
+:root {
+  --primary-color: #019863;
+  --primary-hover: #017a4f;
+  --bg-dark: #121212;
+  --bg-card-dark: #1e1e1e;
+  --text-light: #ffffff;
+  --text-secondary: #adb5bd;
+  --border-dark: #2d2d2d;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-light);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Force dark theme */
+[data-bs-theme="light"] {
+  --bs-body-bg: var(--bg-dark);
+  --bs-body-color: var(--text-light);
+}
+
+.navbar {
+  background-color: var(--bg-dark) !important;
+}
+
+.navbar-brand {
+  color: var(--primary-color) !important;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.btn-outline-primary {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.dropdown-menu {
+  background-color: var(--bg-card-dark);
+  border-color: var(--border-dark);
+}
+
+.dropdown-item {
+  color: var(--text-light);
+}
+
+.dropdown-item:hover {
+  background-color: rgba(1, 152, 99, 0.1);
+  color: var(--primary-color);
+}
+
+.dropdown-divider {
+  border-top-color: var(--border-dark);
+}
+
+.text-muted {
+  color: var(--text-secondary) !important;
+}

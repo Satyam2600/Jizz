@@ -32,10 +32,12 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "../frontend/views"));
 
 // Static files
-app.use(express.static(path.join(__dirname, "../frontend"), {
+app.use(express.static(path.join(__dirname, "../frontend/public"), {
   setHeaders: (res, path) => {
     if (path.endsWith('.js')) {
       res.setHeader('Content-Type', 'application/javascript');
+    } else if (path.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
     }
   }
 }));
@@ -173,4 +175,4 @@ app.use((err, req, res, next) => {
   next();
 });
 
-module.exports = app; 
+module.exports = app;
