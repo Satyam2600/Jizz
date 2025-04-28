@@ -48,7 +48,7 @@ app.use("/assets/uploads", express.static(path.join(__dirname, "../frontend/asse
     // Set proper cache control headers
     res.setHeader('Cache-Control', 'public, max-age=31536000');
   }
-}));
+}));~
 
 // Serve uploaded files (for posts/media)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
