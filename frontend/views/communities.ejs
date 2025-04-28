@@ -9,83 +9,94 @@
   
   <link rel="stylesheet" href="/assets/css/style.css">
   <link rel="stylesheet" href="/assets/css/communities.css">
+  <style>
+    .navbar {
+      background-color: var(--primary-bg) !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      height: 56px;
+      z-index: 1030;
+    }
+      .nav-link {
+      color: var(--text-primary);
+      font-size: 14px;
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+    .nav-link:hover {
+      background-color: var(--secondary-bg);
+    }
+  .nav-link i {
+    font-size: 18px;
+    width: 24px;
+  }
+</style>
  
 </head>
 <body>
-  <!-- Sleek Navbar -->
-  <nav class="navbar navbar-expand-lg fixed-top">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg fixed-top border-bottom">
     <div class="container-fluid px-4">
-      <a class="navbar-brand" href="/dashboard">jizz</a>
+      <a class="navbar-brand fw-bold" href="#">Jizz</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link" href="/dashboard"><i class="bi bi-house-door me-2"></i>Home</a>
+            <a class="nav-link active" href="/dashboard"><i class="bi bi-house-door me-2"></i>Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="/communities"><i class="bi bi-people me-2"></i>Communities</a>
+            <a class="nav-link" href="/communities"><i class="bi bi-people me-2"></i>Communities</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/events"><i class="bi bi-calendar-event me-2"></i>Events</a>
-          </li>
+        
+            <li class="nav-item">
+              <a class="nav-link" href="/events"><i class="bi bi-calendar-event me-2"></i>Events</a>
+            </li>
           <li class="nav-item">
             <a class="nav-link" href="/confessions"><i class="bi bi-chat-quote me-2"></i>Confessions</a>
           </li>
         </ul>
         <div class="d-flex align-items-center gap-3">
-          <!-- Theme Toggle Button -->
           <div class="theme-toggle" id="themeToggle">
-            <i class="bi bi-moon-fill"></i>
+            <i class="bi bi-moon"></i>
           </div>
-          <!-- Notifications -->
           <div class="dropdown">
-            <button class="btn profile-button" type="button" data-bs-toggle="dropdown">
-              <i class="bi bi-bell-fill"></i>
+            <button class="btn btn-link text-dark position-relative" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-bell"></i>
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
             </button>
             <div class="dropdown-menu dropdown-menu-end p-2" style="min-width: 300px;">
               <h6 class="dropdown-header">Notifications</h6>
               <div class="list-group border-0">
                 <a href="#" class="list-group-item list-group-item-action border-0">
                   <div class="d-flex align-items-center">
-                    <i class="bi bi-person-check fs-5 me-3 text-success"></i>
+                    <i class="bi bi-person-check fs-5 me-3"></i>
                     <div>
                       <p class="mb-0 small">New connection request</p>
                       <small class="text-muted">2m ago</small>
                     </div>
                   </div>
                 </a>
-                <a href="#" class="list-group-item list-group-item-action border-0">
-                  <div class="d-flex align-items-center">
-                    <i class="bi bi-chat-left-text fs-5 me-3 text-primary"></i>
-                    <div>
-                      <p class="mb-0 small">New message from Alex</p>
-                      <small class="text-muted">15m ago</small>
-                    </div>
-                  </div>
-                </a>
               </div>
-              <div class="dropdown-divider"></div>
-              <a href="#" class="dropdown-item text-center small text-muted">View all notifications</a>
             </div>
           </div>
-          <!-- Profile -->
           <div class="dropdown">
-            <button class="profile-button" type="button" data-bs-toggle="dropdown">
-              <i class="bi bi-person-fill"></i>
+            <button class="btn rounded-circle border-0" id="chatButton" style="width: 40px; height: 40px; background-color: var(--accent-color); color: white; box-shadow: 0 2px 8px rgba(1, 152, 99, 0.3);">
+              <i class="bi bi-chat-dots-fill fs-5"></i>
             </button>
             <div class="dropdown-menu dropdown-menu-end">
-              <a class="dropdown-item" href="/edit-profile"><i class="bi bi-person-gear me-2"></i>Edit Profile</a>
               <a class="dropdown-item" href="/chat"><i class="bi bi-chat-dots me-2"></i>Messages</a>
+              <a class="dropdown-item" href="/chat/groups"><i class="bi bi-people me-2"></i>Group Chats</a>
+              <a class="dropdown-item" href="/chat/requests"><i class="bi bi-person-plus me-2"></i>Chat Requests</a>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="#" onclick="logout(); return false;"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </nav>
+    </div>
+  </nav>
+
 
   <div class="container communities-container">
     <div class="communities-header">
@@ -277,4 +288,5 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="/assets/js/communities.js"></script>
 </body>
+
 </html>

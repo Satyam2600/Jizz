@@ -44,8 +44,10 @@
 
     .navbar {
       background-color: var(--primary-bg) !important;
-      border-bottom: 1px solid var(--border-color) !important;
-    }
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      height: 56px;
+      z-index: 1030;
+    }
 
     .confession-card {
       border: 1px solid var(--border-color);
@@ -155,24 +157,17 @@
 
     .nav-link {
       color: var(--text-primary);
-      position: relative;
+      font-size: 14px;
+      padding: 8px 12px;
+      border-radius: 8px;
     }
-
-    .nav-link.active {
-      color: var(--accent-color);
-      font-weight: 600;
+    .nav-link:hover {
+      background-color: var(--secondary-bg);
     }
-
-    .nav-link.active::after {
-      content: '';
-      position: absolute;
-      bottom: -1px;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background-color: var(--accent-color);
-    }
-
+    .nav-link i {
+      font-size: 18px;
+      width: 24px;
+    }
     .confession-meta {
       padding: 0.75rem;
       background-color: var(--primary-bg);
@@ -284,24 +279,24 @@
 
   <nav class="navbar navbar-expand-lg fixed-top border-bottom">
     <div class="container-fluid px-4">
-      <a class="navbar-brand fw-bold" href="#">jizz</a>
+      <a class="navbar-brand fw-bold" href="#">Jizz</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link" href="/dashboard"><i class="bi bi-house-door me-2"></i>Home</a>
+            <a class="nav-link active" href="/dashboard"><i class="bi bi-house-door me-2"></i>Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#"><i class="bi bi-people me-2"></i>Communities</a>
+            <a class="nav-link" href="/communities"><i class="bi bi-people me-2"></i>Communities</a>
           </li>
         
             <li class="nav-item">
               <a class="nav-link" href="/events"><i class="bi bi-calendar-event me-2"></i>Events</a>
             </li>
           <li class="nav-item">
-            <a class="nav-link active" href="/confessions"><i class="bi bi-chat-quote me-2"></i>Confessions</a>
+            <a class="nav-link" href="/confessions"><i class="bi bi-chat-quote me-2"></i>Confessions</a>
           </li>
         </ul>
         <div class="d-flex align-items-center gap-3">
