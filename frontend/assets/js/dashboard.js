@@ -187,7 +187,18 @@ if (navbarToggler) {
     });
 }
 
-// Ensure posts are fetched and displayed on page load
+// Helper: Fetch comments for a post
+async function fetchCommentsForPost(postId) {
+    try {
+        const response = await fetch(`/api/comments/post/${postId}`);
+        if (!response.ok) return [];
+        return await response.json();
+    } catch (e) {
+        return [];
+    }
+}
+
+// Modified loadPosts to fetch comments for each post
 async function loadPosts() {
     const postsContainer = document.getElementById('postsContainer');
     postsContainer.innerHTML = '<div class="text-center py-4">Loading posts...</div>';
@@ -212,7 +223,14 @@ async function loadPosts() {
         postsContainer.innerHTML = '';
 
         if (data.success && data.posts && data.posts.length > 0) {
-            data.posts.forEach(post => {
+            // Fetch comments for each post in parallel
+            const postsWithComments = await Promise.all(
+                data.posts.map(async post => {
+                    const comments = await fetchCommentsForPost(post._id);
+                    return { ...post, comments };
+                })
+            );
+            postsWithComments.forEach(post => {
                 postsContainer.innerHTML += renderPost(post);
             });
             attachPostEventListeners();
