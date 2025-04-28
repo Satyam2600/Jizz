@@ -818,13 +818,14 @@
 
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+     document.addEventListener('DOMContentLoaded', function() {
       // Initialize emoji picker
       const emojiPickerBtn = document.getElementById('emojiPickerBtn');
       const emojiPickerContainer = document.getElementById('emoji-picker-container');
       const emojiPicker = emojiPickerContainer.querySelector('emoji-picker');
       
       if (emojiPickerBtn && emojiPickerContainer && emojiPicker) {
+        // Register emoji-click event ONCE, using the correct textarea ID
         emojiPicker.addEventListener('emoji-click', event => {
           const postInput = document.getElementById('postContent');
           if (postInput) {

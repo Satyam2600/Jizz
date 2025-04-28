@@ -5,7 +5,12 @@ const imageInput = document.getElementById('imageUpload');
 const videoInput = document.getElementById('videoUpload');
 const imageUploadBtn = document.getElementById('imageUploadBtn');
 const videoUploadBtn = document.getElementById('videoUploadBtn');
+// Ensure postContent is correctly linked to the input field
 const postContent = document.getElementById('postContent');
+
+if (!postContent) {
+    console.error('Post content input field not found. Ensure the input field has the correct ID.');
+}
 
 // Media preview container
 let currentMediaFile = null;
@@ -24,17 +29,15 @@ function renderPost(post) {
     
     // Fix avatar path handling
     const userAvatar = user.avatar && user.avatar !== 'undefined' && user.avatar !== 'null' 
-        ? (user.avatar.startsWith('/') || user.avatar.startsWith('http') ? user.avatar : `/api/uploads/${user.avatar}`) 
+        ? (user.avatar.startsWith('/') || user.avatar.startsWith('http') ? user.avatar : `/uploads/${user.avatar}`) 
         : '/assets/images/default-avatar.png';
-    
     let mediaHtml = '';
     if (post.image) {
         console.log('Rendering image:', post.image); // Debug log
         // Fix image path handling
         const imagePath = post.image.startsWith('/') || post.image.startsWith('http') 
             ? post.image 
-            : `/api/uploads/${post.image}`;
-            
+            : `/uploads/${post.image}`;
         mediaHtml = `
             <div class="post-media mb-3">
                 <img src="${imagePath}" 
@@ -48,8 +51,7 @@ function renderPost(post) {
         // Fix video path handling
         const videoPath = post.video.startsWith('/') || post.video.startsWith('http') 
             ? post.video 
-            : `/api/uploads/${post.video}`;
-            
+            : `/uploads/${post.video}`;
         mediaHtml = `
             <div class="post-media mb-3">
                 <video class="w-100 rounded" 
@@ -120,11 +122,11 @@ function renderPost(post) {
                     ${comments.map(comment => {
                         // Fix comment avatar handling
                         const commentUserAvatar = comment.user?.avatar && 
-                                                comment.user.avatar !== 'undefined' && 
-                                                comment.user.avatar !== 'null'
+                            comment.user.avatar !== 'undefined' && 
+                            comment.user.avatar !== 'null'
                             ? (comment.user.avatar.startsWith('/') || comment.user.avatar.startsWith('http') 
                                ? comment.user.avatar 
-                               : `/api/uploads/${comment.user.avatar}`)
+                               : `/uploads/${comment.user.avatar}`)
                             : '/assets/images/default-avatar.png';
                         
                         return `
@@ -443,7 +445,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             // Fix avatar path
             sidebarUserAvatar.src = userProfilePhoto.startsWith('/') || userProfilePhoto.startsWith('http') 
                 ? userProfilePhoto 
-                : `/api/uploads/${userProfilePhoto}`;
+                : `/uploads/${userProfilePhoto}`;
             console.log('Setting sidebar avatar to:', sidebarUserAvatar.src);
         } else {
             sidebarUserAvatar.src = '/assets/images/default-avatar.png';
@@ -777,90 +779,43 @@ if (createPostForm) {
         const token = localStorage.getItem('token');
         
         if (!token) {
-            alert('Please log in to create posts');
-            window.location.href = '/login';
+            showError('You are not logged in. Please log in to create a post.');
             return;
         }
 
         try {
-            let mediaUrl = null;
-            let mediaType = null;
-
-            // Upload media first if present
+            const formData = new FormData();
+            formData.append('content', content);
             if (currentMediaFile) {
-                const mediaFormData = new FormData();
-                mediaFormData.append('media', currentMediaFile);
-
-                const mediaResponse = await fetch('/api/uploads/post-media', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: mediaFormData
-                });
-
-                if (!mediaResponse.ok) {
-                    const errorData = await mediaResponse.json();
-                    throw new Error(errorData.message || 'Failed to upload media');
-                }
-
-                const mediaData = await mediaResponse.json();
-                mediaUrl = mediaData.filePath;
-                mediaType = mediaData.type;
+                formData.append(currentMediaType, currentMediaFile);
             }
 
-            // Create post data
-            const postData = {
-                content: content || ''
-            };
-
-            // Add media to post data based on type
-            if (mediaUrl && mediaType) {
-                if (mediaType === 'video') {
-                    postData.video = mediaUrl;
-                } else if (mediaType === 'image') {
-                    postData.image = mediaUrl;
-                }
-            }
-
-            const postResponse = await fetch('/api/posts/create', {
+            const response = await fetch('/api/posts', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                    'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(postData)
+                body: formData
             });
 
-            if (!postResponse.ok) {
-                const errorData = await postResponse.json();
-                if (errorData.message === 'Invalid Token') {
-                    localStorage.removeItem('token');
-                    alert('Your session has expired. Please log in again.');
-                    window.location.href = '/login';
-                    return;
+            if (!response.ok) {
+                const errorData = await response.json();
+                if (errorData.error && errorData.error.includes('File too large')) {
+                    showError('The uploaded file is too large. Please upload a video smaller than 100MB.');
+                } else {
+                    showError(errorData.message || 'Failed to create post.');
                 }
-                throw new Error(errorData.message || 'Failed to create post');
+                return;
             }
 
-            const postResult = await postResponse.json();
-            
-            if (!postResult.success) {
-                throw new Error(postResult.message || 'Failed to create post');
-            }
-
-            // Clear the form
-            postContent.value = '';
-            removeMediaPreview();
-            
-            // Refresh the feed
-            await loadPosts();
-
-            // Show success message
+            const data = await response.json();
             showSuccess('Post created successfully!');
+            createPostForm.reset();
+            removeMediaPreview();
+            await loadPosts();
         } catch (error) {
             console.error('Error creating post:', error);
-            showError(error.message || 'An error occurred while creating your post');
+            showError('An error occurred while creating the post. Please try again.');
         }
     });
 }

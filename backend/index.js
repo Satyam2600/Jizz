@@ -50,8 +50,8 @@ app.use("/assets/uploads", express.static(path.join(__dirname, "../frontend/asse
   }
 }));
 
-// Serve backend uploads
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Serve uploaded files (for posts/media)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Serve static files from frontend directory
 app.use(express.static(path.join(__dirname, '../frontend')));

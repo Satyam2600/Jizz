@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 5000000 }, // 5MB limit
+  limits: { fileSize: 100 * 1024 * 1024 }, // 100MB limit
   fileFilter: function (req, file, cb) {
     checkFileType(file, cb);
   },
@@ -46,34 +46,48 @@ function checkFileType(file, cb) {
 }
 
 // 📌 Create a Post (With Mentions)
-router.post("/", authenticate, async (req, res) => {
-  try {
-    const { content, image } = req.body;
+router.post(
+  "/",
+  authenticate,
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "video", maxCount: 1 }
+  ]),
+  async (req, res) => {
+    try {
+      const { content } = req.body;
+      let image = null;
+      let video = null;
+      if (req.files && req.files.image && req.files.image[0]) {
+        image = req.files.image[0].filename;
+      }
+      if (req.files && req.files.video && req.files.video[0]) {
+        video = req.files.video[0].filename;
+      }
+      console.log("content", content);
+      if (!content && !image && !video) return res.status(400).json({ message: "Post content is required" });
 
-    if (!content) return res.status(400).json({ message: "Post content is required" });
-
-    // Extract mentioned usernames from content (@username)
-    const mentionedUsernames = content.match(/@(\w+)/g) || [];
-    const mentionedUsers = [];
-
-    for (let username of mentionedUsernames) {
-      const user = await User.findOne({ username: username.replace("@", "") }).select("_id");
-      if (user) mentionedUsers.push(user._id);
+      // Extract mentioned usernames from content (@username)
+      const mentionedUsernames = content ? content.match(/@(\w+)/g) : [];
+      const mentionedUsers = [];
+      for (let username of mentionedUsernames || []) {
+        const user = await User.findOne({ username: username.replace("@", "") }).select("_id");
+        if (user) mentionedUsers.push(user._id);
+      }
+      const newPost = new Post({
+        user: req.user.id,
+        content: content || '',
+        image,
+        video,
+        mentions: mentionedUsers, // Store mentioned users
+      });
+      await newPost.save();
+      res.status(201).json({ message: "Post created successfully", post: newPost });
+    } catch (error) {
+      res.status(500).json({ message: "Server Error", error: error.message });
     }
-
-    const newPost = new Post({
-      user: req.user.id,
-      content,
-      image,
-      mentions: mentionedUsers, // Store mentioned users
-    });
-
-    await newPost.save();
-    res.status(201).json({ message: "Post created successfully", post: newPost });
-  } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
   }
-});
+);
 
 // 📌 Get All Posts (Latest First)
 router.get("/", authenticate, postController.getAllPosts); // Always returns all posts with user info, paginated if query params provided
