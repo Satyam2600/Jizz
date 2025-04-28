@@ -13,7 +13,9 @@ exports.register = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { username, email, password } = req.body;
+    const { username, email, password, rollNumber } = req.body;
+
+console.log("rollNumber", rollNumber)
 
     // Check if user already exists
     let user = await User.findOne({ $or: [{ email }, { username }] });
@@ -26,6 +28,7 @@ exports.register = async (req, res) => {
 
     // Create user
     user = await User.create({
+     rollNumber: req.body.rollNumber,
       username,
       email,
       password

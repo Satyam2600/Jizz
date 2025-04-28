@@ -2,11 +2,15 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const UserSchema = new mongoose.Schema({
+// Find the username field in your schema and modify it
+const userSchema = new mongoose.Schema({
     username: {
         type: String,
-        required: [true, 'Please provide a username'],
-        unique: true,
+        // Remove the 'required: true' or change it to a conditional validation
+        // Instead of:
+        // required: [true, 'Please provide a username'],
+        // Use:
+        required: false,
         trim: true,
         minlength: [3, 'Username must be at least 3 characters long']
     },
@@ -44,11 +48,31 @@ const UserSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
-    }
+    } ,
+    rollNumber: {
+        type: String,
+        required: [true, 'Please provide a roll number'],
+        unique: true,
+        trim: true
+    },
 });
 
 // Hash password before saving
-UserSchema.pre('save', async function(next) {
+// Your schema is likely defined with a different variable name like 'userSchema' (lowercase)
+// Find where you defined your schema and make sure to use the same variable name for the pre-save hook
+
+// Change this line:
+userSchema
+.pre('save', async function(next) {
+    if (!this.isModified('password')) {
+        next();
+    }
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+});
+
+// To match your schema variable name, likely:
+userSchema.pre('save', async function(next) {
     if (!this.isModified('password')) {
         next();
     }
@@ -57,15 +81,16 @@ UserSchema.pre('save', async function(next) {
 });
 
 // Sign JWT and return
-UserSchema.methods.getSignedJwtToken = function() {
+userSchema
+.methods.getSignedJwtToken = function() {
     return jwt.sign({ userId: this._id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRE
     });
 };
 
 // Match user entered password to hashed password in database
-UserSchema.methods.matchPassword = async function(enteredPassword) {
+userSchema.methods.matchPassword = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('User', userSchema);

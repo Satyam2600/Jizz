@@ -18,7 +18,7 @@ router.post("/request-reset", async (req, res) => {
     console.log("Roll number received:", rollNo);
 
     // Find the user by rollNo
-    const user = await User.findOne({ rollNo });
+    const user = await User.findOne({ rollNumber: rollNo });
     console.log("User found:", user);
 
     if (!user) {

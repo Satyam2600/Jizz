@@ -8,7 +8,7 @@ const requestPasswordReset = async (req, res) => {
         const { uid } = req.body;
         if (!uid) return res.status(400).json({ error: "UID is required" });
 
-        const user = await User.findOne({ rollNo: uid });
+        const user = await User.findOne({ rollNumber: uid });
         if (!user) return res.status(404).json({ error: "User not found" });
 
         // Generate a reset token

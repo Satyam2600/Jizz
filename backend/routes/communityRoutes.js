@@ -149,4 +149,33 @@ router.post('/:id/join', authenticate, async (req, res) => {
   }
 });
 
+// Leave community
+router.post('/:id/leave', authenticate, async (req, res) => {
+  try {
+    const community = await Community.findById(req.params.id);
+
+    if (!community) {
+      return res.status(404).json({ error: 'Community not found' });
+    }
+
+    // Check if user is a member
+    const memberIndex = community.members.indexOf(req.user._id);
+    if (memberIndex === -1) {
+      return res.status(400).json({ error: 'You are not a member of this community' });
+    }
+
+    // Remove user from members
+    community.members.splice(memberIndex, 1);
+    await community.save();
+
+    res.json({ 
+      success: true,
+      message: 'Successfully left the community'
+    });
+  } catch (error) {
+    console.error('Error leaving community:', error);
+    res.status(500).json({ error: 'Failed to leave community' });
+  }
+});
+
 module.exports = router;

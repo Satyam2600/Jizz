@@ -9,6 +9,7 @@ const router = express.Router();
 router.post("/register", async (req, res) => {
   try {
     const { fullName, email, password, rollNumber } = req.body;
+
     
     // Debug logging
     console.log("Registration request received:", {
@@ -30,15 +31,17 @@ router.post("/register", async (req, res) => {
     }
 
     // Check if user already exists
-    const existingUser = await User.findOne({ 
-      $or: [
-        { email },
-        { rollNumber }
-      ]
-    });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists with this email or roll number" });
-    }
+    // const existingUser = await User.findOne({ 
+    //   $or: [
+    //     { email },
+    //     // { rollNumber }
+    //   ]
+    // });
+    // if (existingUser) {
+    //   return res.status(400).json({ message: "User already exists with this email or roll number" });
+    // }
+
+    console.log(rollNumber)
 
     // Create new user - password will be hashed by the pre-save hook
     const user = new User({
