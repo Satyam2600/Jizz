@@ -54,8 +54,8 @@ const getAllEvents = async (req, res) => {
     }
 
     const events = await Event.find(query)
-      .populate('participants', 'name')
-      .populate('createdBy', 'name')
+      .populate('participants', 'name avatar') // Populate name and avatar for participants
+      .populate('createdBy', 'name avatar') // Populate name and avatar for creator
       .sort({ createdAt: -1 });
     
     res.status(200).json({ success: true, data: events });

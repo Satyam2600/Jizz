@@ -6,6 +6,7 @@ const path = require("path");
 const express = require("express");
 const Event = require("./models/Event");
 const authMiddleware = require('./middleware/authMiddleware');
+const connectDB = require("./config/db"); // Import the database connection function
 
 // Import routes
 const authRoutes = require("./routes/authRoutes");
@@ -86,6 +87,9 @@ app.get('/events', async (req, res) => {
         user: null
     });
 });
+
+// Connect to MongoDB
+connectDB();
 
 // Start the Server
 const PORT = process.env.PORT || 5000;

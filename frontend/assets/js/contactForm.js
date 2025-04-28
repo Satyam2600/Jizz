@@ -15,11 +15,21 @@ document.addEventListener("DOMContentLoaded", function () {
         responseMessage.textContent = "Please fill in all required fields.";
         return;
       }
+
+      // Retrieve token from localStorage
+      const token = localStorage.getItem("token");
+      if (!token) {
+        responseMessage.textContent = "You must be logged in to send a message.";
+        return;
+      }
   
       try {
         const res = await fetch("http://localhost:5000/api/contact", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
           body: JSON.stringify({ name, email, message }),
         });
   
@@ -36,4 +46,3 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
-  

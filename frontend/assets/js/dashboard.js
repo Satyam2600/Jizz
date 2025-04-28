@@ -22,12 +22,22 @@ function renderPost(post) {
     const likeCount = post.likes || (post.likedBy ? post.likedBy.length : 0);
     const comments = post.comments || [];
     
+    // Fix avatar path handling
+    const userAvatar = user.avatar && user.avatar !== 'undefined' && user.avatar !== 'null' 
+        ? (user.avatar.startsWith('/') || user.avatar.startsWith('http') ? user.avatar : `/api/uploads/${user.avatar}`) 
+        : '/assets/images/default-avatar.png';
+    
     let mediaHtml = '';
     if (post.image) {
         console.log('Rendering image:', post.image); // Debug log
+        // Fix image path handling
+        const imagePath = post.image.startsWith('/') || post.image.startsWith('http') 
+            ? post.image 
+            : `/api/uploads/${post.image}`;
+            
         mediaHtml = `
             <div class="post-media mb-3">
-                <img src="${post.image}" 
+                <img src="${imagePath}" 
                      class="img-fluid w-100 rounded" 
                      alt="Post Image"
                      style="max-height: 400px; object-fit: cover;">
@@ -35,6 +45,11 @@ function renderPost(post) {
         `;
     } else if (post.video) {
         console.log('Rendering video:', post.video); // Debug log
+        // Fix video path handling
+        const videoPath = post.video.startsWith('/') || post.video.startsWith('http') 
+            ? post.video 
+            : `/api/uploads/${post.video}`;
+            
         mediaHtml = `
             <div class="post-media mb-3">
                 <video class="w-100 rounded" 
@@ -44,9 +59,9 @@ function renderPost(post) {
                        muted
                        loop
                        playsinline>
-                    <source src="${post.video}" type="video/mp4">
-                    <source src="${post.video}" type="video/webm">
-                    <source src="${post.video}" type="video/quicktime">
+                    <source src="${videoPath}" type="video/mp4">
+                    <source src="${videoPath}" type="video/webm">
+                    <source src="${videoPath}" type="video/quicktime">
                     Your browser does not support the video tag.
                 </video>
             </div>
@@ -58,14 +73,14 @@ function renderPost(post) {
             <div class="card-body p-4">
                 <!-- Post Header -->
                 <div class="d-flex align-items-center mb-3">
-                    <img src="${user.avatar || '/assets/images/default-avatar.png'}" 
+                    <img src="${userAvatar}" 
                          alt="Avatar" 
                          class="rounded-circle me-3" 
                          style="width: 48px; height: 48px; object-fit: cover;">
                     <div>
                         <h6 class="mb-0 fw-bold">${user.fullName || 'Unknown User'}</h6>
                         <small class="text-muted">
-                            @${user.username || 'unknown'} • 
+                            @${user.username || user.rollNumber || 'unknown'} • 
                             <span class="post-time">${new Date(post.createdAt).toLocaleString()}</span>
                         </small>
                     </div>
@@ -102,9 +117,19 @@ function renderPost(post) {
 
                 <!-- Comments Section -->
                 <div class="comments-section mt-3" style="display: none;">
-                    ${comments.map(comment => `
+                    ${comments.map(comment => {
+                        // Fix comment avatar handling
+                        const commentUserAvatar = comment.user?.avatar && 
+                                                comment.user.avatar !== 'undefined' && 
+                                                comment.user.avatar !== 'null'
+                            ? (comment.user.avatar.startsWith('/') || comment.user.avatar.startsWith('http') 
+                               ? comment.user.avatar 
+                               : `/api/uploads/${comment.user.avatar}`)
+                            : '/assets/images/default-avatar.png';
+                        
+                        return `
                         <div class="d-flex align-items-start mb-3">
-                            <img src="${comment.user?.avatar || '/assets/images/default-avatar.png'}" 
+                            <img src="${commentUserAvatar}" 
                                  alt="Avatar" 
                                  class="rounded-circle me-2" 
                                  style="width: 32px; height: 32px; object-fit: cover;">
@@ -118,7 +143,8 @@ function renderPost(post) {
                                 </div>
                             </div>
                         </div>
-                    `).join('')}
+                        `;
+                    }).join('')}
                     
                     <form class="add-comment-form mt-3" data-post-id="${post._id}">
                         <div class="input-group">
@@ -414,8 +440,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     if (sidebarUserAvatar) {
         if (userProfilePhoto && userProfilePhoto !== 'undefined' && userProfilePhoto !== 'null') {
-            sidebarUserAvatar.src = userProfilePhoto;
-            console.log('Setting sidebar avatar to:', userProfilePhoto);
+            // Fix avatar path
+            sidebarUserAvatar.src = userProfilePhoto.startsWith('/') || userProfilePhoto.startsWith('http') 
+                ? userProfilePhoto 
+                : `/api/uploads/${userProfilePhoto}`;
+            console.log('Setting sidebar avatar to:', sidebarUserAvatar.src);
         } else {
             sidebarUserAvatar.src = '/assets/images/default-avatar.png';
             console.log('Setting sidebar avatar to default');

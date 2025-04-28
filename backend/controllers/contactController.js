@@ -3,14 +3,12 @@ const User = require("../models/User");
 
 exports.sendContactMessage = async (req, res) => {
   try {
-    const { subject, message } = req.body;
-    const userId = req.user.id;
+    const { name, email, message } = req.body;
 
     const contact = new Contact({
-      user: userId,
-      subject,
+      name,
+      email,
       message,
-      status: "pending"
     });
 
     await contact.save();
@@ -84,4 +82,4 @@ exports.deleteContactMessage = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-}; 
+};

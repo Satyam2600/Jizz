@@ -13,7 +13,7 @@ apiKey.apiKey = process.env.BREVO_API_KEY;
 const emailAPI = new SibApiV3Sdk.TransactionalEmailsApi();
 
 // Newsletter Subscription Route
-router.post("/subscribe", authenticate, newsletterController.subscribe);
+router.post("/subscribe", newsletterController.subscribe);
 
 // Unsubscribe from newsletter
 router.post("/unsubscribe", authenticate, newsletterController.unsubscribe);
