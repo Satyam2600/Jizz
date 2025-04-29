@@ -183,7 +183,7 @@ const newsletterRoutes = require("./routes/newsletterRoutes");
 const passwordResetRoutes = require("./routes/passwordresetRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const communityRoutes = require("./routes/communityRoutes");
-
+const notifcationRoutes = require("./routes/notifcationRoutes");
 // Mount API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -197,6 +197,7 @@ app.use("/api/newsletter", newsletterRoutes);
 app.use("/api/password-reset", passwordResetRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/communities", communityRoutes);
+app.use("/api/notifications", notifcationRoutes);
 
 // Health check route
 app.get("/health", (req, res) => res.send("🚀 JIZZ Social Media API Running..."));
