@@ -10,15 +10,17 @@ document.addEventListener("DOMContentLoaded", () => {
   loginForm.appendChild(errorDiv);
 
   // Toggle password visibility
-  togglePassword.addEventListener("click", () => {
-    if (passwordInput.type === "password") {
-      passwordInput.type = "text";
-      togglePassword.innerHTML = '<i class="fas fa-eye-slash"></i>';
-    } else {
-      passwordInput.type = "password";
-      togglePassword.innerHTML = '<i class="fas fa-eye"></i>';
-    }
-  });
+ togglePassword.addEventListener("click", () => {
+   if (passwordInput.type === "password") {
+     passwordInput.type = "text"; // Show the password
+     togglePassword.querySelector("i").classList.remove("fa-eye");
+     togglePassword.querySelector("i").classList.add("fa-eye-slash");
+   } else {
+     passwordInput.type = "password"; // Hide the password
+     togglePassword.querySelector("i").classList.remove("fa-eye-slash");
+     togglePassword.querySelector("i").classList.add("fa-eye");
+   }
+ });
 
   // Handle form submission
   loginForm.addEventListener("submit", async function(e) {

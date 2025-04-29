@@ -302,12 +302,18 @@
           <li class="nav-item">
             <a class="nav-link" href="/communities"><i class="bi bi-people me-2"></i>Communities</a>
           </li>
+          
         
             <li class="nav-item">
               <a class="nav-link" href="/events"><i class="bi bi-calendar-event me-2"></i>Events</a>
             </li>
           <li class="nav-item">
             <a class="nav-link" href="/confessions"><i class="bi bi-chat-quote me-2"></i>Confessions</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/profile/<%= user && user.rollNumber ? user.rollNumber : '' %>">
+              <i class="bi bi-person-circle me-2"></i>My Profile
+            </a>
           </li>
         </ul>
         <div class="d-flex align-items-center gap-3">
