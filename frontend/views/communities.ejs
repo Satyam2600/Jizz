@@ -9,75 +9,272 @@
   
   <link rel="stylesheet" href="/assets/css/style.css">
   <link rel="stylesheet" href="/assets/css/communities.css">
- 
+  <style>
+    :root {
+      --primary-bg: #ffffff;
+      --secondary-bg: #f8f9fa;
+      --text-primary: #1C160C;
+      --text-secondary: #6c757d;
+      --accent-color: #019863;
+      --border-color: #e9ecef;
+      --card-radius: 1rem;
+      --hover-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      --transition-speed: 0.3s;
+    }
+
+    [data-bs-theme="dark"] {
+      --primary-bg: #1a1a1a;
+      --secondary-bg: #2d2d2d;
+      --text-primary: #ffffff;
+      --text-secondary: #adb5bd;
+      --border-color: #343a40;
+      --hover-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+
+    body {
+      background-color: var(--primary-bg);
+      color: var(--text-primary);
+      padding-top: 56px;
+      transition: background-color var(--transition-speed), color var(--transition-speed);
+    }
+
+    .navbar {
+      background-color: var(--primary-bg) !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      height: 56px;
+      z-index: 1030;
+    }
+
+    .nav-link {
+      color: var(--text-primary);
+      font-size: 14px;
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    .nav-link:hover {
+      background-color: var(--secondary-bg);
+    }
+
+    .nav-link i {
+      font-size: 18px;
+      width: 24px;
+    }
+
+    [data-bs-theme="dark"] .bi-bell {
+      color: #ffffff; /* Set bell icon color to white in dark mode */
+    }
+
+    .communities-header h1 {
+      color: var(--text-primary); /* Ensure heading is black in light mode */
+    }
+
+    .search-container {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    .search-container i {
+      position: absolute;
+      top: 50%;
+      left: 12px;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+    }
+
+    .search-container input {
+      padding-left: 40px;
+      background-color: var(--secondary-bg);
+      color: var(--text-primary); /* Ensure text is visible in light mode */
+      border: 1px solid var(--border-color);
+      border-radius: var(--card-radius);
+      transition: background-color var(--transition-speed), color var(--transition-speed);
+    }
+
+    .search-container input::placeholder {
+      color: var(--text-secondary); /* Placeholder text color */
+    }
+
+    .search-container input:focus {
+      background-color: var(--primary-bg);
+      border-color: var(--accent-color);
+      outline: none;
+      box-shadow: 0 0 0 0.2rem rgba(1, 152, 99, 0.25);
+    }
+
+    .community-card {
+      background-color: var(--primary-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--card-radius);
+      transition: all var(--transition-speed) ease;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .community-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--hover-shadow);
+    }
+
+    .community-image {
+      height: 200px;
+      background-size: cover;
+      background-position: center;
+    }
+    .community-logo{
+   width: 70px;
+    height: 70px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: px solid var(--bg-card-dark);
+    position: absolute;
+    bottom: -0px;
+    left: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+    
+
+  
+    .community-content {
+      padding: 1rem;
+    }
+
+    .category-badge {
+      background-color: var(--secondary-bg);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.5rem;
+      display: inline-block;
+      margin-bottom: 0.5rem;
+    }
+
+   .community-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary); /* Ensure text is black in light mode */
+  }
+
+  .community-description {
+    color: var(--text-secondary); /* Ensure description text is visible */
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+
+    .community-meta span {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-right: 1rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: linear-gradient(135deg, var(--secondary-bg) 0%, var(--primary-bg) 100%);
+      border: 1px solid var(--border-color);
+      border-radius: var(--card-radius);
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+
+    .empty-state-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-state-text {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .create-community-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: all var(--transition-speed) ease;
+    }
+
+    .create-community-btn:hover {
+      background-color: #018555;
+      transform: scale(1.1);
+    }
+  </style>
 </head>
 <body>
-  <!-- Sleek Navbar -->
-  <nav class="navbar navbar-expand-lg fixed-top">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg fixed-top border-bottom">
     <div class="container-fluid px-4">
-      <a class="navbar-brand" href="/dashboard">jizz</a>
+      <a class="navbar-brand fw-bold" href="#">Jizz</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link" href="/dashboard"><i class="bi bi-house-door me-2"></i>Home</a>
+            <a class="nav-link active" href="/dashboard"><i class="bi bi-house-door me-2"></i>Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="/communities"><i class="bi bi-people me-2"></i>Communities</a>
+            <a class="nav-link" href="/communities"><i class="bi bi-people me-2"></i>Communities</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/events"><i class="bi bi-calendar-event me-2"></i>Events</a>
-          </li>
+        
+            <li class="nav-item">
+              <a class="nav-link" href="/events"><i class="bi bi-calendar-event me-2"></i>Events</a>
+            </li>
           <li class="nav-item">
             <a class="nav-link" href="/confessions"><i class="bi bi-chat-quote me-2"></i>Confessions</a>
           </li>
         </ul>
         <div class="d-flex align-items-center gap-3">
-          <!-- Theme Toggle Button -->
           <div class="theme-toggle" id="themeToggle">
-            <i class="bi bi-moon-fill"></i>
+            <i class="bi bi-moon"></i>
           </div>
-          <!-- Notifications -->
           <div class="dropdown">
-            <button class="btn profile-button" type="button" data-bs-toggle="dropdown">
-              <i class="bi bi-bell-fill"></i>
+            <button class="btn btn-link text-dark position-relative" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-bell"></i>
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
             </button>
             <div class="dropdown-menu dropdown-menu-end p-2" style="min-width: 300px;">
               <h6 class="dropdown-header">Notifications</h6>
               <div class="list-group border-0">
                 <a href="#" class="list-group-item list-group-item-action border-0">
                   <div class="d-flex align-items-center">
-                    <i class="bi bi-person-check fs-5 me-3 text-success"></i>
+                    <i class="bi bi-person-check fs-5 me-3"></i>
                     <div>
                       <p class="mb-0 small">New connection request</p>
                       <small class="text-muted">2m ago</small>
                     </div>
                   </div>
                 </a>
-                <a href="#" class="list-group-item list-group-item-action border-0">
-                  <div class="d-flex align-items-center">
-                    <i class="bi bi-chat-left-text fs-5 me-3 text-primary"></i>
-                    <div>
-                      <p class="mb-0 small">New message from Alex</p>
-                      <small class="text-muted">15m ago</small>
-                    </div>
-                  </div>
-                </a>
               </div>
-              <div class="dropdown-divider"></div>
-              <a href="#" class="dropdown-item text-center small text-muted">View all notifications</a>
             </div>
           </div>
-          <!-- Profile -->
           <div class="dropdown">
-            <button class="profile-button" type="button" data-bs-toggle="dropdown">
-              <i class="bi bi-person-fill"></i>
+            <button class="btn rounded-circle border-0" id="chatButton" style="width: 40px; height: 40px; background-color: var(--accent-color); color: white; box-shadow: 0 2px 8px rgba(1, 152, 99, 0.3);">
+              <i class="bi bi-chat-dots-fill fs-5"></i>
             </button>
             <div class="dropdown-menu dropdown-menu-end">
-              <a class="dropdown-item" href="/edit-profile"><i class="bi bi-person-gear me-2"></i>Edit Profile</a>
               <a class="dropdown-item" href="/chat"><i class="bi bi-chat-dots me-2"></i>Messages</a>
+              <a class="dropdown-item" href="/chat/groups"><i class="bi bi-people me-2"></i>Group Chats</a>
+              <a class="dropdown-item" href="/chat/requests"><i class="bi bi-person-plus me-2"></i>Chat Requests</a>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="#" onclick="logout(); return false;"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
             </div>
@@ -87,12 +284,11 @@
     </div>
   </nav>
 
+  <!-- Main Content -->
   <div class="container communities-container">
     <div class="communities-header">
       <h1 class="mb-2">Communities</h1>
       <p class="text-muted mb-4">Find and join communities that share your interests.</p>
-      
-      <!-- Search input and tabs with IDs -->
       <div class="search-container">
         <i class="bi bi-search"></i>
         <input type="text" class="form-control" id="communitySearch" placeholder="Search for communities...">
@@ -277,4 +473,5 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="/assets/js/communities.js"></script>
 </body>
+
 </html>

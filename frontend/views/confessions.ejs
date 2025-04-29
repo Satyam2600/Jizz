@@ -1,547 +1,641 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confessions - JIZZ</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
-  <!-- Load emoji picker element -->
-  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.3/index.js"></script>
-  <style>
-    :root {
-      --primary-bg: #ffffff;
-      --secondary-bg: #F4EFE6;
-      --text-primary: #1C160C;
-      --text-secondary: #6c757d;
-      --accent-color: #019863;
-      --accent-light: #e8f5e9;
-      --border-color: #E9DFCE;
-      --beige-light: #F4EFE6;
-      --beige-dark: #E9DFCE;
-      --card-radius: 1rem;
-      --hover-shadow: 0 8px 24px rgba(0,0,0,0.08);
-      --transition-speed: 0.3s;
-    }
-    
-    [data-bs-theme="dark"] {
-      --primary-bg: #1C160C;
-      --secondary-bg: #2d2d2d;
-      --text-primary: #F4EFE6;
-      --text-secondary: #E9DFCE;
-      --border-color: #343a40;
-      --beige-light: #2d2d2d;
-      --beige-dark: #343a40;
-      --hover-shadow: 0 8px 24px rgba(0,0,0,0.3);
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Confessions - JIZZ</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <!-- Load emoji picker element -->
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.18.3/index.js"
+    ></script>
+    <style>
+          :root {
+            --primary-bg: #ffffff;
+            --secondary-bg: #F4EFE6;
+            --text-primary: #1C160C;
+            --text-secondary: #6c757d;
+            --accent-color: #019863;
+            --accent-light: #e8f5e9;
+            --border-color: #E9DFCE;
+            --beige-light: #F4EFE6;
+            --beige-dark: #E9DFCE;
+            --card-radius: 1rem;
+            --hover-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            --transition-speed: 0.3s;
+          }
 
-    body {
-      background-color: var(--primary-bg);
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
+          [data-bs-theme="dark"] {
+            --primary-bg: #1C160C;
+            --secondary-bg: #2d2d2d;
+            --text-primary: #F4EFE6;
+            --text-secondary: #E9DFCE;
+            --border-color: #343a40;
+            --beige-light: #2d2d2d;
+            --beige-dark: #343a40;
+            --hover-shadow: 0 8px 24px rgba(0,0,0,0.3);
+          }
+             [data-bs-theme="dark"] .bi-bell {
+            color: #ffffff; /* Set bell icon color to white in dark mode */
+          }
 
-    .navbar {
-      background-color: var(--primary-bg) !important;
-      border-bottom: 1px solid var(--border-color) !important;
-    }
+          .theme-toggle {
+            cursor: pointer; /* Add pointer cursor for the dark mode button */
+          }
 
-    .confession-card {
-      border: 1px solid var(--border-color);
-      border-radius: var(--card-radius);
-      transition: all var(--transition-speed) ease;
-      background: var(--primary-bg);
-      margin-bottom: 1.5rem;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-    }
+          body {
+            background-color: var(--primary-bg);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+          }
 
-    .confession-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--hover-shadow);
-      border-color: var(--beige-dark);
-    }
+          .navbar {
+            background-color: var(--primary-bg) !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            height: 56px;
+            z-index: 1030;
+      }
 
-    .confession-input {
-      border: none;
-      resize: none;
-      font-size: 1rem;
-      background: transparent;
-      color: var(--text-primary);
-    }
+          .confession-card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--card-radius);
+            transition: all var(--transition-speed) ease;
+            background: var(--primary-bg);
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+          }
 
-    .confession-input:focus {
-      box-shadow: none;
-      outline: none;
-    }
+          .confession-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--hover-shadow);
+            border-color: var(--beige-dark);
+          }
 
-    .confession-input::placeholder {
-      color: var(--text-secondary);
-    }
+          .confession-input {
+            border: none;
+            resize: none;
+            font-size: 1rem;
+            background: transparent;
+            color: var(--text-primary);
+          }
 
-    .confession-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: var(--beige-light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid var(--border-color);
-    }
+          .confession-input:focus {
+            box-shadow: none;
+            outline: none;
+          }
 
-    .confession-avatar i {
-      color: var(--text-secondary);
-      font-size: 1.2rem;
-    }
+          .confession-input::placeholder {
+            color: var(--text-secondary);
+          }
 
-    .empty-state {
-      text-align: center;
-      padding: 4rem 2rem;
-      background: linear-gradient(135deg, var(--beige-light) 0%, var(--primary-bg) 100%);
-      border: 1px solid var(--border-color);
-      border-radius: var(--card-radius);
-      margin: 2rem 0;
-    }
+          .confession-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--beige-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border-color);
+          }
 
-    .empty-state img {
-      width: 200px;
-      margin-bottom: 2rem;
-      opacity: 0.9;
-    }
+          .confession-avatar i {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+          }
 
-    .empty-state h3 {
-      color: var(--text-primary);
-      font-weight: 700;
-      margin-bottom: 1rem;
-    }
+          .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, var(--beige-light) 0%, var(--primary-bg) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: var(--card-radius);
+            margin: 2rem 0;
+          }
 
-    .empty-state p {
-      color: var(--text-secondary);
-      font-size: 1.1rem;
-      max-width: 400px;
-      margin: 0 auto;
-    }
+          .empty-state img {
+            width: 200px;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+          }
 
-    .action-button {
-      padding: 0.5rem 1rem;
-      border-radius: 2rem;
-      font-size: 0.9rem;
-      transition: all var(--transition-speed) ease;
-      border: 1px solid var(--border-color);
-      background-color: var(--primary-bg);
-      color: var(--text-primary);
-    }
+          .empty-state h3 {
+            color: var(--text-primary);
+            font-weight: 700;
+            margin-bottom: 1rem;
+          }
 
-    .action-button:hover {
-      transform: translateY(-1px);
-      background-color: var(--beige-light);
-      border-color: var(--beige-dark);
-    }
+          .empty-state p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 400px;
+            margin: 0 auto;
+          }
 
-    .post-button {
-      background: linear-gradient(135deg, var(--accent-color), #018555);
-      color: white;
-      border: none;
-      padding: 0.5rem 1.5rem;
-      font-weight: 600;
-    }
+          .action-button {
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.9rem;
+            transition: all var(--transition-speed) ease;
+            border: 1px solid var(--border-color);
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+          }
 
-    .post-button:hover {
-      background: linear-gradient(135deg, #018555, var(--accent-color));
-      box-shadow: 0 4px 12px rgba(1, 152, 99, 0.2);
-      color: white;
-    }
+          .action-button:hover {
+            transform: translateY(-1px);
+            background-color: var(--beige-light);
+            border-color: var(--beige-dark);
+          }
 
-    .nav-link {
-      color: var(--text-primary);
-      position: relative;
-    }
+          .post-button {
+            background: linear-gradient(135deg, var(--accent-color), #018555);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+          }
 
-    .nav-link.active {
-      color: var(--accent-color);
-      font-weight: 600;
-    }
+          .post-button:hover {
+            background: linear-gradient(135deg, #018555, var(--accent-color));
+            box-shadow: 0 4px 12px rgba(1, 152, 99, 0.2);
+            color: white;
+          }
 
-    .nav-link.active::after {
-      content: '';
-      position: absolute;
-      bottom: -1px;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background-color: var(--accent-color);
-    }
+          .nav-link {
+            color: var(--text-primary);
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 8px;
+          }
+          .nav-link:hover {
+            background-color: var(--secondary-bg);
+          }
+          .nav-link i {
+            font-size: 18px;
+            width: 24px;
+      }
+          .confession-meta {
+            padding: 0.75rem;
+            background-color: var(--primary-bg);
+            border-top: 1px solid var(--border-color);
+            border-radius: 0 0 var(--card-radius) var(--card-radius);
+            margin-top: 1rem;
+          }
 
-    .confession-meta {
-      padding: 0.75rem;
-      background-color: var(--primary-bg);
-      border-top: 1px solid var(--border-color);
-      border-radius: 0 0 var(--card-radius) var(--card-radius);
-      margin-top: 1rem;
-    }
+          .confession-content {
+            padding: 1rem;
+            background-color: var(--primary-bg);
+          }
 
-    .confession-content {
-      padding: 1rem;
-      background-color: var(--primary-bg);
-    }
+          .like-button:hover {
+            color: #dc3545;
+            border-color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.1);
+          }
 
-    .like-button:hover {
-      color: #dc3545;
-      border-color: #dc3545;
-      background-color: rgba(220, 53, 69, 0.1);
-    }
+          .comment-button:hover {
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+            background-color: var(--accent-light);
+          }
 
-    .comment-button:hover {
-      color: var(--accent-color);
-      border-color: var(--accent-color);
-      background-color: var(--accent-light);
-    }
+          .confession-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--beige-light);
+            border-radius: var(--card-radius) var(--card-radius) 0 0;
+          }
 
-    .confession-header {
-      padding: 1rem;
-      border-bottom: 1px solid var(--border-color);
-      background-color: var(--beige-light);
-      border-radius: var(--card-radius) var(--card-radius) 0 0;
-    }
+          .badge-anonymous {
+            background-color: var(--beige-light);
+            color: var(--text-primary);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            border: 1px solid var(--border-color);
+          }
 
-    .badge-anonymous {
-      background-color: var(--beige-light);
-      color: var(--text-primary);
-      font-weight: 500;
-      padding: 0.5rem 1rem;
-      border-radius: 2rem;
-      border: 1px solid var(--border-color);
-    }
+          .comment-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background-color: var(--secondary-bg);
+            border-radius: var(--card-radius);
+          }
 
-    .comment-item {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      padding: 0.5rem;
-      background-color: var(--secondary-bg);
-      border-radius: var(--card-radius);
-    }
+          .comment-content {
+            flex: 1;
+          }
 
-    .comment-content {
-      flex: 1;
-    }
+          .comment-content p {
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+          }
 
-    .comment-content p {
-      margin-bottom: 0.25rem;
-      color: var(--text-primary);
-    }
+          .comment-content small {
+            color: var(--text-secondary);
+          }
 
-    .comment-content small {
-      color: var(--text-secondary);
-    }
+          .comments-list {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            background-color: var(--primary-bg);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-color);
+          }
 
-    .comments-list {
-      max-height: 300px;
-      overflow-y: auto;
-      padding: 0.5rem;
-      background-color: var(--primary-bg);
-      border-radius: var(--card-radius);
-      border: 1px solid var(--border-color);
-    }
+          /* Emoji picker styles */
+          #emoji-picker-container {
+            position: fixed;
+            z-index: 9999;
+            background: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: none;
+          }
 
-    /* Emoji picker styles */
-    #emoji-picker-container {
-      position: fixed;
-      z-index: 9999;
-      background: var(--primary-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      display: none;
-    }
+          emoji-picker {
+            --background: var(--primary-bg);
+            --text-color: var(--text-primary);
+            --border-color: var(--border-color);
+            --category-emoji-size: 1.25rem;
+            --emoji-size: 1.5rem;
+            --num-columns: 8;
+            width: 320px;
+            height: 350px;
+            font-family: inherit;
+          }
 
-    emoji-picker {
-      --background: var(--primary-bg);
-      --text-color: var(--text-primary);
-      --border-color: var(--border-color);
-      --category-emoji-size: 1.25rem;
-      --emoji-size: 1.5rem;
-      --num-columns: 8;
-      width: 320px;
-      height: 350px;
-      font-family: inherit;
-    }
-
-    [data-bs-theme="dark"] emoji-picker {
-      --background: #2d2d2d;
-      --text-color: #ffffff;
-      --border-color: #444;
-      --category-background: #1a1a1a;
-    } 
-  </style>
-</head>
-<body>
-  <!-- Move emoji picker container here, right after body tag -->
-  <div id="emoji-picker-container">
-    <emoji-picker></emoji-picker>
-  </div>
-
-  <nav class="navbar navbar-expand-lg fixed-top border-bottom">
-    <div class="container-fluid px-4">
-      <a class="navbar-brand fw-bold" href="#">jizz</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="/dashboard"><i class="bi bi-house-door me-2"></i>Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#"><i class="bi bi-people me-2"></i>Communities</a>
-          </li>
-        
-            <li class="nav-item">
-              <a class="nav-link" href="/events"><i class="bi bi-calendar-event me-2"></i>Events</a>
-            </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="/confessions"><i class="bi bi-chat-quote me-2"></i>Confessions</a>
-          </li>
-        </ul>
-        <div class="d-flex align-items-center gap-3">
-          <div class="theme-toggle" id="themeToggle">
-            <i class="bi bi-moon"></i>
-          </div>
-          <div class="dropdown">
-            <button class="btn btn-link text-dark position-relative" type="button" data-bs-toggle="dropdown">
-              <i class="bi bi-bell"></i>
-              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
-            </button>
-            <div class="dropdown-menu dropdown-menu-end p-2" style="min-width: 300px;">
-              <h6 class="dropdown-header">Notifications</h6>
-              <div class="list-group border-0">
-                <a href="#" class="list-group-item list-group-item-action border-0">
-                  <div class="d-flex align-items-center">
-                    <i class="bi bi-person-check fs-5 me-3"></i>
-                    <div>
-                      <p class="mb-0 small">New connection request</p>
-                      <small class="text-muted">2m ago</small>
-                    </div>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div class="dropdown">
-            <button class="btn rounded-circle border-0" id="chatButton" style="width: 40px; height: 40px; background-color: var(--accent-color); color: white; box-shadow: 0 2px 8px rgba(1, 152, 99, 0.3);">
-              <i class="bi bi-chat-dots-fill fs-5"></i>
-            </button>
-            <div class="dropdown-menu dropdown-menu-end">
-              <a class="dropdown-item" href="/chat"><i class="bi bi-chat-dots me-2"></i>Messages</a>
-              <a class="dropdown-item" href="/chat/groups"><i class="bi bi-people me-2"></i>Group Chats</a>
-              <a class="dropdown-item" href="/chat/requests"><i class="bi bi-person-plus me-2"></i>Chat Requests</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#" onclick="logout(); return false;"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
-            </div>
-          </div>
-        </div>
-      </div>
+          [data-bs-theme="dark"] emoji-picker {
+            --background: #2d2d2d;
+            --text-color: #ffffff;
+            --border-color: #444;
+            --category-background: #1a1a1a;
+          }
+    </style>
+  </head>
+  <body>
+    <!-- Move emoji picker container here, right after body tag -->
+    <div id="emoji-picker-container">
+      <emoji-picker></emoji-picker>
     </div>
-  </nav>
-  
-  <div class="container mt-5 pt-4">
-    <div class="row justify-content-center">
-      <div class="col-lg-7">
-        <!-- Confession Creation Card -->
-        <div class="confession-card">
-          <div class="confession-header">
-            <div class="d-flex gap-3 align-items-center">
-              <div class="confession-avatar">
-                <i class="bi bi-person"></i>
-              </div>
-              <span class="badge-anonymous">
-                <i class="bi bi-incognito me-2"></i>
-                Anonymous
-              </span>
+
+    <nav class="navbar navbar-expand-lg fixed-top border-bottom">
+      <div class="container-fluid px-4">
+        <a class="navbar-brand fw-bold" href="#">Jizz</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link active" href="/dashboard"
+                ><i class="bi bi-house-door me-2"></i>Home</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/communities"
+                ><i class="bi bi-people me-2"></i>Communities</a
+              >
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="/events"
+                ><i class="bi bi-calendar-event me-2"></i>Events</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/confessions"
+                ><i class="bi bi-chat-quote me-2"></i>Confessions</a
+              >
+            </li>
+          </ul>
+          <div class="d-flex align-items-center gap-3">
+            <div class="theme-toggle" id="themeToggle">
+              <i class="bi bi-moon"></i>
             </div>
-          </div>
-          <div class="confession-content">
-            <form id="confessionForm">
-              <textarea 
-                class="form-control confession-input mb-3" 
-                id="confessionText" 
-                rows="3" 
-                placeholder="What's on your mind? Your secret is safe here..."
-              ></textarea>
-              <div class="confession-meta">
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="d-flex gap-2">
-                    <button type="button" class="btn action-button" id="emojiPickerBtn">
-                      <i class="bi bi-emoji-smile"></i>
-                    </button>
-                  
-                    <input type="file" id="imageUpload" class="d-none" accept="image/*">
-                  </div>
-                  <div class="d-flex align-items-center gap-3">
-                    <small class="text-muted">0/500</small>
-                    <button type="submit" class="btn post-button">
-                      Share Anonymously
-                    </button>
-                  </div>
+            <div class="dropdown">
+              <button
+                class="btn btn-link text-dark position-relative"
+                type="button"
+                data-bs-toggle="dropdown"
+              >
+                <i class="bi bi-bell"></i>
+                <span
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  >3</span
+                >
+              </button>
+              <div
+                class="dropdown-menu dropdown-menu-end p-2"
+                style="min-width: 300px"
+              >
+                <h6 class="dropdown-header">Notifications</h6>
+                <div class="list-group border-0">
+                  <a
+                    href="#"
+                    class="list-group-item list-group-item-action border-0"
+                  >
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-person-check fs-5 me-3"></i>
+                      <div>
+                        <p class="mb-0 small">New connection request</p>
+                        <small class="text-muted">2m ago</small>
+                      </div>
+                    </div>
+                  </a>
                 </div>
               </div>
-            </form>
+            </div>
+            <div class="dropdown">
+              <button
+                class="btn rounded-circle border-0"
+                id="chatButton"
+                style="
+                  width: 40px;
+                  height: 40px;
+                  background-color: var(--accent-color);
+                  color: white;
+                  box-shadow: 0 2px 8px rgba(1, 152, 99, 0.3);
+                "
+              >
+                <i class="bi bi-chat-dots-fill fs-5"></i>
+              </button>
+              <div class="dropdown-menu dropdown-menu-end">
+                <a class="dropdown-item" href="/chat"
+                  ><i class="bi bi-chat-dots me-2"></i>Messages</a
+                >
+                <a class="dropdown-item" href="/chat/groups"
+                  ><i class="bi bi-people me-2"></i>Group Chats</a
+                >
+                <a class="dropdown-item" href="/chat/requests"
+                  ><i class="bi bi-person-plus me-2"></i>Chat Requests</a
+                >
+                <div class="dropdown-divider"></div>
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  onclick="logout(); return false;"
+                  ><i class="bi bi-box-arrow-right me-2"></i>Logout</a
+                >
+              </div>
+            </div>
           </div>
         </div>
+      </div>
+    </nav>
 
-        <!-- Confessions Feed -->
-        <div id="confessionsFeed">
-          <!-- Empty state will be shown when there are no confessions -->
+    <div class="container mt-5 pt-4">
+      <div class="row justify-content-center">
+        <div class="col-lg-7">
+          <!-- Confession Creation Card -->
+          <div class="confession-card">
+            <div class="confession-header">
+              <div class="d-flex gap-3 align-items-center">
+                <div class="confession-avatar">
+                  <i class="bi bi-person"></i>
+                </div>
+                <span class="badge-anonymous">
+                  <i class="bi bi-incognito me-2"></i>
+                  Anonymous
+                </span>
+              </div>
+            </div>
+            <div class="confession-content">
+              <form id="confessionForm">
+                <textarea
+                  class="form-control confession-input mb-3"
+                  id="confessionText"
+                  rows="3"
+                  placeholder="What's on your mind? Your secret is safe here..."
+                ></textarea>
+                <div class="confession-meta">
+                  <div
+                    class="d-flex justify-content-between align-items-center"
+                  >
+                    <div class="d-flex gap-2">
+                      <button
+                        type="button"
+                        class="btn action-button"
+                        id="emojiPickerBtn"
+                      >
+                        <i class="bi bi-emoji-smile"></i>
+                      </button>
+
+                      <input
+                        type="file"
+                        id="imageUpload"
+                        class="d-none"
+                        accept="image/*"
+                      />
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                      <small class="text-muted">0/500</small>
+                      <button type="submit" class="btn post-button">
+                        Share Anonymously
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Confessions Feed -->
+          <div id="confessionsFeed">
+            <!-- Empty state will be shown when there are no confessions -->
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <%- include('partials/footer') %>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    // Initialize emoji picker functionality
-    document.addEventListener('DOMContentLoaded', function() {
-      const emojiPickerBtn = document.getElementById('emojiPickerBtn');
-      const emojiPickerContainer = document.getElementById('emoji-picker-container');
-      const emojiPicker = emojiPickerContainer.querySelector('emoji-picker');
-      
-      console.log('Emoji picker elements:', { emojiPickerBtn, emojiPickerContainer, emojiPicker }); // Debug log
-      
-      if (emojiPickerBtn && emojiPickerContainer && emojiPicker) {
-        // Handle emoji selection
-        emojiPicker.addEventListener('emoji-click', event => {
-          console.log('Emoji clicked:', event.detail); // Debug log
-          const confessionText = document.getElementById('confessionText');
-          if (confessionText) {
-            const cursorPosition = confessionText.selectionStart;
-            const textBeforeCursor = confessionText.value.substring(0, cursorPosition);
-            const textAfterCursor = confessionText.value.substring(cursorPosition);
-            const emoji = event.detail.unicode;
-            confessionText.value = textBeforeCursor + emoji + textAfterCursor;
-            const newCursorPosition = cursorPosition + emoji.length;
-            confessionText.focus();
-            confessionText.setSelectionRange(newCursorPosition, newCursorPosition);
-          }
-          emojiPickerContainer.style.display = 'none';
-        });
-
-        // Handle emoji button click
-        emojiPickerBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log('Emoji button clicked'); // Debug log
-          toggleEmojiPicker();
-        });
-
-        // Handle clicking outside of emoji picker
-        document.addEventListener('click', (e) => {
-          if (emojiPickerContainer.style.display === 'block' && 
-              !emojiPickerContainer.contains(e.target) && 
-              !emojiPickerBtn.contains(e.target)) {
-            emojiPickerContainer.style.display = 'none';
-          }
-        });
-      }
-    });
-
-    // Toggle emoji picker visibility
-    function toggleEmojiPicker() {
-      const emojiPickerContainer = document.getElementById('emoji-picker-container');
-      const emojiPickerBtn = document.getElementById('emojiPickerBtn');
-      
-      if (!emojiPickerContainer || !emojiPickerBtn) {
-        console.error('Emoji picker elements not found'); // Debug log
-        return;
-      }
-      
-      const isVisible = emojiPickerContainer.style.display === 'block';
-      console.log('Toggling emoji picker, current visibility:', isVisible); // Debug log
-      
-      if (isVisible) {
-        emojiPickerContainer.style.display = 'none';
-      } else {
-        const buttonRect = emojiPickerBtn.getBoundingClientRect();
-        console.log('Button position:', buttonRect); // Debug log
-        
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-        
-        // Calculate position to ensure the picker is always visible
-        let leftPosition = Math.min(
-          buttonRect.left,
-          viewportWidth - 320 - 10
+    <%- include('partials/footer') %>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Initialize emoji picker functionality
+      document.addEventListener("DOMContentLoaded", function () {
+        const emojiPickerBtn = document.getElementById("emojiPickerBtn");
+        const emojiPickerContainer = document.getElementById(
+          "emoji-picker-container"
         );
-        leftPosition = Math.max(10, leftPosition);
-        
-        let topPosition = buttonRect.bottom + 10;
-        if (topPosition + 350 > viewportHeight) {
-          topPosition = Math.max(10, buttonRect.top - 350 - 10);
+        const emojiPicker = emojiPickerContainer.querySelector("emoji-picker");
+
+        console.log("Emoji picker elements:", {
+          emojiPickerBtn,
+          emojiPickerContainer,
+          emojiPicker,
+        }); // Debug log
+
+        if (emojiPickerBtn && emojiPickerContainer && emojiPicker) {
+          // Handle emoji selection
+          emojiPicker.addEventListener("emoji-click", (event) => {
+            console.log("Emoji clicked:", event.detail); // Debug log
+            const confessionText = document.getElementById("confessionText");
+            if (confessionText) {
+              const cursorPosition = confessionText.selectionStart;
+              const textBeforeCursor = confessionText.value.substring(
+                0,
+                cursorPosition
+              );
+              const textAfterCursor =
+                confessionText.value.substring(cursorPosition);
+              const emoji = event.detail.unicode;
+              confessionText.value = textBeforeCursor + emoji + textAfterCursor;
+              const newCursorPosition = cursorPosition + emoji.length;
+              confessionText.focus();
+              confessionText.setSelectionRange(
+                newCursorPosition,
+                newCursorPosition
+              );
+            }
+            emojiPickerContainer.style.display = "none";
+          });
+
+          // Handle emoji button click
+          emojiPickerBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("Emoji button clicked"); // Debug log
+            toggleEmojiPicker();
+          });
+
+          // Handle clicking outside of emoji picker
+          document.addEventListener("click", (e) => {
+            if (
+              emojiPickerContainer.style.display === "block" &&
+              !emojiPickerContainer.contains(e.target) &&
+              !emojiPickerBtn.contains(e.target)
+            ) {
+              emojiPickerContainer.style.display = "none";
+            }
+          });
         }
-        
-        console.log('Calculated position:', { leftPosition, topPosition }); // Debug log
-        
-        emojiPickerContainer.style.top = `${topPosition}px`;
-        emojiPickerContainer.style.left = `${leftPosition}px`;
-        emojiPickerContainer.style.display = 'block';
-      }
-    }
-
-    // Theme handling
-    document.addEventListener('DOMContentLoaded', function() {
-      // Check for saved theme preference
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme) {
-        document.body.setAttribute('data-bs-theme', savedTheme);
-      }
-
-      // Theme toggle functionality
-      const themeToggle = document.getElementById('themeToggle');
-      if (themeToggle) {
-        themeToggle.addEventListener('click', function() {
-          const body = document.body;
-          const isDark = body.getAttribute('data-bs-theme') === 'dark';
-          const newTheme = isDark ? 'light' : 'dark';
-          body.setAttribute('data-bs-theme', newTheme);
-          localStorage.setItem('theme', newTheme);
-          this.innerHTML = isDark ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon"></i>';
-        });
-      }
-
-      // Initialize tooltips
-      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)
       });
 
-      // Character counter
-      const confessionText = document.getElementById('confessionText');
-      const charCounter = confessionText.nextElementSibling.querySelector('small');
-      
-      confessionText.addEventListener('input', function() {
-        const charCount = this.value.length;
-        charCounter.textContent = `${charCount}/500`;
-      });
+      // Toggle emoji picker visibility
+      function toggleEmojiPicker() {
+        const emojiPickerContainer = document.getElementById(
+          "emoji-picker-container"
+        );
+        const emojiPickerBtn = document.getElementById("emojiPickerBtn");
 
-      // Initialize image upload
-      const imageInput = document.getElementById('imageUpload');
-      if (imageInput) {
-        imageInput.addEventListener('change', async (event) => {
-          const file = event.target.files[0];
-          if (!file) return;
+        if (!emojiPickerContainer || !emojiPickerBtn) {
+          console.error("Emoji picker elements not found"); // Debug log
+          return;
+        }
 
-          // Check file size (max 100MB)
-          if (file.size > 100 * 1024 * 1024) {
-            alert('Image size should be less than 100MB');
-            return;
+        const isVisible = emojiPickerContainer.style.display === "block";
+        console.log("Toggling emoji picker, current visibility:", isVisible); // Debug log
+
+        if (isVisible) {
+          emojiPickerContainer.style.display = "none";
+        } else {
+          const buttonRect = emojiPickerBtn.getBoundingClientRect();
+          console.log("Button position:", buttonRect); // Debug log
+
+          const viewportWidth = window.innerWidth;
+          const viewportHeight = window.innerHeight;
+
+          // Calculate position to ensure the picker is always visible
+          let leftPosition = Math.min(
+            buttonRect.left,
+            viewportWidth - 320 - 10
+          );
+          leftPosition = Math.max(10, leftPosition);
+
+          let topPosition = buttonRect.bottom + 10;
+          if (topPosition + 350 > viewportHeight) {
+            topPosition = Math.max(10, buttonRect.top - 350 - 10);
           }
 
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            const previewContainer = document.createElement('div');
-            previewContainer.className = 'media-preview-container';
-            previewContainer.innerHTML = `
+          console.log("Calculated position:", { leftPosition, topPosition }); // Debug log
+
+          emojiPickerContainer.style.top = `${topPosition}px`;
+          emojiPickerContainer.style.left = `${leftPosition}px`;
+          emojiPickerContainer.style.display = "block";
+        }
+      }
+
+      // Theme handling
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme) {
+          document.body.setAttribute("data-bs-theme", savedTheme);
+        }
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById("themeToggle");
+        if (themeToggle) {
+          themeToggle.addEventListener("click", function () {
+            const body = document.body;
+            const isDark = body.getAttribute("data-bs-theme") === "dark";
+            const newTheme = isDark ? "light" : "dark";
+            body.setAttribute("data-bs-theme", newTheme);
+            localStorage.setItem("theme", newTheme);
+            this.innerHTML = isDark
+              ? '<i class="bi bi-sun"></i>'
+              : '<i class="bi bi-moon"></i>';
+          });
+        }
+
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(
+          document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        );
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Character counter
+        const confessionText = document.getElementById("confessionText");
+        const charCounter =
+          confessionText.nextElementSibling.querySelector("small");
+
+        confessionText.addEventListener("input", function () {
+          const charCount = this.value.length;
+          charCounter.textContent = `${charCount}/500`;
+        });
+
+        // Initialize image upload
+        const imageInput = document.getElementById("imageUpload");
+        if (imageInput) {
+          imageInput.addEventListener("change", async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Check file size (max 100MB)
+            if (file.size > 100 * 1024 * 1024) {
+              alert("Image size should be less than 100MB");
+              return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              const previewContainer = document.createElement("div");
+              previewContainer.className = "media-preview-container";
+              previewContainer.innerHTML = `
               <div class="position-relative">
                 <img src="${e.target.result}" class="img-fluid rounded" alt="Preview">
                 <button type="button" class="remove-media-btn" onclick="removeImagePreview()">
@@ -549,139 +643,151 @@
                 </button>
               </div>
             `;
-            
-            const existingPreview = document.querySelector('.media-preview-container');
-            if (existingPreview) {
-              existingPreview.remove();
+
+              const existingPreview = document.querySelector(
+                ".media-preview-container"
+              );
+              if (existingPreview) {
+                existingPreview.remove();
+              }
+
+              const confessionText = document.getElementById("confessionText");
+              if (confessionText && confessionText.parentElement) {
+                confessionText.parentElement.insertBefore(
+                  previewContainer,
+                  confessionText.nextSibling
+                );
+                window.currentImageFile = file;
+              }
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+      });
+
+      // Logout functionality
+      function logout() {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }
+
+      // Remove image preview
+      window.removeImagePreview = function () {
+        const previewContainer = document.querySelector(
+          ".media-preview-container"
+        );
+        if (previewContainer) {
+          previewContainer.remove();
+        }
+        window.currentImageFile = null;
+        const imageInput = document.getElementById("imageUpload");
+        if (imageInput) {
+          imageInput.value = "";
+        }
+      };
+
+      // Form submission
+      document
+        .getElementById("confessionForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const confessionText = document.getElementById("confessionText");
+          const charCounter =
+            confessionText.nextElementSibling.querySelector("small");
+
+          try {
+            let imageUrl = null;
+            if (window.currentImageFile) {
+              const formData = new FormData();
+              formData.append("media", window.currentImageFile);
+
+              const uploadResponse = await fetch("/api/uploads/post-media", {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: formData,
+              });
+
+              if (!uploadResponse.ok) {
+                throw new Error("Failed to upload image");
+              }
+
+              const uploadData = await uploadResponse.json();
+              imageUrl = uploadData.filePath;
             }
-            
-            const confessionText = document.getElementById('confessionText');
-            if (confessionText && confessionText.parentElement) {
-              confessionText.parentElement.insertBefore(previewContainer, confessionText.nextSibling);
-              window.currentImageFile = file;
+
+            const response = await fetch("/api/confessions", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+              body: JSON.stringify({
+                content: confessionText.value,
+                image: imageUrl,
+              }),
+            });
+
+            if (response.ok) {
+              confessionText.value = "";
+              if (charCounter) {
+                charCounter.textContent = "0/500";
+              }
+              if (window.currentImageFile) {
+                removeImagePreview();
+              }
+              await loadConfessions();
+            } else {
+              const error = await response.json();
+              alert(
+                error.message || "Failed to post confession. Please try again."
+              );
             }
-          };
-          reader.readAsDataURL(file);
+          } catch (error) {
+            console.error("Error:", error);
+            alert("An error occurred. Please try again.");
+          }
         });
-      }
-    });
 
-    // Logout functionality
-    function logout() {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
-    }
-
-    // Remove image preview
-    window.removeImagePreview = function() {
-      const previewContainer = document.querySelector('.media-preview-container');
-      if (previewContainer) {
-        previewContainer.remove();
-      }
-      window.currentImageFile = null;
-      const imageInput = document.getElementById('imageUpload');
-      if (imageInput) {
-        imageInput.value = '';
-      }
-    };
-
-    // Form submission
-    document.getElementById('confessionForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const confessionText = document.getElementById('confessionText');
-      const charCounter = confessionText.nextElementSibling.querySelector('small');
-      
-      try {
-        let imageUrl = null;
-        if (window.currentImageFile) {
-          const formData = new FormData();
-          formData.append('media', window.currentImageFile);
-
-          const uploadResponse = await fetch('/api/uploads/post-media', {
-            method: 'POST',
+      // Load confessions
+      async function loadConfessions() {
+        try {
+          const response = await fetch("/api/confessions", {
             headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
-            body: formData
           });
 
-          if (!uploadResponse.ok) {
-            throw new Error('Failed to upload image');
+          if (!response.ok) {
+            throw new Error("Failed to fetch confessions");
           }
 
-          const uploadData = await uploadResponse.json();
-          imageUrl = uploadData.filePath;
-        }
+          const confessions = await response.json();
+          const feed = document.getElementById("confessionsFeed");
+          feed.innerHTML = "";
 
-        const response = await fetch('/api/confessions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
-          body: JSON.stringify({ 
-            content: confessionText.value,
-            image: imageUrl
-          })
-        });
-        
-        if (response.ok) {
-          confessionText.value = '';
-          if (charCounter) {
-            charCounter.textContent = '0/500';
-          }
-          if (window.currentImageFile) {
-            removeImagePreview();
-          }
-          await loadConfessions();
-        } else {
-          const error = await response.json();
-          alert(error.message || 'Failed to post confession. Please try again.');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred. Please try again.');
-      }
-    });
-
-    // Load confessions
-    async function loadConfessions() {
-      try {
-        const response = await fetch('/api/confessions', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch confessions');
-        }
-        
-        const confessions = await response.json();
-        const feed = document.getElementById('confessionsFeed');
-        feed.innerHTML = '';
-        
-        if (confessions.length === 0) {
-          feed.innerHTML = `
+          if (confessions.length === 0) {
+            feed.innerHTML = `
             <div class="empty-state">
               <img src="/assets/images/empty-confessions.svg" alt="No confessions yet">
               <h3>No Confessions Yet</h3>
               <p>Be the first to share your thoughts anonymously! Your secret is safe with us. 🤫</p>
             </div>
           `;
-          return;
-        }
-        
-        confessions.forEach(confession => {
-          const confessionElement = document.createElement('div');
-          confessionElement.className = 'confession-card';
-          
-          // Create a temporary div to properly escape HTML and handle emojis
-          const tempDiv = document.createElement('div');
-          tempDiv.textContent = confession.content;
-          const escapedContent = tempDiv.innerHTML;
-          
-          confessionElement.innerHTML = `
+            return;
+          }
+
+          confessions.forEach((confession) => {
+            const confessionElement = document.createElement("div");
+            confessionElement.className = "confession-card";
+
+            // Create a temporary div to properly escape HTML and handle emojis
+            const tempDiv = document.createElement("div");
+            tempDiv.textContent = confession.content;
+            const escapedContent = tempDiv.innerHTML;
+
+            confessionElement.innerHTML = `
             <div class="confession-header">
               <div class="d-flex gap-3 align-items-center">
                 <div class="confession-avatar">
@@ -692,120 +798,145 @@
                     <i class="bi bi-incognito me-2"></i>
                     Anonymous
                   </span>
-                  <small class="text-muted">${new Date(confession.createdAt).toLocaleString()}</small>
+                  <small class="text-muted">${new Date(
+                    confession.createdAt
+                  ).toLocaleString()}</small>
                 </div>
               </div>
             </div>
             <div class="confession-content">
               <p class="mb-3">${escapedContent}</p>
-              ${confession.image ? `<img src="${confession.image}" class="img-fluid rounded mb-3" alt="Confession image" style="max-height: 400px; width: auto; object-fit: contain;">` : ''}
+              ${
+                confession.image
+                  ? `<img src="${confession.image}" class="img-fluid rounded mb-3" alt="Confession image" style="max-height: 400px; width: auto; object-fit: contain;">`
+                  : ""
+              }
             </div>
             <div class="confession-meta">
               <div class="d-flex gap-3">
-                <button class="btn action-button like-button" onclick="handleLike('${confession._id}')">
+                <button class="btn action-button like-button" onclick="handleLike('${
+                  confession._id
+                }')">
                   <i class="bi bi-heart me-2"></i>
                   <span>${confession.likes}</span>
                 </button>
-                <button class="btn action-button comment-button" onclick="toggleComments('${confession._id}')">
+                <button class="btn action-button comment-button" onclick="toggleComments('${
+                  confession._id
+                }')">
                   <i class="bi bi-chat me-2"></i>
                   <span>${confession.comments.length}</span>
                 </button>
               </div>
-              <div id="comments-${confession._id}" class="mt-3" style="display: none;">
+              <div id="comments-${
+                confession._id
+              }" class="mt-3" style="display: none;">
                 <div class="comments-list">
-                  ${confession.comments.map(comment => {
-                    const tempCommentDiv = document.createElement('div');
-                    tempCommentDiv.textContent = comment.content;
-                    const escapedComment = tempCommentDiv.innerHTML;
-                    return `
+                  ${confession.comments
+                    .map((comment) => {
+                      const tempCommentDiv = document.createElement("div");
+                      tempCommentDiv.textContent = comment.content;
+                      const escapedComment = tempCommentDiv.innerHTML;
+                      return `
                       <div class="comment-item">
                         <div class="confession-avatar">
                           <i class="bi bi-person"></i>
                         </div>
                         <div class="comment-content">
                           <p class="mb-0">${escapedComment}</p>
-                          <small class="text-muted">${new Date(comment.createdAt).toLocaleString()}</small>
+                          <small class="text-muted">${new Date(
+                            comment.createdAt
+                          ).toLocaleString()}</small>
                         </div>
                       </div>
                     `;
-                  }).join('')}
+                    })
+                    .join("")}
                 </div>
-                <form class="mt-2" onsubmit="handleComment(event, '${confession._id}')">
+                <form class="mt-2" onsubmit="handleComment(event, '${
+                  confession._id
+                }')">
                   <input type="text" class="form-control" placeholder="Add a comment..." required>
                 </form>
               </div>
             </div>
           `;
-          feed.appendChild(confessionElement);
-        });
-      } catch (error) {
-        console.error('Error loading confessions:', error);
-        alert('Failed to load confessions. Please try again.');
+            feed.appendChild(confessionElement);
+          });
+        } catch (error) {
+          console.error("Error loading confessions:", error);
+          alert("Failed to load confessions. Please try again.");
+        }
       }
-    }
 
-    // Handle like
-    async function handleLike(confessionId) {
-      try {
-        const response = await fetch(`/api/confessions/${confessionId}/like`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+      // Handle like
+      async function handleLike(confessionId) {
+        try {
+          const response = await fetch(
+            `/api/confessions/${confessionId}/like`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
+
+          if (response.ok) {
+            await loadConfessions(); // Reload confessions to update likes
+          } else {
+            const error = await response.json();
+            alert(error.message || "Failed to like confession");
           }
-        });
-        
-        if (response.ok) {
-          await loadConfessions(); // Reload confessions to update likes
-        } else {
-          const error = await response.json();
-          alert(error.message || 'Failed to like confession');
+        } catch (error) {
+          console.error("Error:", error);
+          alert("An error occurred while liking the confession");
         }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred while liking the confession');
       }
-    }
 
-    // Toggle comments
-    function toggleComments(confessionId) {
-      const commentsDiv = document.getElementById(`comments-${confessionId}`);
-      commentsDiv.style.display = commentsDiv.style.display === 'none' ? 'block' : 'none';
-    }
+      // Toggle comments
+      function toggleComments(confessionId) {
+        const commentsDiv = document.getElementById(`comments-${confessionId}`);
+        commentsDiv.style.display =
+          commentsDiv.style.display === "none" ? "block" : "none";
+      }
 
-    // Handle comment
-    async function handleComment(event, confessionId) {
-      event.preventDefault();
-      const commentInput = event.target.querySelector('input');
-      const comment = commentInput.value;
-      
-      try {
-        const response = await fetch(`/api/confessions/${confessionId}/comments`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
-          body: JSON.stringify({ content: comment })
-        });
-        
-        if (response.ok) {
-          commentInput.value = '';
-          await loadConfessions(); // Reload confessions to update comments
-        } else {
-          const error = await response.json();
-          alert(error.message || 'Failed to add comment');
+      // Handle comment
+      async function handleComment(event, confessionId) {
+        event.preventDefault();
+        const commentInput = event.target.querySelector("input");
+        const comment = commentInput.value;
+
+        try {
+          const response = await fetch(
+            `/api/confessions/${confessionId}/comments`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+              body: JSON.stringify({ content: comment }),
+            }
+          );
+
+          if (response.ok) {
+            commentInput.value = "";
+            await loadConfessions(); // Reload confessions to update comments
+          } else {
+            const error = await response.json();
+            alert(error.message || "Failed to add comment");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("An error occurred while adding the comment");
         }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred while adding the comment');
       }
-    }
 
-    // Initial load
-    loadConfessions();
+      // Initial load
+      loadConfessions();
 
-    // Set up auto-refresh every 30 seconds
-    setInterval(loadConfessions, 30000);
-  </script>
-</body>
+      // Set up auto-refresh every 30 seconds
+      setInterval(loadConfessions, 30000);
+    </script>
+  </body>
 </html>
