@@ -328,8 +328,13 @@
             <li class="nav-item">
               <a class="nav-link" href="/confessions"
                 ><i class="bi bi-chat-quote me-2"></i>Confessions</a
-              >
+              >=
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/profile/<%= user && user.rollNumber ? user.rollNumber : '' %>">
+                  <i class="bi bi-person-circle me-2"></i>My Profile
+              </a>
+            </li
           </ul>
           <div class="d-flex align-items-center gap-3">
             <div class="theme-toggle" id="themeToggle">

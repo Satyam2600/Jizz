@@ -83,6 +83,8 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: [] }],
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: [] }],
 });
 
 // Hash password before saving

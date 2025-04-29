@@ -10,7 +10,7 @@ exports.getAllPosts = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const posts = await Post.find()
-      .populate("user", "fullName username avatar department")
+      .populate("user", "fullName username avatar department followers") // include followers
       .populate("comments.user", "fullName username avatar")
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -18,13 +18,24 @@ exports.getAllPosts = async (req, res) => {
 
     const totalPosts = await Post.countDocuments();
 
+    const currentUserId = req.user && (req.user._id || req.user.userId);
+
+    const postsWithIsFollowing = posts.map(post => {
+      const userObj = post.user.toObject ? post.user.toObject() : post.user;
+      userObj.isFollowing = userObj.followers && currentUserId
+        ? userObj.followers.some(f => f.equals(currentUserId))
+        : false;
+      post.user = userObj;
+      return post;
+    });
+
     res.json({
       success: true,
       totalPosts,
       currentPage: page,
       totalPages: Math.ceil(totalPosts / limit),
-      posts: posts.length > 0 ? posts : [],
-      message: posts.length === 0 ? 'No posts found. Be the first to share something!' : ''
+      posts: postsWithIsFollowing,
+      message: postsWithIsFollowing.length === 0 ? 'No posts found. Be the first to share something!' : ''
     });
 
   } catch (error) {

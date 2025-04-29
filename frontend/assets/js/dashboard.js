@@ -446,7 +446,7 @@ function attachPostEventListeners() {
         btn.onclick = async function(e) {
             e.preventDefault();
             const userId = btn.getAttribute('data-user-id');
-            const isFollowing = btn.getAttribute('data-following') === 'true';
+            let isFollowing = btn.getAttribute('data-following') === 'true';
             const token = localStorage.getItem('token');
             if (!token) {
                 alert('Please log in to follow users');
@@ -460,12 +460,44 @@ function attachPostEventListeners() {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (response.ok) {
-                    // Toggle button state
-                    btn.setAttribute('data-following', (!isFollowing).toString());
-                    btn.classList.toggle('btn-outline-primary');
-                    btn.classList.toggle('btn-success');
-                    btn.querySelector('.follow-btn-text').textContent = isFollowing ? 'Follow' : 'Following';
-                    // Optionally update follower count in profile if open
+                    const data = await response.json();
+                    // Toggle follow state
+                    isFollowing = !isFollowing;
+                    btn.setAttribute('data-following', isFollowing.toString());
+                    if (isFollowing) {
+                        btn.classList.remove('btn-outline-primary');
+                        btn.classList.add('btn-success');
+                        btn.querySelector('.follow-btn-text').textContent = 'Following';
+                    } else {
+                        btn.classList.remove('btn-success');
+                        btn.classList.add('btn-outline-primary');
+                        btn.querySelector('.follow-btn-text').textContent = 'Follow';
+                    }
+                    // Update follower count in the UI if present
+                    const postCard = btn.closest('.post-card');
+                    if (postCard) {
+                        const userId = btn.getAttribute('data-user-id');
+                        // Find all follow buttons for this user and update their state
+                        document.querySelectorAll(`.btn-follow-user[data-user-id="${userId}"]`).forEach(otherBtn => {
+                            otherBtn.setAttribute('data-following', isFollowing.toString());
+                            if (isFollowing) {
+                                otherBtn.classList.remove('btn-outline-primary');
+                                otherBtn.classList.add('btn-success');
+                                otherBtn.querySelector('.follow-btn-text').textContent = 'Following';
+                            } else {
+                                otherBtn.classList.remove('btn-success');
+                                otherBtn.classList.add('btn-outline-primary');
+                                otherBtn.querySelector('.follow-btn-text').textContent = 'Follow';
+                            }
+                        });
+                    }
+                    // Update follower count in profile page if open
+                    const followersCountElem = document.querySelector('.stat-title')?.textContent?.trim() === 'Followers'
+                        ? document.querySelector('.stat-title').previousElementSibling
+                        : null;
+                    if (followersCountElem && data.followersCount !== undefined) {
+                        followersCountElem.textContent = data.followersCount;
+                    }
                 } else {
                     const errorData = await response.json();
                     alert(errorData.message || 'Failed to update follow status');

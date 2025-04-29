@@ -99,8 +99,13 @@ app.get("/change-password", (req, res) => {
 app.get("/forgotpassword", (req, res) => {
   res.render("forgotpassword", { title: "Forgot Password - JIZZ" });
 });
-app.get("/confessions", (req, res) => {
-  res.render("confessions", { title: "Confessions - JIZZ" });
+app.get("/confessions", async (req, res) => {
+  const userId = req.user?.id || req.user?.userId || req.session.userId || req.session.user?.id;
+  let user = null;
+  if (userId) {
+    user = await User.findById(userId).lean();
+  }
+  res.render("confessions", { title: "Confessions - JIZZ", user });
 });
 
 app.get("/communities", async (req, res) => {
@@ -155,6 +160,10 @@ app.get('/profile/:rollNumber', async (req, res) => {
     const user = await User.findOne({ rollNumber: req.params.rollNumber }).lean();
     if (!user) return res.status(404).send('User not found');
     const posts = await Post.find({ user: user._id }).sort({ createdAt: -1 }).lean();
+    // Add these lines:
+    user.postsCount = posts.length;
+    user.followersCount = user.followers ? user.followers.length : 0;
+    user.followingCount = user.following ? user.following.length : 0;
     res.render('profile', { user, posts });
   } catch (error) {
     res.status(500).send('Server error');
