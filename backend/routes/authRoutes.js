@@ -94,6 +94,7 @@ router.post("/login", async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       console.log('Password mismatch for user:', cleanRollNumber);
+console.log("password:", password)
       return res.status(401).json({ message: 'Invalid roll number or password' });
     }
 

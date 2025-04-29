@@ -22,6 +22,10 @@ function renderPost(post) {
     
     // Use post.user for user details
     const user = post.user || {};
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const isCurrentUser = user._id === currentUser._id;
+    const isFollowing = user.isFollowing || false; // Should be provided by backend for each post's user
+    const followersCount = user.followersCount || 0;
     // Likes/comments
     const isLiked = Array.isArray(post.likedBy) && post.likedBy.includes(localStorage.getItem('userId'));
     const likeCount = post.likes || (post.likedBy ? post.likedBy.length : 0);
@@ -86,6 +90,11 @@ function renderPost(post) {
                             <span class="post-time">${new Date(post.createdAt).toLocaleString()}</span>
                         </small>
                     </div>
+                    ${!isCurrentUser ? `<button class="btn btn-sm ms-3 btn-follow-user ${isFollowing ? 'btn-success' : 'btn-outline-primary'}" 
+                        data-user-id="${user._id}" 
+                        data-following="${isFollowing}">
+                        <span class="follow-btn-text">${isFollowing ? 'Following' : 'Follow'}</span>
+                    </button>` : ''}
                 </div>
 
                 <!-- Post Content -->
@@ -428,6 +437,41 @@ function attachPostEventListeners() {
                     alert('Failed to copy link to clipboard');
                 }
                 document.body.removeChild(textArea);
+            }
+        };
+    });
+
+    // Follow/Unfollow functionality
+    document.querySelectorAll('.btn-follow-user').forEach(btn => {
+        btn.onclick = async function(e) {
+            e.preventDefault();
+            const userId = btn.getAttribute('data-user-id');
+            const isFollowing = btn.getAttribute('data-following') === 'true';
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please log in to follow users');
+                window.location.href = '/login';
+                return;
+            }
+            try {
+                const endpoint = isFollowing ? `/api/users/${userId}/unfollow` : `/api/users/${userId}/follow`;
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    // Toggle button state
+                    btn.setAttribute('data-following', (!isFollowing).toString());
+                    btn.classList.toggle('btn-outline-primary');
+                    btn.classList.toggle('btn-success');
+                    btn.querySelector('.follow-btn-text').textContent = isFollowing ? 'Follow' : 'Following';
+                    // Optionally update follower count in profile if open
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.message || 'Failed to update follow status');
+                }
+            } catch (err) {
+                alert('Failed to update follow status');
             }
         };
     });

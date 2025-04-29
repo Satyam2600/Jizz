@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { authenticate } = require("../middleware/authMiddleware");
 const User = require("../models/User");
+const userController = require("../controllers/userController");
 const bcrypt = require("bcryptjs");
 const multer = require("multer");
 const path = require("path");
@@ -71,7 +72,7 @@ router.post('/login', async (req, res) => {
     console.log("Login attempt with password:", password);
 
         // Find user by rollNumber
-        const user = await User.findOne({ rollNumber });
+        const user = await User.findOne({ rollNumber }).select('+password');
         
         if (!user) {
             console.log("User not found with rollNumber:", rollNumber);
@@ -79,7 +80,7 @@ router.post('/login', async (req, res) => {
         }
 
         // Compare password
-        const isMatch = await user.comparePassword(password);
+        const isMatch = await user.matchPassword(password);
         if (!isMatch) {
             console.log("Password mismatch for user:", rollNumber);
             return res.status(401).json({ message: 'Invalid credentials' });
@@ -246,5 +247,9 @@ router.post("/change-password", authenticate, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+// Add follow/unfollow routes
+router.post('/:id/follow', authenticate, userController.followUser);
+router.post('/:id/unfollow', authenticate, userController.unfollowUser);
 
 module.exports = router;

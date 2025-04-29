@@ -93,7 +93,7 @@ const userSchema = new mongoose.Schema({
 userSchema
 .pre('save', async function(next) {
     if (!this.isModified('password')) {
-        next();
+        return next(); // Fix: return immediately if password not modified
     }
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
@@ -102,7 +102,7 @@ userSchema
 // To match your schema variable name, likely:
 userSchema.pre('save', async function(next) {
     if (!this.isModified('password')) {
-        next();
+        return next(); // Fix: return immediately if password not modified
     }
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
