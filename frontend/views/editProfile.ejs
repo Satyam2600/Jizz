@@ -1,486 +1,722 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="en" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JIZZ - Edit Profile</title>
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+    />
     <style>
-        :root {
-            --primary-color: #1C160C;
-            --secondary-color: #A18249;
-            --background-light: #F4EFE6;
-            --success-color: #019863;
-            --border-color: #E9DFCE;
-        }
-        
-        body {
-            font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;
-            background-color: #FFFFFF;
-        }
-        
-        .custom-header {
-            border-bottom: 1px solid #F4EFE6;
-            padding: 12px 40px;
-        }
-        
-        .profile-photo {
-            background-size: cover;
-            background-position: center;
-        }
-        
-        .cover-photo-container {
-            height: 218px;
-            border-radius: 12px;
-            background-size: cover;
-            background-position: center;
-        }
-        
-        .custom-btn {
-            border-radius: 2rem;
-            padding: 8px 16px;
-            font-weight: 700;
-            font-size: 14px;
-        }
-        
-        .btn-light-custom {
-            background-color: var(--background-light);
-            color: var(--primary-color);
-        }
-        
-        .btn-success-custom {
-            background-color: var(--success-color);
-            color: white;
-        }
-        
-        .form-control-custom {
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            height: 56px;
-            padding: 15px;
-        }
-        
-        .form-control-custom:focus {
-            border-color: var(--border-color);
-            box-shadow: none;
-        }
-        
-        .custom-select {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='24px' height='24px' fill='%23A18249' viewBox='0 0 256 256'%3e%3cpath d='M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z'%3e%3c/path%3e%3c/svg%3e");
-            background-position: right 15px center;
-            background-size: 24px;
-        }
-        
-        .toggle-switch {
-            width: 51px;
-            height: 31px;
-            background-color: var(--background-light);
-            border-radius: 15px;
-            padding: 2px;
-            cursor: pointer;
-        }
-        
-        .toggle-handle {
-            width: 27px;
-            height: 27px;
-            background-color: white;
-            border-radius: 50%;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.15), 0 3px 1px rgba(0,0,0,0.06);
-            transition: transform 0.2s;
-        }
-        
-        input:checked + .toggle-handle {
-            transform: translateX(20px);
-        }
-        nav{
-          background-color: white;
-        }
+      :root {
+        --primary-bg: #ffffff;
+        --secondary-bg: #f8f9fa;
+        --text-primary: #1c160c;
+        --text-secondary: #6c757d;
+        --accent-color: #019863;
+        --border-color: #e9ecef;
+        --card-radius: 1rem;
+        --hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        --transition-speed: 0.3s;
+      }
+
+      [data-bs-theme="dark"] {
+        --primary-bg: #1a1a1a;
+        --secondary-bg: #2d2d2d;
+        --text-primary: #ffffff;
+        --text-secondary: #adb5bd;
+        --border-color: #343a40;
+        --hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      }
+
+      [data-bs-theme="dark"] .bi-bell {
+        color: #ffffff; /* Set bell icon color to white in dark mode */
+      }
+
+      body {
+        background-color: var(--primary-bg);
+        color: var(--text-primary);
+        font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;
+        padding-top: 56px;
+        transition: background-color var(--transition-speed),
+          color var(--transition-speed);
+      }
+
+      .navbar {
+        background-color: var(--primary-bg) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        height: 56px;
+        z-index: 1030;
+      }
+
+      .nav-link {
+        color: var(--text-primary);
+        font-size: 14px;
+        padding: 8px 12px;
+        border-radius: 8px;
+      }
+
+      .nav-link:hover {
+        background-color: var(--secondary-bg);
+      }
+
+      .nav-link i {
+        font-size: 18px;
+        width: 24px;
+      }
+
+      .theme-toggle {
+        cursor: pointer; /* Add pointer cursor for the dark mode button */
+      }
+
+      .form-control-custom {
+        background-color: var(--secondary-bg);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        height: 56px;
+        padding: 15px;
+        transition: background-color var(--transition-speed),
+          color var(--transition-speed);
+      }
+
+      .form-control-custom:focus {
+        background-color: var(--primary-bg);
+        border-color: var(--accent-color);
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(1, 152, 99, 0.25);
+      }
+
+      .form-control-custom::placeholder {
+        color: var(--text-secondary);
+      }
+
+      .btn-light-custom {
+        background-color: var(--secondary-bg);
+        color: var(--text-primary);
+      }
+
+      .btn-success-custom {
+        background-color: var(--accent-color);
+        color: white;
+      }
+
+      .cover-photo-container {
+        height: 218px;
+        border-radius: 12px;
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .cover-photo-container span {
+        font-size: 18px;
+        color: var(--text-secondary);
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg fixed-top border-bottom">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold" href="#">jizz</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#"><i class="bi bi-house-door me-2"></i>Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="bi bi-people me-2"></i>Communities</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="bi bi-calendar-event me-2"></i>Events</a>
-                    </li>
-                </ul>
+      <div class="container-fluid px-4">
+        <a class="navbar-brand fw-bold" href="#">Jizz</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/dashboard"
+                ><i class="bi bi-house-door me-2"></i>Home</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/communities"
+                ><i class="bi bi-people me-2"></i>Communities</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/events"
+                ><i class="bi bi-calendar-event me-2"></i>Events</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/confessions"
+                ><i class="bi bi-chat-quote me-2"></i>Confessions</a
+              >
+            </li>
+          </ul>
+          <div class="d-flex align-items-center gap-3">
+            <div class="theme-toggle" id="themeToggle">
+              <i class="bi bi-moon"></i>
             </div>
+            <div class="dropdown">
+              <button
+                class="btn btn-link text-dark position-relative"
+                type="button"
+                data-bs-toggle="dropdown"
+              >
+                <i class="bi bi-bell"></i>
+                <span
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  >3</span
+                >
+              </button>
+              <div
+                class="dropdown-menu dropdown-menu-end p-2"
+                style="min-width: 300px"
+              >
+                <h6 class="dropdown-header">Notifications</h6>
+                <div class="list-group border-0">
+                  <a
+                    href="#"
+                    class="list-group-item list-group-item-action border-0"
+                  >
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-person-check fs-5 me-3"></i>
+                      <div>
+                        <p class="mb-0 small">New connection request</p>
+                        <small class="text-muted">2m ago</small>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </nav>
 
-    <main class="container py-5 px-5" style="max-width: 960px;">
+    <main class="container py-5 px-5" style="max-width: 960px">
+      <div class="mb-4">
+        <h1 class="fw-black mb-4" style="font-size: 36px">Edit Profile</h1>
+        <div
+          id="coverPhotoPreview"
+          class="cover-photo-container mb-3"
+          style="background-image: url('/assets/images/default-banner.jpg')"
+        >
+         
+        </div>
+        <button
+          id="uploadCoverPhotoBtn"
+          class="custom-btn btn btn-light-custom"
+        >
+          Upload Cover Photo
+        </button>
+        <input
+          type="file"
+          id="coverPhotoInput"
+          class="d-none"
+          accept="image/*"
+        />
+      </div>
+
+      <div class="text-center mb-5">
+        <div
+          id="profilePhotoPreview"
+          class="profile-photo mx-auto mb-3"
+          style="
+            background-image: url('/assets/images/default-avatar.jpg');
+            width: 128px;
+            height: 128px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid var(--border-color);
+          "
+        ></div>
+        <button
+          id="uploadProfilePhotoBtn"
+          class="custom-btn btn btn-light-custom"
+        >
+          Upload Profile Photo
+        </button>
+        <input
+          type="file"
+          id="profilePhotoInput"
+          class="d-none"
+          accept="image/*"
+        />
+      </div>
+
+      <form class="mb-5" id="profileForm">
         <div class="mb-4">
-            <h1 class="fw-black mb-4" style="font-size: 36px;">Edit Profile</h1>
-            <div id="coverPhotoPreview" class="cover-photo-container mb-3" 
-                 style="background-image: url('/assets/images/default-banner.jpg')">
-            </div>
-            <button id="uploadCoverPhotoBtn" class="custom-btn btn btn-light-custom">
-                Upload Cover Photo
-            </button>
-            <input type="file" id="coverPhotoInput" class="d-none" accept="image/*">
+          <label class="form-label fw-medium mb-2">Full Name</label>
+          <input
+            type="text"
+            class="form-control form-control-custom"
+            placeholder="Full Name"
+            id="fullName"
+          />
         </div>
-
-        <div class="text-center mb-5">
-            <div id="profilePhotoPreview" class="profile-photo mx-auto mb-3" 
-                 style="background-image: url('/assets/images/default-avatar.jpg'); width: 128px; height: 128px; border-radius: 50%; background-size: cover; background-position: center; border: 2px solid var(--border-color);">
-            </div>
-            <button id="uploadProfilePhotoBtn" class="custom-btn btn btn-light-custom">
-                Upload Profile Photo
-            </button>
-            <input type="file" id="profilePhotoInput" class="d-none" accept="image/*">
+        <div class="mb-4">
+          <label class="form-label fw-medium mb-2">Username</label>
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control form-control-custom rounded-end-0"
+              placeholder="Username"
+              id="username"
+            />
+            <span class="input-group-text bg-white border-start-0 rounded-end">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="#A18249"
+                viewBox="0 0 256 256"
+              >
+                <path
+                  d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"
+                />
+              </svg>
+            </span>
+          </div>
         </div>
-
-        <form class="mb-5" id="profileForm">
-            <div class="mb-4">
-                <label class="form-label fw-medium mb-2">Full Name</label>
-                <input type="text" class="form-control form-control-custom" placeholder="Full Name" id="fullName">
-            </div>
-            <div class="mb-4">
-                <label class="form-label fw-medium mb-2">Username</label>
-                <div class="input-group">
-                    <input type="text" class="form-control form-control-custom rounded-end-0" placeholder="Username" id="username">
-                    <span class="input-group-text bg-white border-start-0 rounded-end">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#A18249" viewBox="0 0 256 256">
-                            <path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/>
-                        </svg>
-                    </span>
-                </div>
-            </div>
-            <div class="mb-4">
-                <label class="form-label fw-medium mb-2">Department</label>
-                <select class="form-select form-control-custom custom-select" id="department">
-                    <option value=""></option>
-                    <option value="CSE">CSE</option>
-                    <option value="ECE">ECE</option>
-                    <option value="Mechanical">Mechanical</option>
-                    <option value="Architecture">Architecture</option>
-                    <option value="Production">Production</option>
-                    <option value="Civil">Civil</option>
-                    <option value="Electrical">Electrical</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <label class="form-label fw-medium mb-2">Year of Study</label>
-                <select class="form-select form-control-custom custom-select" id="year">
-                    <option value=""></option>
-                    <option value="1">First Year</option>
-                    <option value="2">Second Year</option>
-                    <option value="3">Third Year</option>
-                    <option value="4">Fourth Year</option>
-                    <option value="5">Fifth Year</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <label class="form-label fw-medium mb-2">Semester</label>
-                <select class="form-select form-control-custom custom-select" id="semester">
-                    <option value=""></option>
-                    <option value="1">Semester 1</option>
-                    <option value="2">Semester 2</option>
-                    <option value="3">Semester 3</option>
-                    <option value="4">Semester 4</option>
-                    <option value="5">Semester 5</option>
-                    <option value="6">Semester 6</option>
-                    <option value="7">Semester 7</option>
-                    <option value="8">Semester 8</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <label class="form-label fw-medium mb-2">Bio</label>
-                <textarea class="form-control form-control-custom" rows="4" placeholder="Tell us about yourself, your interests, and what you're studying..." id="bio"></textarea>
-            </div>
-            <div class="mb-4">
-                <label class="form-label fw-medium mb-2">Skills</label>
-                <input type="text" class="form-control form-control-custom" placeholder="e.g., Python, JavaScript, UI/UX Design, Public Speaking" id="skills">
-                <small class="text-muted">Separate skills with commas</small>
-            </div>
-            <div class="mb-4">
-                <label class="form-label fw-medium mb-2">Interests</label>
-                <input type="text" class="form-control form-control-custom" placeholder="e.g., AI, Web Development, Photography, Basketball" id="interests">
-                <small class="text-muted">Separate interests with commas</small>
-            </div>
-            <div class="mb-4">
-                <label class="form-label fw-medium mb-2">Portfolio/Projects</label>
-                <input type="url" class="form-control form-control-custom" placeholder="Link to your portfolio or project showcase" id="portfolio">
-            </div>
-            <div class="mb-4">
-                <label class="form-label fw-medium mb-2">LinkedIn</label>
-                <input type="url" class="form-control form-control-custom" placeholder="linkedin.com/yourhandle" id="linkedin">
-            </div>
-            <h3 class="fw-bold fs-5 mt-5 mb-3">Settings</h3>
-            <div class="d-flex justify-content-between align-items-center py-2">
-                <div>
-                    <p class="mb-0 fw-medium">Public Profile</p>
-                    <p class="text-secondary fs-6 mb-0">Make your profile visible to other students and faculty</p>
-                </div>
-                <label class="toggle-switch">
-                    <input type="checkbox" class="d-none">
-                    <div class="toggle-handle"></div>
-                </label>
-            </div>
-            <div class="d-flex justify-content-between align-items-center py-2">
-                <div>
-                    <p class="mb-0 fw-medium">Notification Preferences</p>
-                    <p class="text-secondary fs-6 mb-0">Customize your notification settings</p>
-                </div>
-                <button class="btn btn-link text-decoration-none fw-medium">Manage</button>
-            </div>
-            <div class="d-flex justify-content-between align-items-center py-2">
-                <p class="mb-0">Change Password</p>
-                <a href="/change-password" class="btn btn-link text-decoration-none fw-medium">Update</a>
-            </div>
-            <div class="d-flex justify-content-end gap-3 mt-5">
-                <button type="button" class="custom-btn btn btn-light-custom">Cancel</button>
-                <button type="submit" class="custom-btn btn btn-success-custom">Save Changes</button>
-            </div>
-        </form>
+        <div class="mb-4">
+          <label class="form-label fw-medium mb-2">Department</label>
+          <select
+            class="form-select form-control-custom custom-select"
+            id="department"
+          >
+            <option value=""></option>
+            <option value="CSE">CSE</option>
+            <option value="ECE">ECE</option>
+            <option value="Mechanical">Mechanical</option>
+            <option value="Architecture">Architecture</option>
+            <option value="Production">Production</option>
+            <option value="Civil">Civil</option>
+            <option value="Electrical">Electrical</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-medium mb-2">Year of Study</label>
+          <select
+            class="form-select form-control-custom custom-select"
+            id="year"
+          >
+            <option value=""></option>
+            <option value="1">First Year</option>
+            <option value="2">Second Year</option>
+            <option value="3">Third Year</option>
+            <option value="4">Fourth Year</option>
+            <option value="5">Fifth Year</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-medium mb-2">Semester</label>
+          <select
+            class="form-select form-control-custom custom-select"
+            id="semester"
+          >
+            <option value=""></option>
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+            <option value="3">Semester 3</option>
+            <option value="4">Semester 4</option>
+            <option value="5">Semester 5</option>
+            <option value="6">Semester 6</option>
+            <option value="7">Semester 7</option>
+            <option value="8">Semester 8</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-medium mb-2">Bio</label>
+          <textarea
+            class="form-control form-control-custom"
+            rows="4"
+            placeholder="Tell us about yourself, your interests, and what you're studying..."
+            id="bio"
+          ></textarea>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-medium mb-2">Skills</label>
+          <input
+            type="text"
+            class="form-control form-control-custom"
+            placeholder="e.g., Python, JavaScript, UI/UX Design, Public Speaking"
+            id="skills"
+          />
+          <small class="text-muted">Separate skills with commas</small>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-medium mb-2">Interests</label>
+          <input
+            type="text"
+            class="form-control form-control-custom"
+            placeholder="e.g., AI, Web Development, Photography, Basketball"
+            id="interests"
+          />
+          <small class="text-muted">Separate interests with commas</small>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-medium mb-2">Portfolio/Projects</label>
+          <input
+            type="url"
+            class="form-control form-control-custom"
+            placeholder="Link to your portfolio or project showcase"
+            id="portfolio"
+          />
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-medium mb-2">LinkedIn</label>
+          <input
+            type="url"
+            class="form-control form-control-custom"
+            placeholder="linkedin.com/yourhandle"
+            id="linkedin"
+          />
+        </div>
+        <h3 class="fw-bold fs-5 mt-5 mb-3">Settings</h3>
+        <div class="d-flex justify-content-between align-items-center py-2">
+          <div>
+            <p class="mb-0 fw-medium">Public Profile</p>
+            <p class="text-secondary fs-6 mb-0">
+              Make your profile visible to other students and faculty
+            </p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" class="d-none" />
+            <div class="toggle-handle"></div>
+          </label>
+        </div>
+        <div class="d-flex justify-content-between align-items-center py-2">
+          <div>
+            <p class="mb-0 fw-medium">Notification Preferences</p>
+            <p class="text-secondary fs-6 mb-0">
+              Customize your notification settings
+            </p>
+          </div>
+          <button class="btn btn-link text-decoration-none fw-medium">
+            Manage
+          </button>
+        </div>
+        <div class="d-flex justify-content-between align-items-center py-2">
+          <p class="mb-0">Change Password</p>
+          <a
+            href="/change-password"
+            class="btn btn-link text-decoration-none fw-medium"
+            >Update</a
+          >
+        </div>
+        <div class="d-flex justify-content-end gap-3 mt-5">
+          <button type="button" class="custom-btn btn btn-light-custom">
+            Cancel
+          </button>
+          <button type="submit" class="custom-btn btn btn-success-custom">
+            Save Changes
+          </button>
+        </div>
+      </form>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/editProfile.js"></script>
     <script src="/assets/js/logout.js"></script>
 
-<script>
-// Load user profile data
-async function loadUserProfile() {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    window.location.href = '/login';
-    return;
-  }
-
-  try {
-    const response = await fetch('/api/users/my-profile', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      console.log('Loaded profile data:', data);
-
-      // Pre-fill form fields
-      document.getElementById('fullName').value = data.fullName || '';
-      document.getElementById('username').value = data.username || '';
-      document.getElementById('department').value = data.department || '';
-      document.getElementById('year').value = data.year || '';
-      document.getElementById('semester').value = data.semester || '';
-      document.getElementById('bio').value = data.bio || '';
-      document.getElementById('skills').value = data.skills || '';
-      document.getElementById('interests').value = data.interests || '';
-      document.getElementById('portfolio').value = data.portfolio || '';
-      document.getElementById('linkedin').value = data.linkedin || '';
-
-      // Set profile photos
-      if (data.avatar) {
-        document.getElementById('profilePhotoPreview').style.backgroundImage = `url('${data.avatar}')`;
-      }
-      if (data.banner) {
-        document.getElementById('coverPhotoPreview').style.backgroundImage = `url('${data.banner}')`;
-      }
-    } else if (response.status === 401) {
-      alert('Session expired. Please log in again.');
-      window.location.href = '/login';
-    } else {
-      console.error('Failed to load profile:', await response.text());
-    }
-  } catch (error) {
-    console.error('Error loading profile:', error);
-  }
-}
-
-// Load profile when page loads
-document.addEventListener('DOMContentLoaded', loadUserProfile);
-
-// Handle form submission
-document.getElementById('profileForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
-  const formData = new FormData(e.target);
-  const token = localStorage.getItem('token');
-  
-  if (!token) {
-    alert('Please log in again');
-    window.location.href = '/login';
-    return;
-  }
-
-  try {
-    console.log('Sending profile update request...');
-    const response = await fetch('/api/users/update-profile', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
-      body: formData
-    });
-
-    console.log('Response status:', response.status);
-    const data = await response.json();
-    console.log('Profile update response:', data);
-
-    if (response.ok) {
-      // Save updated user data to localStorage
-      localStorage.setItem('user', JSON.stringify(data.user));
-      localStorage.setItem('userFullName', data.user.fullName);
-      localStorage.setItem('userUsername', data.user.username);
-      if (data.user.avatar) {
-        localStorage.setItem('userProfilePhoto', data.user.avatar);
-      }
-      if (data.user.banner) {
-        localStorage.setItem('userBanner', data.user.banner);
-      }
-      
-      alert('Profile updated successfully!');
-      window.location.href = '/dashboard';
-    } else {
-      if (response.status === 401) {
-        alert('Session expired. Please log in again.');
-        window.location.href = '/login';
-      } else {
-        alert(data.message || 'Failed to update profile');
-      }
-    }
-  } catch (error) {
-    console.error('Error updating profile:', error);
-    alert('An error occurred while updating your profile');
-  }
-});
-  
-document.getElementById("uploadProfilePhotoBtn").addEventListener("click", () => {
-    document.getElementById("profilePhotoInput").click();
-});
-  
-document.getElementById("profilePhotoInput").addEventListener("change", async (event) => {
-    const file = event.target.files[0];
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-        alert("User not logged in. Redirecting to login page.");
-        window.location.href = "/login";
-        return;
-    }
-
-    if (file) {
-        const formData = new FormData();
-        formData.append("profilePhoto", file);
+    <script>
+      // Load user profile data
+      async function loadUserProfile() {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          window.location.href = "/login";
+          return;
+        }
 
         try {
-            console.log("Uploading profile photo...");
-            const response = await fetch("/api/uploads/profile-photo", {
-                method: "POST",
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                body: formData
+          const response = await fetch("/api/users/my-profile", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            console.log("Loaded profile data:", data);
+
+            // Pre-fill form fields
+            document.getElementById("fullName").value = data.fullName || "";
+            document.getElementById("username").value = data.username || "";
+            document.getElementById("department").value = data.department || "";
+            document.getElementById("year").value = data.year || "";
+            document.getElementById("semester").value = data.semester || "";
+            document.getElementById("bio").value = data.bio || "";
+            document.getElementById("skills").value = data.skills || "";
+            document.getElementById("interests").value = data.interests || "";
+            document.getElementById("portfolio").value = data.portfolio || "";
+            document.getElementById("linkedin").value = data.linkedin || "";
+
+            // Set profile photos
+            if (data.avatar) {
+              document.getElementById(
+                "profilePhotoPreview"
+              ).style.backgroundImage = `url('${data.avatar}')`;
+            }
+            if (data.banner) {
+              document.getElementById(
+                "coverPhotoPreview"
+              ).style.backgroundImage = `url('${data.banner}')`;
+            }
+          } else if (response.status === 401) {
+            alert("Session expired. Please log in again.");
+            window.location.href = "/login";
+          } else {
+            console.error("Failed to load profile:", await response.text());
+          }
+        } catch (error) {
+          console.error("Error loading profile:", error);
+        }
+      }
+
+      // Load profile when page loads
+      document.addEventListener("DOMContentLoaded", loadUserProfile);
+
+      // Handle form submission
+      document
+        .getElementById("profileForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const formData = new FormData(e.target);
+          const token = localStorage.getItem("token");
+
+          if (!token) {
+            alert("Please log in again");
+            window.location.href = "/login";
+            return;
+          }
+
+          try {
+            console.log("Sending profile update request...");
+            const response = await fetch("/api/users/update-profile", {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+              body: formData,
             });
 
-            console.log("Upload response status:", response.status);
-            
+            console.log("Response status:", response.status);
+            const data = await response.json();
+            console.log("Profile update response:", data);
+
             if (response.ok) {
+              // Save updated user data to localStorage
+              localStorage.setItem("user", JSON.stringify(data.user));
+              localStorage.setItem("userFullName", data.user.fullName);
+              localStorage.setItem("userUsername", data.user.username);
+              if (data.user.avatar) {
+                localStorage.setItem("userProfilePhoto", data.user.avatar);
+              }
+              if (data.user.banner) {
+                localStorage.setItem("userBanner", data.user.banner);
+              }
+
+              alert("Profile updated successfully!");
+              window.location.href = "/dashboard";
+            } else {
+              if (response.status === 401) {
+                alert("Session expired. Please log in again.");
+                window.location.href = "/login";
+              } else {
+                alert(data.message || "Failed to update profile");
+              }
+            }
+          } catch (error) {
+            console.error("Error updating profile:", error);
+            alert("An error occurred while updating your profile");
+          }
+        });
+
+      document
+        .getElementById("uploadProfilePhotoBtn")
+        .addEventListener("click", () => {
+          document.getElementById("profilePhotoInput").click();
+        });
+
+      document
+        .getElementById("profilePhotoInput")
+        .addEventListener("change", async (event) => {
+          const file = event.target.files[0];
+          const token = localStorage.getItem("token");
+
+          if (!token) {
+            alert("User not logged in. Redirecting to login page.");
+            window.location.href = "/login";
+            return;
+          }
+
+          if (file) {
+            const formData = new FormData();
+            formData.append("profilePhoto", file);
+
+            try {
+              console.log("Uploading profile photo...");
+              const response = await fetch("/api/uploads/profile-photo", {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+                body: formData,
+              });
+
+              console.log("Upload response status:", response.status);
+
+              if (response.ok) {
                 const data = await response.json();
                 console.log("Upload response data:", data);
                 const profilePhotoUrl = data.filePath;
-                
+
                 // Update the profile photo preview
-                document.getElementById("profilePhotoPreview").style.backgroundImage = `url('${profilePhotoUrl}')`;
-                
+                document.getElementById(
+                  "profilePhotoPreview"
+                ).style.backgroundImage = `url('${profilePhotoUrl}')`;
+
                 // Store the profile photo URL in localStorage
                 localStorage.setItem("userProfilePhoto", profilePhotoUrl);
-                
+
                 // Also update the avatar in the post creation area if it exists
-                const postUserAvatar = document.getElementById("postUserAvatar");
+                const postUserAvatar =
+                  document.getElementById("postUserAvatar");
                 if (postUserAvatar) {
-                    postUserAvatar.src = profilePhotoUrl;
+                  postUserAvatar.src = profilePhotoUrl;
                 }
-                
+
                 // Also update the avatar in the sidebar if it exists
-                const sidebarUserAvatar = document.getElementById("sidebarUserAvatar");
+                const sidebarUserAvatar =
+                  document.getElementById("sidebarUserAvatar");
                 if (sidebarUserAvatar) {
-                    sidebarUserAvatar.src = profilePhotoUrl;
+                  sidebarUserAvatar.src = profilePhotoUrl;
                 }
-                
+
                 alert("Profile photo uploaded successfully!");
-            } else {
+              } else {
                 const errorData = await response.json();
-                console.error("Failed to upload profile photo. Status:", response.status, "Error:", errorData);
+                console.error(
+                  "Failed to upload profile photo. Status:",
+                  response.status,
+                  "Error:",
+                  errorData
+                );
                 alert(errorData.message || "Failed to upload profile photo.");
+              }
+            } catch (error) {
+              console.error("Error uploading profile photo:", error);
+              alert("An error occurred while uploading the profile photo.");
             }
-        } catch (error) {
-            console.error("Error uploading profile photo:", error);
-            alert("An error occurred while uploading the profile photo.");
-        }
-    }
-});
+          }
+        });
 
-document.getElementById("uploadCoverPhotoBtn").addEventListener("click", () => {
-    document.getElementById("coverPhotoInput").click();
-});
+      document
+        .getElementById("uploadCoverPhotoBtn")
+        .addEventListener("click", () => {
+          document.getElementById("coverPhotoInput").click();
+        });
 
-document.getElementById("coverPhotoInput").addEventListener("change", async (event) => {
-    const file = event.target.files[0];
-    const token = localStorage.getItem("token");
+      document
+        .getElementById("coverPhotoInput")
+        .addEventListener("change", async (event) => {
+          const file = event.target.files[0];
+          const token = localStorage.getItem("token");
 
-    if (!token) {
-        alert("User not logged in. Redirecting to login page.");
-        window.location.href = "/login";
-        return;
-    }
+          if (!token) {
+            alert("User not logged in. Redirecting to login page.");
+            window.location.href = "/login";
+            return;
+          }
 
-    if (file) {
-        const formData = new FormData();
-        formData.append("coverPhoto", file);
+          if (file) {
+            const formData = new FormData();
+            formData.append("coverPhoto", file);
 
-        try {
-            console.log("Uploading cover photo...");
-            const response = await fetch("/api/uploads/cover-photo", {
+            try {
+              console.log("Uploading cover photo...");
+              const response = await fetch("/api/uploads/cover-photo", {
                 method: "POST",
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                  Authorization: `Bearer ${token}`,
                 },
-                body: formData
-            });
+                body: formData,
+              });
 
-            console.log("Upload response status:", response.status);
-            
-            if (response.ok) {
+              console.log("Upload response status:", response.status);
+
+              if (response.ok) {
                 const data = await response.json();
                 console.log("Upload response data:", data);
                 const coverPhotoUrl = data.filePath;
-                
+
                 // Update the cover photo preview
-                document.getElementById("coverPhotoPreview").style.backgroundImage = `url('${coverPhotoUrl}')`;
-                
+                document.getElementById(
+                  "coverPhotoPreview"
+                ).style.backgroundImage = `url('${coverPhotoUrl}')`;
+
                 // Store the cover photo URL in localStorage
                 localStorage.setItem("userBanner", coverPhotoUrl);
-                
+
                 alert("Cover photo uploaded successfully!");
-            } else {
+              } else {
                 const errorData = await response.json();
-                console.error("Failed to upload cover photo. Status:", response.status, "Error:", errorData);
+                console.error(
+                  "Failed to upload cover photo. Status:",
+                  response.status,
+                  "Error:",
+                  errorData
+                );
                 alert(errorData.message || "Failed to upload cover photo.");
+              }
+            } catch (error) {
+              console.error("Error uploading cover photo:", error);
+              alert("An error occurred while uploading the cover photo.");
             }
-        } catch (error) {
-            console.error("Error uploading cover photo:", error);
-            alert("An error occurred while uploading the cover photo.");
+          }
+        });
+
+      // Theme handling
+      document.addEventListener("DOMContentLoaded", function () {
+        const savedTheme = localStorage.getItem("theme");
+        const body = document.body;
+        const themeToggle = document.getElementById("themeToggle");
+
+        if (savedTheme) {
+          body.setAttribute("data-bs-theme", savedTheme);
+          themeToggle.innerHTML =
+            savedTheme === "dark"
+              ? '<i class="bi bi-sun"></i>'
+              : '<i class="bi bi-moon"></i>';
+        } else {
+          themeToggle.innerHTML = '<i class="bi bi-moon"></i>'; // Default to light mode
         }
-    }
-});
-</script>
-</body>
+
+        themeToggle.addEventListener("click", function () {
+          const isDark = body.getAttribute("data-bs-theme") === "dark";
+          const newTheme = isDark ? "light" : "dark";
+          body.setAttribute("data-bs-theme", newTheme);
+          localStorage.setItem("theme", newTheme);
+          this.innerHTML = isDark
+            ? '<i class="bi bi-moon"></i>'
+            : '<i class="bi bi-sun"></i>';
+        });
+      });
+    </script>
+  </body>
 </html>
