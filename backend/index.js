@@ -219,4 +219,17 @@ app.use((err, req, res, next) => {
   next();
 });
 
+app.get('/notifications', async (req, res) => {
+  // You may want to add authentication here if needed
+  let user = null;
+  try {
+    const userId = req.user?.id || req.user?.userId || req.session?.userId || req.session?.user?._id;
+    if (userId) {
+      const User = require('./models/User');
+      user = await User.findById(userId).lean();
+    }
+  } catch {}
+  res.render('notifications', { title: 'Notifications - JIZZ', user });
+});
+
 module.exports = app;
