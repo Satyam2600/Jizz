@@ -104,23 +104,48 @@ exports.createPost = async (req, res) => {
 // Like/Unlike a post
 exports.toggleLike = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await Post.findById(req.params.id).populate('user', 'fullName username avatar');
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
 
     const userId = req.user.userId;
     const likeIndex = post.likedBy.indexOf(userId);
-
+    let liked = false;
     if (likeIndex === -1) {
       post.likedBy.push(userId);
       post.likes += 1;
+      liked = true;
     } else {
       post.likedBy.splice(likeIndex, 1);
       post.likes -= 1;
     }
 
     await post.save();
+
+    // Real-time notification logic
+    if (liked && post.user._id.toString() !== userId.toString()) {
+      // Only notify if not liking own post
+      const Notification = require('../models/Notification');
+      const notification = await Notification.create({
+        user: post.user._id,
+        type: 'like',
+        message: `${req.user.fullName || 'Someone'} liked your post`,
+        fromUser: userId,
+        post: post._id
+      });
+      // Emit socket notification
+      if (req.app.get('io')) {
+        req.app.get('io').to(post.user._id.toString()).emit('notification', {
+          type: 'like',
+          message: notification.message,
+          fromUser: userId,
+          post: post._id,
+          createdAt: notification.createdAt
+        });
+      }
+    }
+
     res.json(post);
   } catch (error) {
     console.error("Error toggling like:", error);

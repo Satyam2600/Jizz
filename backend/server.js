@@ -19,22 +19,17 @@ const communityRoutes = require('./routes/communityRoutes');
 
 // Create HTTP Server
 const server = http.createServer(app);
-
-// Setup Socket.io
-const io = new Server(server, {
+const io = require("socket.io")(server, {
   cors: {
-    origin: "http://localhost:5000", 
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"],
-    credentials: true,
-  },
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
 });
 
-// Pass `io` to socket setup module
-setupSocket(io);
+// Attach io to app for controller access
+app.set('io', io);
 
-// Attach io to app for global access (if needed)
-app.set("io", io);
+require("./socket")(io);
 
 // Register routes
 app.use("/api/auth", authRoutes);
