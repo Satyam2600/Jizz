@@ -12,11 +12,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Fetch existing user data
     try {
-        const response = await fetch('/api/users/profile', {
+        const response = await fetch('/api/users/my-profile', {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
+                'Authorization': `Bearer ${token}`
             }
         });
 
@@ -247,4 +246,4 @@ if (coverPhotoInput && coverPhotoPreview) {
             reader.readAsDataURL(file);
         }
     });
-} 
+}

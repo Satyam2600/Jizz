@@ -2,17 +2,18 @@ async function login(event) {
     event.preventDefault();
     console.log('Login attempt started');
 
-    const email = document.getElementById("email").value;
+    const rollNumber = document.getElementById("rollNumber").value;
     const password = document.getElementById("password").value;
-    console.log('Login attempt for email:', email);
+    console.log('Login attempt for rollNumber:', rollNumber);
 
     try {
-        const response = await fetch("/api/auth/login", {
+        const response = await fetch("/api/users/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ email, password }),
+            body: JSON.stringify({ rollNumber, password }),
+            credentials: "include"
         });
 
         console.log('Login response status:', response.status);
@@ -20,15 +21,14 @@ async function login(event) {
         console.log('Login response data:', data);
 
         if (response.ok) {
-            console.log('Login successful, setting token');
-            setToken(data.token);
-            window.location.href = "/communities.html";
+            // Session-based login: no need to store token
+            window.location.href = "/dashboard";
         } else {
-            console.error('Login failed:', data.error);
-            showError(data.error);
+            console.error('Login failed:', data.message || data.error);
+            alert(data.message || data.error || "Login failed");
         }
     } catch (error) {
         console.error('Login error:', error);
-        showError("An error occurred. Please try again.");
+        alert("An error occurred. Please try again.");
     }
-} 
+}

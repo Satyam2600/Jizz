@@ -75,7 +75,13 @@ app.get("/register", (req, res) => {
 
 app.get("/dashboard", async (req, res) => {
   try {
-    res.render("dashboard", { title: "Dashboard - JIZZ" });
+    // You may need to adjust this depending on your authentication/session logic
+    const userId = req.user?.id || req.user?.userId || req.session.userId || req.session.user?.id;
+    let user = null;
+    if (userId) {
+      user = await User.findById(userId).lean();
+    }
+    res.render("dashboard", { title: "Dashboard - JIZZ", user });
   } catch (error) {
     console.error("Error rendering dashboard:", error);
     res.status(500).send("Server error");
@@ -123,6 +129,35 @@ app.get("/communities", async (req, res) => {
       user: req.session.user || null,
       error: "Failed to load communities. Please try again later."
     });
+  }
+});
+
+// My Profile page (current user, session-based auth)
+app.get('/profile', async (req, res) => {
+  console.log('Session on /profile:', req.session);
+  const userId = req.session.userId || (req.session.user && req.session.user._id);
+  console.log('Resolved userId from session:', userId);
+  if (!userId) {
+    console.log('No userId in session, redirecting to /login');
+    return res.redirect('/login');
+  }
+  const user = await User.findById(userId).lean();
+  const Post = require('./models/Post');
+  const posts = await Post.find({ user: userId }).sort({ createdAt: -1 }).lean();
+  console.log('Rendering profile for user:', user && user.username);
+  res.render('profile', { user, posts });
+});
+
+// Public profile by rollNumber
+app.get('/profile/:rollNumber', async (req, res) => {
+  try {
+    const Post = require('./models/Post');
+    const user = await User.findOne({ rollNumber: req.params.rollNumber }).lean();
+    if (!user) return res.status(404).send('User not found');
+    const posts = await Post.find({ user: user._id }).sort({ createdAt: -1 }).lean();
+    res.render('profile', { user, posts });
+  } catch (error) {
+    res.status(500).send('Server error');
   }
 });
 

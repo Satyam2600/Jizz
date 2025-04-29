@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { authenticate } = require("../middleware/authMiddleware");
 const User = require("../models/User");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const multer = require("multer");
 const path = require("path");
 const jwt = require('jsonwebtoken');
@@ -19,10 +19,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Get user profile
+// Get user profile (for edit profile page, protected)
 router.get('/profile', authenticate, async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select('-password');
+    const user = await User.findById(req.user.id).select('-password');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -32,109 +32,30 @@ router.get('/profile', authenticate, async (req, res) => {
   }
 });
 
-// Update user profile
-router.post('/update-profile', authenticate, upload.fields([
-  { name: 'avatar', maxCount: 1 },
-  { name: 'banner', maxCount: 1 }
-]), async (req, res) => {
-  try {
-    const { fullName, username, department, year, semester, bio, skills, interests, portfolio, linkedin } = req.body;
-    
-    // Find user by ID from the authenticated user
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Handle file uploads
-    const updateData = {
-      fullName: fullName || user.fullName,
-      username: username || user.username,
-      department: department || user.department,
-      year: year || user.year,
-      semester: semester || user.semester,
-      bio: bio || user.bio,
-      skills: skills ? skills.split(',').map(skill => skill.trim()) : user.skills,
-      interests: interests ? interests.split(',').map(interest => interest.trim()) : user.interests,
-      socialLinks: {
-        ...user.socialLinks,
-        portfolio: portfolio || user.socialLinks?.portfolio,
-        linkedin: linkedin || user.socialLinks?.linkedin
-      }
-    };
-
-    // Add avatar and banner if uploaded
-    if (req.files) {
-      if (req.files.avatar) {
-        updateData.avatar = `/uploads/${req.files.avatar[0].filename}`;
-      }
-      if (req.files.banner) {
-        updateData.banner = `/uploads/${req.files.banner[0].filename}`;
-      }
-    }
-
-    // Update the user
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user.id,
-      { $set: updateData },
-      { new: true }
-    );
-
-    // Set profileCompleted to true if not already
-    if (!updatedUser.profileCompleted) {
-      updatedUser.profileCompleted = true;
-      await updatedUser.save();
-    }
-
-    res.json({ 
-      message: 'Profile updated successfully',
-      user: {
-        fullName: updatedUser.fullName,
-        username: updatedUser.username,
-        department: updatedUser.department,
-        year: updatedUser.year,
-        semester: updatedUser.semester,
-        bio: updatedUser.bio,
-        skills: updatedUser.skills,
-        interests: updatedUser.interests,
-        socialLinks: updatedUser.socialLinks,
-        avatar: updatedUser.avatar,
-        banner: updatedUser.banner,
-        rollNumber: updatedUser.rollNumber,
-        profileCompleted: updatedUser.profileCompleted
-      }
-    });
-  } catch (error) {
-    console.error('Error updating profile:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
 // Get user profile by roll number
-router.get("/profile/:rollNo", async (req, res) => {
+router.get("/profile/:rollNumber", async (req, res) => {
   try {
-    console.log("Fetching profile for rollNo:", req.params.rollNo);
-    
-    const user = await User.findOne({ rollNo: req.params.rollNo });
+    console.log("Fetching profile for rollNumber:", req.params.rollNumber);
+    const user = await User.findOne({ rollNumber: req.params.rollNumber });
     if (!user) {
-      console.log("User not found with rollNo:", req.params.rollNo);
+      console.log("User not found with rollNumber:", req.params.rollNumber);
       return res.status(404).json({ message: "User not found" });
     }
-
-    // Return public profile data
     res.status(200).json({
       fullName: user.fullName,
       username: user.username,
+      email: user.email,
+      rollNumber: user.rollNumber,
       department: user.department,
       year: user.year,
       semester: user.semester,
       bio: user.bio,
-      skills: user.skills,
-      interests: user.interests,
-      portfolio: user.socialLinks?.portfolio,
-      linkedin: user.socialLinks?.linkedin,
+      skills: Array.isArray(user.skills) ? user.skills : (user.skills ? user.skills.split(',').map(s => s.trim()) : []),
+      interests: Array.isArray(user.interests) ? user.interests : (user.interests ? user.interests.split(',').map(i => i.trim()) : []),
+      portfolio: user.portfolio || '',
+      linkedin: user.linkedin || '',
       avatar: user.avatar || '/assets/images/default-avatar.png',
-      banner: user.banner || '/assets/images/default-banner.jpg'
+      banner: user.banner || '/assets/images/default-banner.jpg',
     });
   } catch (error) {
     console.error("Error fetching profile:", error);
@@ -147,6 +68,7 @@ router.post('/login', async (req, res) => {
     try {
         const { rollNumber, password } = req.body;
         console.log("Login attempt with rollNumber:", rollNumber);
+    console.log("Login attempt with password:", password);
 
         // Find user by rollNumber
         const user = await User.findOne({ rollNumber });
@@ -164,7 +86,17 @@ router.post('/login', async (req, res) => {
         }
 
         // Set session
-        req.session.userId = user.rollNumber;
+        req.session.userId = user._id;
+        req.session.user = {
+            _id: user._id,
+            username: user.username || user.rollNumber,
+            rollNumber: user.rollNumber,
+            fullName: user.fullName,
+            email: user.email,
+            avatar: user.avatar || '/assets/images/default-avatar.png',
+            banner: user.banner || '/assets/images/default-banner.jpg',
+            profileCompleted: user.profileCompleted
+        };
 
         // Generate JWT token
         const token = jwt.sign(
@@ -197,38 +129,90 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// Get authenticated user's profile
-router.get("/my-profile", authenticate, async (req, res) => {
+// Get authenticated user's profile (for edit profile page, used by editProfile.js)
+router.get('/my-profile', authenticate, async (req, res) => {
   try {
-    console.log("Fetching authenticated user profile for ID:", req.user.id);
-    
     const user = await User.findById(req.user.id);
     if (!user) {
-      console.log("User not found with ID:", req.user.id);
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
-
-    // Return complete profile data for authenticated user
     res.status(200).json({
       fullName: user.fullName,
       username: user.username,
-      rollNumber: user.rollNumber,
       email: user.email,
+      rollNumber: user.rollNumber,
       department: user.department,
       year: user.year,
       semester: user.semester,
       bio: user.bio,
-      skills: user.skills,
-      interests: user.interests,
-      portfolio: user.socialLinks?.portfolio,
-      linkedin: user.socialLinks?.linkedin,
+      skills: Array.isArray(user.skills) ? user.skills : (user.skills ? user.skills.split(',').map(s => s.trim()) : []),
+      interests: Array.isArray(user.interests) ? user.interests : (user.interests ? user.interests.split(',').map(i => i.trim()) : []),
+      portfolio: user.portfolio || '',
+      linkedin: user.linkedin || '',
       avatar: user.avatar || '/assets/images/default-avatar.png',
       banner: user.banner || '/assets/images/default-banner.jpg',
-      socialLinks: user.socialLinks || {}
     });
   } catch (error) {
-    console.error("Error fetching authenticated profile:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Update user profile (edit profile form submission, used by editProfile.js)
+router.post('/update-profile', authenticate, upload.fields([
+  { name: 'avatar', maxCount: 1 },
+  { name: 'banner', maxCount: 1 }
+]), async (req, res) => {
+  try {
+    const data = req.body;
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    user.fullName = data.fullName || user.fullName;
+    user.username = data.username || user.username;
+    user.email = data.email || user.email;
+    user.rollNumber = data.rollNumber || user.rollNumber;
+    user.department = data.department || user.department;
+    user.year = data.year || user.year;
+    user.semester = data.semester || user.semester;
+    user.bio = data.bio || user.bio;
+    // Accept both comma-separated string and array for skills/interests
+    if (data.skills) {
+      user.skills = Array.isArray(data.skills) ? data.skills.join(', ') : data.skills;
+    }
+    if (data.interests) {
+      user.interests = Array.isArray(data.interests) ? data.interests.join(', ') : data.interests;
+    }
+    user.portfolio = data.portfolio || user.portfolio;
+    user.linkedin = data.linkedin || user.linkedin;
+    if (req.files && req.files.avatar && req.files.avatar[0]) {
+      user.avatar = `/uploads/${req.files.avatar[0].filename}`;
+    }
+    if (req.files && req.files.banner && req.files.banner[0]) {
+      user.banner = `/uploads/${req.files.banner[0].filename}`;
+    }
+    await user.save();
+    res.json({
+      message: 'Profile updated successfully',
+      user: {
+        fullName: user.fullName,
+        username: user.username,
+        email: user.email,
+        rollNumber: user.rollNumber,
+        department: user.department,
+        year: user.year,
+        semester: user.semester,
+        bio: user.bio,
+        skills: Array.isArray(user.skills) ? user.skills : (user.skills ? user.skills.split(',').map(s => s.trim()) : []),
+        interests: Array.isArray(user.interests) ? user.interests : (user.interests ? user.interests.split(',').map(i => i.trim()) : []),
+        portfolio: user.portfolio || '',
+        linkedin: user.linkedin || '',
+        avatar: user.avatar || '/assets/images/default-avatar.png',
+        banner: user.banner || '/assets/images/default-banner.jpg',
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
@@ -236,39 +220,26 @@ router.get("/my-profile", authenticate, async (req, res) => {
 router.post("/change-password", authenticate, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
-    const rollNo = req.user.rollNo;
-
-    if (!rollNo) {
+    const rollNumber = req.user.rollNumber;
+    if (!rollNumber) {
       return res.status(401).json({ message: "Not authenticated" });
     }
-
-    const user = await User.findOne({ rollNo });
+    const user = await User.findOne({ rollNumber }).select('+password');
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
     // Verify current password
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Current password is incorrect" });
     }
-
     // Validate new password
     if (!newPassword || newPassword.length < 8) {
       return res.status(400).json({ message: "New password must be at least 8 characters long" });
     }
-
-    // Hash the new password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
-
-    // Update the user's password
-    await User.findOneAndUpdate(
-      { rollNo },
-      { $set: { password: hashedPassword } },
-      { new: true }
-    );
-
+    user.password = newPassword;
+    await user.save();
+    console.log('Password after change (should be hash):', user.password);
     res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {
     console.error("Error changing password:", error);

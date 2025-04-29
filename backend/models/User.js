@@ -55,6 +55,34 @@ const userSchema = new mongoose.Schema({
         unique: true,
         trim: true
     },
+    department: {
+        type: String,
+        trim: true
+    },
+    year: {
+        type: String,
+        trim: true
+    },
+    semester: {
+        type: String,
+        trim: true
+    },
+    skills: {
+        type: String,
+        trim: true
+    },
+    portfolio: {
+        type: String,
+        trim: true
+    },
+    linkedin: {
+        type: String,
+        trim: true
+    },
+    banner: {
+        type: String,
+        trim: true
+    },
 });
 
 // Hash password before saving

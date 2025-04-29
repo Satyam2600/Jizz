@@ -115,6 +115,18 @@ router.post("/login", async (req, res) => {
     // Log successful login
     console.log(`User ${user.rollNumber} logged in successfully`);
 
+    // Set session for session-based authentication
+    req.session.userId = user._id;
+    req.session.user = {
+      _id: user._id,
+      rollNumber: user.rollNumber,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role
+    };
+    // Log session after setting
+    console.log('Session after login:', req.session);
+
     res.status(200).json({
       message: "Login successful",
       token,
@@ -152,46 +164,24 @@ router.post("/logout", (req, res) => {
 router.post('/forgot-password', async (req, res) => {
   try {
     const { rollNumber } = req.body;
-    
     if (!rollNumber) {
       return res.status(400).json({ message: 'Roll number is required' });
     }
-    
-    // Clean and convert rollNumber to string
     const cleanRollNumber = String(rollNumber).trim();
-    
-    // Debug log
     console.log('Looking for user with roll number:', cleanRollNumber);
-    
-    // Find user by roll number
     const user = await User.findOne({ rollNumber: cleanRollNumber });
-    
-    // Debug log
-    console.log('User found:', user ? 'Yes' : 'No');
-    
     if (!user) {
-      console.log('No user found with roll number:', cleanRollNumber);
       return res.status(404).json({ message: 'No account found with the provided roll number' });
     }
-    
     if (!user.email) {
-      console.log('User found but email is missing');
       return res.status(400).json({ message: 'No email associated with this account' });
     }
-    
     // Generate a random password (8 characters)
     const crypto = require('crypto');
     const newPassword = crypto.randomBytes(4).toString('hex');
-    
-    // Hash the new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    
-    // Update the user's password
-    await User.updateOne(
-      { _id: user._id },
-      { $set: { password: hashedPassword } }
-    );
-    
+    user.password = newPassword;
+    await user.save();
+    console.log('Password after reset (should be hash):', user.password);
     // Send email with the new password
     const sendEmail = require('../utils/emailService');
     const htmlContent = `
@@ -201,18 +191,21 @@ router.post('/forgot-password', async (req, res) => {
       <p>Please log in using this password and change it immediately for security.</p>
       <p>If you did not request this password reset, please contact support immediately.</p>
     `;
-    
     await sendEmail(user.email, "Your New Password", htmlContent);
-    
-    console.log(`Password reset completed for user: ${user.fullName || user.rollNumber} (${user.rollNumber})`);
-    
-    res.status(200).json({ 
-      message: 'Password reset instructions have been sent to your email.',
-      success: true
-    });
+    res.status(200).json({ message: 'Password reset instructions have been sent to your email.', success: true });
   } catch (error) {
     console.error('Forgot password error:', error);
     res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Add a route to check session retrieval
+router.get('/session-check', (req, res) => {
+  console.log('Session on /session-check:', req.session);
+  if (req.session && req.session.user) {
+    res.status(200).json({ session: req.session, message: 'Session is active' });
+  } else {
+    res.status(401).json({ message: 'No active session' });
   }
 });
 
