@@ -160,15 +160,19 @@ app.get('/profile/:rollNumber', async (req, res) => {
     const user = await User.findOne({ rollNumber: req.params.rollNumber }).lean();
     if (!user) return res.status(404).send('User not found');
     const posts = await Post.find({ user: user._id }).sort({ createdAt: -1 }).lean();
-    // Add these lines:
     user.postsCount = posts.length;
     user.followersCount = user.followers ? user.followers.length : 0;
     user.followingCount = user.following ? user.following.length : 0;
 
+    // Affiliation check by email (from env)
+    const affiliatedEmails = (process.env.AFFILIATED_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+    user.affiliatedWithJizz = false;
+    if (affiliatedEmails.length && user.email && affiliatedEmails.includes(user.email.toLowerCase())) {
+      user.affiliatedWithJizz = true;
+    }
+
     // --- BADGE LOGIC START ---
-    // 1. Calculate total likes for this user
     const userTotalLikes = posts.reduce((sum, p) => sum + (p.likes || (p.likedBy ? p.likedBy.length : 0)), 0);
-    // 2. Find user with most likes
     const allUsers = await User.find({}).lean();
     const allUserIds = allUsers.map(u => u._id);
     const allPosts = await Post.find({ user: { $in: allUserIds } }).lean();
@@ -186,7 +190,6 @@ app.get('/profile/:rollNumber', async (req, res) => {
         mostLikesUserId = uid;
       }
     });
-    // 3. Prepare badges array
     const badges = [];
     if (user._id.toString() === mostLikesUserId && mostLikes > 0) {
       badges.push({
