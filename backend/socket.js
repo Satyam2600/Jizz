@@ -18,9 +18,19 @@ module.exports = (io) => {
       }
     });
 
-    // Handle incoming messages
-    socket.on("sendMessage", (data) => {
-      io.emit("receiveMessage", data);
+    // Real-time private messaging
+    socket.on('sendMessage', (data) => {
+      // data: { sender, receiver, content }
+      // Emit to receiver if online
+      const targetSocketId = userSocketMap[data.receiver];
+      if (targetSocketId) {
+        io.to(targetSocketId).emit('receiveMessage', data);
+      }
+      // Optionally, emit to sender for instant feedback
+      const senderSocketId = userSocketMap[data.sender];
+      if (senderSocketId && senderSocketId !== targetSocketId) {
+        io.to(senderSocketId).emit('receiveMessage', data);
+      }
     });
 
     // Handle joining a chat room

@@ -1,15 +1,13 @@
 const mongoose = require("mongoose");
 
-const ReportSchema = new mongoose.Schema(
+const MessageSchema = new mongoose.Schema(
   {
-    reportedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    reportType: { type: String, enum: ["post", "user"], required: true },
-    reportedPost: { type: mongoose.Schema.Types.ObjectId, ref: "Post" },
-    reportedUser: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    reason: { type: String, required: true },
-    status: { type: String, enum: ["pending", "reviewed"], default: "pending" },
+    sender: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    receiver: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    content: { type: String, required: true },
+    read: { type: Boolean, default: false }
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Report", ReportSchema);
+module.exports = mongoose.model("Message", MessageSchema);

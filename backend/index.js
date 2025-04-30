@@ -164,6 +164,65 @@ app.get('/profile/:rollNumber', async (req, res) => {
     user.postsCount = posts.length;
     user.followersCount = user.followers ? user.followers.length : 0;
     user.followingCount = user.following ? user.following.length : 0;
+
+    // --- BADGE LOGIC START ---
+    // 1. Calculate total likes for this user
+    const userTotalLikes = posts.reduce((sum, p) => sum + (p.likes || (p.likedBy ? p.likedBy.length : 0)), 0);
+    // 2. Find user with most likes
+    const allUsers = await User.find({}).lean();
+    const allUserIds = allUsers.map(u => u._id);
+    const allPosts = await Post.find({ user: { $in: allUserIds } }).lean();
+    const likeMap = {};
+    allUserIds.forEach(id => { likeMap[id.toString()] = 0; });
+    allPosts.forEach(p => {
+      if (p.user) {
+        likeMap[p.user.toString()] += p.likes || (p.likedBy ? p.likedBy.length : 0);
+      }
+    });
+    let mostLikesUserId = null, mostLikes = -1;
+    Object.entries(likeMap).forEach(([uid, likes]) => {
+      if (likes > mostLikes) {
+        mostLikes = likes;
+        mostLikesUserId = uid;
+      }
+    });
+    // 3. Prepare badges array
+    const badges = [];
+    if (user._id.toString() === mostLikesUserId && mostLikes > 0) {
+      badges.push({
+        key: 'most_likes',
+        label: 'Most Likes',
+        description: 'Top liked user on JIZZ',
+        icon: 'bi-fire',
+      });
+    }
+    if (userTotalLikes >= 100) {
+      badges.push({
+        key: '100_likes',
+        label: '100 Likes',
+        description: 'Received 100+ likes',
+        icon: 'bi-heart-fill',
+      });
+    }
+    if (user.followersCount >= 100) {
+      badges.push({
+        key: '100_followers',
+        label: '100 Followers',
+        description: 'Has 100+ followers',
+        icon: 'bi-people-fill',
+      });
+    }
+    if (user.affiliatedWithJizz) {
+      badges.push({
+        key: 'affiliated',
+        label: 'Affiliated with JIZZ',
+        description: 'Officially affiliated with JIZZ',
+        icon: 'bi-patch-check-fill',
+      });
+    }
+    user.badges = badges;
+    // --- BADGE LOGIC END ---
+
     res.render('profile', { user, posts });
   } catch (error) {
     res.status(500).send('Server error');
@@ -231,6 +290,18 @@ app.get('/notifications', async (req, res) => {
     }
   } catch {}
   res.render('notifications', { title: 'Notifications - JIZZ', user });
+});
+
+app.get('/chat', async (req, res) => {
+  let user = null;
+  try {
+    const userId = req.user?.id || req.user?.userId || req.session?.userId || req.session?.user?._id;
+    if (userId) {
+      const User = require('./models/User');
+      user = await User.findById(userId).lean();
+    }
+  } catch {}
+  res.render('chat', { title: 'Chat - JIZZ', user });
 });
 
 module.exports = app;

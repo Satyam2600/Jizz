@@ -252,4 +252,14 @@ router.post("/change-password", authenticate, async (req, res) => {
 router.post('/:id/follow', authenticate, userController.followUser);
 router.post('/:id/unfollow', authenticate, userController.unfollowUser);
 
+// Get all users (for chat list)
+router.get('/all', authenticate, async (req, res) => {
+  try {
+    const users = await User.find({}, 'fullName username avatar rollNumber _id').lean();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router;

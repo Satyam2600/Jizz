@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat - JIZZ</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --primary-bg: #ffffff;
+      --secondary-bg: #f8f9fa;
+      --text-primary: #1c160c;
+      --text-secondary: #6c757d;
+      --accent-color: #019863;
+      --border-color: #e9ecef;
+      --card-radius: 1rem;
+      --hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      --transition-speed: 0.3s;
+    }
+    [data-bs-theme="dark"] {
+      --primary-bg: #1a1a1a;
+      --secondary-bg: #2d2d2d;
+      --text-primary: #ffffff;
+      --text-secondary: #adb5bd;
+      --border-color: #343a40;
+      --hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+    body {
+      background-color: var(--primary-bg);
+      color: var(--text-primary);
+      padding-top: 56px;
+      font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;
+    }
+    .navbar {
+      background-color: var(--primary-bg) !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      height: 56px;
+      z-index: 1030;
+    }
+    .main-section {
+      padding: 0;
+      margin: 0;
+      width: 100%;
+    }
+    .chat-card {
+      background: var(--primary-bg);
+      border-radius: var(--card-radius);
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+      width: 100%;
+      max-width: 1350px; /* was 1100px */
+      min-height: 80vh;   /* was 70vh */
+      display: flex;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+    .chat-main-section {
+      min-height: 95vh;
+      padding: 3.5rem 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .user-list {
+      width: 380px; /* was 340px */
+      border-right: 1px solid var(--border-color);
+      background: var(--secondary-bg);
+      overflow-y: auto;
+      padding: 2rem 1rem 2rem 2rem;
+    }
+    .user-item {
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    .user-item.active, .user-item:hover {
+      background: #e8f5e9;
+    }
+    .user-item .fw-bold {
+      transition: color 0.2s, font-weight 0.2s;
+    }
+    .user-item:hover .fw-bold, .user-item.active .fw-bold {
+      color: #017a4f; /* A strong green for visibility */
+      font-weight: 700;
+    }
+    .user-avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--primary-bg);
+      border: 2px solid var(--border-color);
+    }
+    .chat-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: var(--primary-bg);
+    }
+    .chat-header {
+      padding: 2rem 2.5rem; /* was 1.5rem 2rem */
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      background: var(--primary-bg);
+      min-height: 80px;
+    }
+    .chat-messages {
+      flex: 1;
+      padding: 2.5rem 2.5rem 2rem 2.5rem; /* was 2rem 2rem 1.5rem 2rem */
+      overflow-y: auto;
+      background: var(--secondary-bg);
+      min-height: 400px;
+    }
+    .message {
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: flex-end;
+      gap: 0.9rem;
+    }
+    .message.sent {
+      flex-direction: row-reverse;
+    }
+    .message .msg-content {
+      max-width: 60%;
+      padding: 1rem 1.4rem;
+      border-radius: 1.5rem;
+      background: #e8f5e9;
+      color: var(--text-primary);
+      font-size: 1.08rem;
+      box-shadow: 0 2px 8px rgba(1,152,99,0.04);
+    }
+    .message.sent .msg-content {
+      background: var(--accent-color);
+      color: #fff;
+    }
+    .message .msg-time {
+      font-size: 0.92em;
+      color: var(--text-secondary);
+      margin: 0 0.5rem;
+      min-width: 60px;
+      text-align: center;
+    }
+    .chat-input {
+      border-top: 1px solid var(--border-color);
+      background: var(--primary-bg);
+      padding: 1.5rem 2.5rem; /* was 1.2rem 2rem */
+      display: flex;
+      gap: 0.7rem;
+      align-items: center;
+    }
+    .chat-input input {
+      flex: 1;
+      border-radius: 2rem;
+      border: 1px solid var(--border-color);
+      padding: 0.9rem 1.5rem;
+      font-size: 1.15rem;
+      background: var(--secondary-bg);
+      color: var(--text-primary);
+      transition: border-color 0.2s;
+    }
+    .chat-input input:focus {
+      border-color: var(--accent-color);
+      outline: none;
+    }
+    .chat-input button {
+      border-radius: 2rem;
+      padding: 0.9rem 2rem;
+      background: var(--accent-color);
+      color: #fff;
+      border: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+      transition: background 0.2s;
+    }
+    .chat-input button:hover {
+      background: #018555;
+    }
+    .chat-empty {
+      color: var(--text-secondary);
+      text-align: center;
+      margin-top: 30%;
+      font-size: 1.2rem;
+    }
+    @media (max-width: 1200px) {
+      .chat-card { max-width: 100%; }
+      .user-list { width: 220px; padding-left: 0.5rem; }
+      .chat-header, .chat-messages, .chat-input { padding-left: 1rem; padding-right: 1rem; }
+    }
+    @media (max-width: 900px) {
+      .chat-main-section { padding: 0.5rem; }
+      .chat-card { flex-direction: column; min-height: 80vh; }
+      .user-list { width: 100%; height: 180px; border-right: none; border-bottom: 1px solid var(--border-color); display: flex; flex-direction: row; overflow-x: auto; padding: 1rem; }
+      .user-list .user-item { min-width: 180px; border-bottom: none; border-right: 1px solid var(--border-color); }
+      .chat-main { flex: 1; }
+    }
+    [data-bs-theme="dark"] .chat-card, [data-bs-theme="dark"] .chat-main, [data-bs-theme="dark"] .chat-header {
+      background: var(--primary-bg);
+      color: var(--text-primary);
+    }
+    [data-bs-theme="dark"] .chat-messages {
+      background: var(--secondary-bg);
+    }
+    [data-bs-theme="dark"] .user-list {
+      background: var(--secondary-bg);
+      border-color: #343a40;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar (copied from dashboard, chat icon removed) -->
+  <nav class="navbar navbar-expand-lg fixed-top border-bottom">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand fw-bold" href="#">Jizz</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="/dashboard"><i class="bi bi-house-door me-2"></i>Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/communities"><i class="bi bi-people me-2"></i>Communities</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/events"><i class="bi bi-calendar-event me-2"></i>Events</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/confessions"><i class="bi bi-chat-quote me-2"></i>Confessions</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/profile/<%= user && user.rollNumber ? user.rollNumber : '' %>"><i class="bi bi-person-circle me-2"></i>My Profile</a>
+          </li>
+        </ul>
+        <div class="d-flex align-items-center gap-3">
+          <div class="theme-toggle" id="themeToggle">
+            <i class="bi bi-moon"></i>
+          </div>
+          <a class="btn position-relative" href="/notifications" id="notificationBell" style="background: none; border: none;">
+            <i class="bi bi-bell fs-5"></i>
+            <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size:0.7em;">0</span>
+          </a>
+          <div class="dropdown">
+            <button class="btn rounded-circle border-0" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px; background-color: var(--accent-color); color: white; box-shadow: 0 2px 8px rgba(1, 152, 99, 0.3);">
+              <i class="bi bi-person-circle fs-5"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+              <a class="dropdown-item" href="/profile/<%= user && user.rollNumber ? user.rollNumber : '' %>"><i class="bi bi-person-circle me-2"></i>My Profile</a>
+              <a class="dropdown-item" href="/edit-profile"><i class="bi bi-pencil-square me-2"></i>Edit Profile</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#" onclick="logout(); return false;"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-section chat-main-section">
+    <div class="chat-card">
+      <div class="user-list" id="userList">
+        <!-- Users will be loaded here -->
+      </div>
+      <div class="chat-main">
+        <div class="chat-header" id="chatHeader">
+          <span class="text-muted">Select a user to start chatting</span>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-empty">No conversation selected.</div>
+        </div>
+        <form class="chat-input" id="chatInputForm" style="display:none;">
+          <input type="text" id="chatInput" placeholder="Type a message..." autocomplete="off" />
+          <button type="submit"><i class="bi bi-send"></i></button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/assets/js/logout.js"></script>
+  <script>
+    const userId = localStorage.getItem('userId') || '<%= user && user._id ? user._id : "" %>';
+    let currentChatUser = null;
+    let users = [];
+    let socket = io();
+    if (userId) socket.emit('register', userId);
+
+    // Fetch all users
+    async function fetchUsers() {
+      const res = await fetch('/api/users/all', { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
+      users = await res.json();
+      renderUserList();
+    }
+
+    // Render user list
+    function renderUserList() {
+      const userList = document.getElementById('userList');
+      userList.innerHTML = '';
+      users.forEach(u => {
+        if (u._id === userId) return; // Don't show self
+        const div = document.createElement('div');
+        div.className = 'user-item';
+        div.innerHTML = `<img src="${u.avatar || '/assets/images/default-avatar.png'}" class="user-avatar"><div><div class="fw-bold">${u.fullName}</div><div class="text-muted small">@${u.username || u.rollNumber}</div></div>`;
+        div.onclick = () => selectUser(u);
+        if (currentChatUser && currentChatUser._id === u._id) div.classList.add('active');
+        userList.appendChild(div);
+      });
+    }
+
+    // Select user to chat
+    async function selectUser(u) {
+      currentChatUser = u;
+      renderUserList();
+      document.getElementById('chatHeader').innerHTML = `<img src="${u.avatar || '/assets/images/default-avatar.png'}" class="user-avatar me-2"><span class="fw-bold">${u.fullName}</span> <span class="text-muted small">@${u.username || u.rollNumber}</span>`;
+      document.getElementById('chatInputForm').style.display = '';
+      await loadMessages();
+    }
+
+    // Load messages between current user and selected user
+    async function loadMessages() {
+      if (!currentChatUser) return;
+      const res = await fetch(`/api/messages/${currentChatUser._id}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
+      const messages = await res.json();
+      renderMessages(messages);
+    }
+
+    // Render messages
+    function renderMessages(messages) {
+      const chatMessages = document.getElementById('chatMessages');
+      chatMessages.innerHTML = '';
+      if (!messages.length) {
+        chatMessages.innerHTML = '<div class="chat-empty">No messages yet. Say hi!</div>';
+        return;
+      }
+      messages.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'message' + (m.sender === userId ? ' sent' : '');
+        div.innerHTML = `<div class="msg-content">${m.content}</div><div class="msg-time">${new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>`;
+        chatMessages.appendChild(div);
+      });
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Send message
+    document.getElementById('chatInputForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const input = document.getElementById('chatInput');
+      const content = input.value.trim();
+      if (!content || !currentChatUser) return;
+      // Send via API for persistence
+      await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+        body: JSON.stringify({ receiver: currentChatUser._id, content })
+      });
+      // Emit via socket for real-time
+      socket.emit('sendMessage', { sender: userId, receiver: currentChatUser._id, content });
+      input.value = '';
+      await loadMessages();
+    };
+
+    // Listen for real-time messages
+    socket.on('receiveMessage', data => {
+      if (!currentChatUser) return;
+      if (data.sender === currentChatUser._id || data.receiver === currentChatUser._id) {
+        loadMessages();
+      }
+    });
+
+    fetchUsers();
+
+    // Theme toggle logic (copied from dashboard)
+    document.addEventListener("DOMContentLoaded", function () {
+      const themeToggle = document.getElementById("themeToggle");
+      const themeIcon = themeToggle.querySelector("i");
+      const savedTheme = localStorage.getItem("theme") || "light";
+      document.documentElement.setAttribute("data-bs-theme", savedTheme);
+      updateThemeIcon(savedTheme);
+      themeToggle.addEventListener("click", function () {
+        const currentTheme = document.documentElement.getAttribute("data-bs-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-bs-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+        updateThemeIcon(newTheme);
+      });
+      function updateThemeIcon(theme) {
+        if (theme === "dark") {
+          themeIcon.classList.remove("bi-moon");
+          themeIcon.classList.add("bi-sun");
+        } else {
+          themeIcon.classList.remove("bi-sun");
+          themeIcon.classList.add("bi-moon");
+        }
+      }
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

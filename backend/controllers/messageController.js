@@ -1,24 +1,33 @@
 const Message = require("../models/Message");
-
+// Send a message (sender, receiver, content)
 exports.sendMessage = async (req, res) => {
   try {
-    const message = new Message(req.body);
+    const { receiver, content } = req.body;
+    const sender = req.user.id || req.user._id;
+    if (!receiver || !content) return res.status(400).json({ message: 'Receiver and content required' });
+    const message = new Message({ sender, receiver, content });
     await message.save();
     res.status(201).json(message);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
+// Get messages between current user and another user
 exports.getMessages = async (req, res) => {
   try {
-    const messages = await Message.find().populate("sender", "username");
+    const userId = req.user.id || req.user._id;
+    const otherUserId = req.params.userId;
+    const messages = await Message.find({
+      $or: [
+        { sender: userId, receiver: otherUserId },
+        { sender: otherUserId, receiver: userId }
+      ]
+    }).sort({ createdAt: 1 });
     res.json(messages);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
 exports.markAsRead = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -50,4 +59,4 @@ exports.deleteMessage = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-}; 
+};

@@ -85,6 +85,7 @@ const userSchema = new mongoose.Schema({
     },
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: [] }],
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: [] }],
+    affiliatedWithJizz: { type: Boolean, default: false }, // Special badge flag
 });
 
 // Hash password before saving

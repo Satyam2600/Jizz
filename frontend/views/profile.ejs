@@ -56,6 +56,27 @@
           <h2 class="mb-0"><%= user.fullName %></h2>
           <p class="text-secondary mb-2">@<%= user.username %></p>
           <p class="mb-2"><%= user.bio %></p>
+          <% if (user.badges && user.badges.length > 0) { %>
+            <div class="mt-2 mb-2">
+              <div class="profile-section-title mb-1" style="font-size:1.1em;">Badges</div>
+              <div class="d-flex flex-wrap gap-2">
+                <% user.badges.forEach(function(badge) { %>
+                  <% let badgeImg = '';
+                    if (badge.key === '100_likes') badgeImg = '/assets/images/100 likes.png';
+                    else if (badge.key === 'most_likes') badgeImg = '/assets/images/most likes.png';
+                    else if (badge.key === '100_followers') badgeImg = '/assets/images/100 followers.png';
+                    else if (badge.key === 'affiliated') badgeImg = '/assets/images/jizz affiliated.png';
+                  %>
+                  <span class="badge rounded-pill d-flex align-items-center px-3 py-2" style="background:#e8f5e9;color:#017a4f;font-weight:600;font-size:1em;gap:0.5em;cursor:pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="<%= badge.description %>">
+                    <% if (badgeImg) { %>
+                      <img src="<%= badgeImg %>" alt="<%= badge.label %>" style="height:32px;width:32px;object-fit:contain;margin-right:0.5em;">
+                    <% } %>
+                    <%= badge.label %>
+                  </span>
+                <% }); %>
+              </div>
+            </div>
+          <% } %>
         </div>
         <div class="col-md-4 text-md-end mt-3 mt-md-0">
           <% if (!user.isCurrentUser) { %>
