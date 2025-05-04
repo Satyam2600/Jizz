@@ -66,20 +66,24 @@ exports.login = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password } = req.body;
+    const { rollNumber, password } = req.body;
 
     // Check if user exists
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ rollNumber }).select('+password');
     if (!user) {
       return res.status(401).json({ 
         success: false, 
         error: 'Invalid credentials' 
       });
     }
+    console.log('User found: Yes');
+    console.log('DB hashed password:', user.password);
+    console.log('Password entered:', password);
 
     // Check if password matches
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
+      console.log('Password mismatch for user:', rollNumber);
       return res.status(401).json({ 
         success: false, 
         error: 'Invalid credentials' 

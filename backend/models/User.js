@@ -89,31 +89,16 @@ const userSchema = new mongoose.Schema({
 });
 
 // Hash password before saving
-// Your schema is likely defined with a different variable name like 'userSchema' (lowercase)
-// Find where you defined your schema and make sure to use the same variable name for the pre-save hook
-
-// Change this line:
-userSchema
-.pre('save', async function(next) {
-    if (!this.isModified('password')) {
-        return next(); // Fix: return immediately if password not modified
-    }
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-});
-
-// To match your schema variable name, likely:
 userSchema.pre('save', async function(next) {
     if (!this.isModified('password')) {
-        return next(); // Fix: return immediately if password not modified
+        return next();
     }
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
 });
 
 // Sign JWT and return
-userSchema
-.methods.getSignedJwtToken = function() {
+userSchema.methods.getSignedJwtToken = function() {
     return jwt.sign({ userId: this._id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRE
     });
