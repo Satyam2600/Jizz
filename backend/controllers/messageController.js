@@ -12,11 +12,13 @@ exports.sendMessage = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-// Get messages between current user and another user
+// Get messages between current user and another user, and mark as read
 exports.getMessages = async (req, res) => {
   try {
     const userId = req.user.id || req.user._id;
     const otherUserId = req.params.userId;
+    // Mark all messages from otherUserId to userId as read
+    await Message.updateMany({ sender: otherUserId, receiver: userId, read: false }, { read: true });
     const messages = await Message.find({
       $or: [
         { sender: userId, receiver: otherUserId },
@@ -28,6 +30,24 @@ exports.getMessages = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// Get unread message count for each user
+exports.getUnreadCounts = async (req, res) => {
+  try {
+    const userId = req.user.id || req.user._id;
+    const messages = await Message.aggregate([
+      { $match: { receiver: userId, read: false } },
+      { $group: { _id: "$sender", count: { $sum: 1 } } }
+    ]);
+    // Format: { userId: count }
+    const result = {};
+    messages.forEach(m => { result[m._id] = m.count; });
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 exports.markAsRead = async (req, res) => {
   try {
     const { userId } = req.params;

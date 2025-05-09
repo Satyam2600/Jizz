@@ -6,6 +6,9 @@ const messageController = require("../controllers/messageController");
 // Send a message
 router.post("/", authenticate, messageController.sendMessage);
 
+// Get unread message counts
+router.get('/unread-counts', authenticate, messageController.getUnreadCounts);
+
 // Get messages between two users
 router.get("/:userId", authenticate, messageController.getMessages);
 
