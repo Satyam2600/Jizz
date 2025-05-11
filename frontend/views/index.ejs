@@ -309,6 +309,10 @@
       background: var(--accent-gold) !important;
       color: #181c1f !important;
     }
+
+    body.dark-mode footer > div.container {
+      background: #23272f !important;
+    }
   </style>
 </head>
 
@@ -502,40 +506,27 @@
 
   <!-- Footer Section -->
   <footer class="bg-dark text-white py-5">
-    <div class="container">
-      <div class="row g-4">
-        <div class="col-md-4">
+    <div class="container py-4 px-4" style="border-radius: 16px;">
+      <div class="row g-5 align-items-center">
+        <div class="col-md-5 mb-4 mb-md-0">
           <h5 class="fw-bold mb-3">JIZZ</h5>
-          <p>Connecting campus communities through authentic social experiences.</p>
+          <p class="mb-0">Connecting campus communities through authentic social experiences.</p>
         </div>
-        <div class="col-md-2">
-          <h6 class="fw-bold mb-3">Company</h6>
-          <ul class="list-unstyled">
-            <li class="mb-2"><a href="#about" class="text-white text-decoration-none">About</a></li>
-            <li class="mb-2"><a href="#careers" class="text-white text-decoration-none">Careers</a></li>
-            <li class="mb-2"><a href="#blog" class="text-white text-decoration-none">Blog</a></li>
-          </ul>
-        </div>
-        <div class="col-md-2">
-          <h6 class="fw-bold mb-3">Legal</h6>
-          <ul class="list-unstyled">
-            <li class="mb-2"><a href="#privacy" class="text-white text-decoration-none">Privacy</a></li>
-            <li class="mb-2"><a href="#terms" class="text-white text-decoration-none">Terms</a></li>
-            <li class="mb-2"><a href="#security" class="text-white text-decoration-none">Security</a></li>
-          </ul>
-        </div>
-        <div class="col-md-4">
+        <div class="col-md-4 mb-4 mb-md-0">
           <h6 class="fw-bold mb-3">Stay Updated</h6>
           <div class="input-group">
-            <input type="email" id="newsletter-email" class="form-control rounded-start-pill"
-              placeholder="Enter your email">
+            <input type="email" id="newsletter-email" class="form-control rounded-start-pill bg-dark border-0 text-white" placeholder="Enter your email">
             <button id="subscribe-btn" class="btn btn-success rounded-end-pill">Subscribe</button>
           </div>
         </div>
-      </div>
-      <hr class="my-5">
-      <div class="text-center">
-        <p class="mb-0">&copy; 2025 JIZZ. All rights reserved.</p>
+        <div class="col-md-3 d-flex flex-column align-items-md-end align-items-start">
+          <div class="social-links mb-3">
+            <a href="#" class="me-3 fs-4 text-white"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="me-3 fs-4 text-white"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="fs-4 text-white"><i class="fab fa-instagram"></i></a>
+          </div>
+          <p class="mb-0 small text-secondary">&copy; 2025 JIZZ. All rights reserved.</p>
+        </div>
       </div>
     </div>
   </footer>
