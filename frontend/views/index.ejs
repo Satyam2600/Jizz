@@ -313,6 +313,273 @@
     body.dark-mode footer > div.container {
       background: #23272f !important;
     }
+
+    .footer-modern {
+      max-width: 1200px;
+      margin: 0 auto;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px 0 rgba(0,0,0,0.18);
+      background: var(--footer-bg) !important;
+      padding-top: 3rem !important;
+      padding-bottom: 2.5rem !important;
+    }
+    .footer-links-group {
+      width: 100%;
+    }
+    .footer-newsletter h6,
+    .footer-quicklinks h6 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+    .footer-quicklinks ul.quick-links-modern {
+
+      margin-bottom: 0 !important;
+      padding-left: 0;
+    }
+    .quick-links-modern li {
+      margin-bottom: 0 !important;
+    }
+    .quick-links-modern a {
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: background 0.2s, color 0.2s;
+      display: inline-block;
+    }
+    .quick-links-modern a:hover {
+      background: var(--primary-green);
+      color: #181c1f !important;
+      text-decoration: none;
+    }
+    @media (max-width: 991px) {
+      .footer-modern {
+        max-width: 100%;
+        border-radius: 12px;
+        padding: 1.5rem 0.5rem;
+      }
+      .footer-links-group {
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+      }
+      .footer-quicklinks ul.quick-links-modern {
+        flex-direction: column !important;
+      
+        align-items: flex-start;
+      }
+      .quick-links-modern a {
+        font-size: 1rem;
+        padding: 6px 0;
+      }
+      .footer-quicklinks {
+        margin-left: 0 !important;
+      }
+      .footer-newsletter, .footer-quicklinks {
+        width: 100%;
+        align-items: flex-start !important;
+      }
+      .footer-links-group {
+        align-items: flex-start !important;
+      }
+      .footer-modern p.text-md-end {
+        text-align: left !important;
+        margin-top: 1.5rem !important;
+      }
+    }
+    .footer-links-row {
+      width: 100%;
+      gap: 3rem !important;
+    }
+    .footer-newsletter, .footer-quicklinks {
+      min-width: 220px;
+      max-width: 340px;
+      flex: 1 1 0;
+    }
+    .footer-newsletter h6, .footer-quicklinks h6 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+    .footer-quicklinks ul.quick-links-modern {
+      gap: 0 !important;
+      margin-bottom: 0 !important;
+      padding-left: 0;
+      width: 100%;
+    }
+    .quick-links-modern li {
+      margin-bottom: 0 !important;
+      flex: 1 1 0;
+      text-align: center;
+    }
+    .quick-links-modern a {
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 6px 0;
+      border-radius: 8px;
+      transition: background 0.2s, color 0.2s;
+      display: block;
+      width: 100%;
+    }
+    .quick-links-modern a:hover {
+      background: var(--primary-green);
+      color: #181c1f !important;
+      text-decoration: none;
+    }
+    .footer-newsletter .input-group {
+      width: 100%;
+    }
+    @media (max-width: 991px) {
+      .footer-modern {
+        max-width: 100%;
+        border-radius: 12px;
+        padding: 2rem 0.5rem 1.5rem 0.5rem !important;
+      }
+      .footer-links-row {
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+      }
+      .footer-newsletter, .footer-quicklinks {
+        min-width: 0;
+        max-width: 100%;
+        width: 100%;
+      }
+      .footer-quicklinks ul.quick-links-modern {
+        flex-direction: column !important;
+     
+        align-items: flex-start;
+      }
+      .quick-links-modern li {
+        text-align: left;
+      }
+      .quick-links-modern a {
+        font-size: 1rem;
+        padding: 6px 0;
+      }
+      .footer-modern p.text-md-end {
+        text-align: left !important;
+        margin-top: 1.5rem !important;
+      }
+    }
+    .newsletter-input-group input[type="email"] {
+      border-radius: 0.5rem !important;
+      min-width: 0;
+      flex: 1 1 0;
+    }
+    .subscribe-btn-custom {
+      background: var(--primary-green) !important;
+      color: #181c1f !important;
+      font-weight: 600;
+      border-radius: 0.5rem !important;
+      box-shadow: 0 2px 12px 0 rgba(1, 152, 99, 0.10);
+      border: none;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+      letter-spacing: 0.02em;
+    }
+    .subscribe-btn-custom:hover {
+      background: var(--accent-gold) !important;
+      color: #181c1f !important;
+      box-shadow: 0 4px 18px 0 rgba(161, 130, 73, 0.15);
+    }
+    .footer-quicklinks ul.quick-links-modern {
+  
+      margin-bottom: 0 !important;
+      padding-left: 0;
+      width: 100%;
+    }
+    .quick-links-modern li {
+      margin-bottom: 0 !important;
+      text-align: left;
+      width: 100%;
+    }
+    .quick-links-modern a {
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 6px 0 6px 4px;
+      border-radius: 6px;
+      transition: background 0.2s, color 0.2s;
+      display: block;
+      width: 100%;
+    }
+    .quick-links-modern a:hover {
+      background: var(--primary-green);
+      color: #181c1f !important;
+      text-decoration: none;
+    }
+    @media (max-width: 991px) {
+      .footer-modern {
+        max-width: 100%;
+        border-radius: 10px;
+        padding: 2rem 0.5rem 1.5rem 0.5rem !important;
+      }
+      .footer-links-row {
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+      }
+      .footer-newsletter, .footer-quicklinks {
+        min-width: 0;
+        max-width: 100%;
+        width: 100%;
+      }
+      .newsletter-input-group {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+      }
+      .footer-quicklinks ul.quick-links-modern {
+        flex-direction: column !important;
+      
+        align-items: flex-start;
+      }
+      .quick-links-modern li {
+        text-align: left;
+      }
+      .quick-links-modern a {
+        font-size: 1rem;
+        padding: 6px 0 6px 4px;
+      }
+    }
+    .footer-quicklinks ul.quick-links-modern {
+      flex-direction: row !important;
+      
+      margin-bottom: 0 !important;
+      padding-left: 0;
+      width: 100%;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .quick-links-modern li {
+      margin-bottom: 0 !important;
+      text-align: left;
+      width: auto;
+    }
+    .quick-links-modern a {
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: background 0.2s, color 0.2s;
+      display: block;
+      width: 100%;
+    }
+    @media (max-width: 991px) {
+      .footer-quicklinks ul.quick-links-modern {
+        flex-direction: row !important;
+        gap: 1rem !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+      }
+      .quick-links-modern li {
+        text-align: left;
+        width: auto;
+      }
+      .quick-links-modern a {
+        font-size: 1rem;
+        padding: 6px 8px;
+      }
+    }
   </style>
 </head>
 
@@ -506,26 +773,36 @@
 
   <!-- Footer Section -->
   <footer class="bg-dark text-white py-5">
-    <div class="container py-4 px-4" style="border-radius: 16px;">
+    <div class="container py-5 px-4 footer-modern" style="border-radius: 12px; max-width: 1200px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.18);">
       <div class="row g-5 align-items-center">
-        <div class="col-md-5 mb-4 mb-md-0">
+        <div class="col-md-4 mb-4 mb-md-0">
           <h5 class="fw-bold mb-3">JIZZ</h5>
           <p class="mb-0">Connecting campus communities through authentic social experiences.</p>
         </div>
-        <div class="col-md-4 mb-4 mb-md-0">
-          <h6 class="fw-bold mb-3">Stay Updated</h6>
-          <div class="input-group">
-            <input type="email" id="newsletter-email" class="form-control rounded-start-pill bg-dark border-0 text-white" placeholder="Enter your email">
-            <button id="subscribe-btn" class="btn btn-success rounded-end-pill">Subscribe</button>
+        <div class="col-md-8 mb-4 mb-md-0">
+          <div class="footer-links-row d-flex flex-row align-items-start align-items-md-center justify-content-between gap-4 w-100">
+            <div class="footer-newsletter d-flex flex-column align-items-start flex-grow-1 me-4" style="min-width: 260px; max-width: 340px;">
+              <h6 class="fw-bold mb-2">Stay Updated</h6>
+              <div class="newsletter-input-group d-flex flex-column flex-md-row w-100 gap-2 align-items-stretch">
+                <input type="email" id="newsletter-email" class="form-control rounded-3 bg-dark border-0 text-white" placeholder="Enter your email">
+                <button id="subscribe-btn" class="btn btn-success subscribe-btn-custom rounded-3 px-4 py-2 mt-2 mt-md-0" type="button">Subscribe</button>
+              </div>
+            </div>
+            <div class="footer-quicklinks d-flex flex-column align-items-start flex-grow-1" style="min-width: 260px; max-width: 340px;">
+              <h6 class="fw-bold mb-2">Quick Links</h6>
+              <ul class="list-unstyled d-flex flex-row align-items-center quick-links-modern w-100 mb-0 gap-3 justify-content-center">
+                <li><a href="#home" class="text-white text-decoration-none">Home</a></li>
+                <li><a href="#features" class="text-white text-decoration-none">Features</a></li>
+                <li><a href="#about" class="text-white text-decoration-none">About</a></li>
+                <li><a href="#contact" class="text-white text-decoration-none">Contact</a></li>
+              </ul>
+            </div>
           </div>
         </div>
-        <div class="col-md-3 d-flex flex-column align-items-md-end align-items-start">
-          <div class="social-links mb-3">
-            <a href="#" class="me-3 fs-4 text-white"><i class="fab fa-facebook"></i></a>
-            <a href="#" class="me-3 fs-4 text-white"><i class="fab fa-twitter"></i></a>
-            <a href="#" class="fs-4 text-white"><i class="fab fa-instagram"></i></a>
-          </div>
-          <p class="mb-0 small text-secondary">&copy; 2025 JIZZ. All rights reserved.</p>
+      </div>
+      <div class="row mt-4">
+        <div class="col-12">
+          <p class="mb-0 small text-secondary text-center pt-3">&copy; 2025 JIZZ. All rights reserved.</p>
         </div>
       </div>
     </div>
