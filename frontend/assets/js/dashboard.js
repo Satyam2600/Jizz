@@ -22,8 +22,8 @@ function renderPost(post) {
     
     // Use post.user for user details
     const user = post.user || {};
-    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-    const isCurrentUser = user._id === currentUser._id;
+    // Use backend-provided isCurrentUser if available, fallback to local check
+    const isCurrentUser = typeof user.isCurrentUser !== 'undefined' ? user.isCurrentUser : (user._id === (JSON.parse(localStorage.getItem('user') || '{}')._id));
     const isFollowing = user.isFollowing || false; // Should be provided by backend for each post's user
     const followersCount = user.followersCount || 0;
     // Likes/comments

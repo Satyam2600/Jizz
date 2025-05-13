@@ -71,7 +71,25 @@
       transition: color 0.4s;
     }
 
-    .navbar .nav-link.active, .navbar .nav-link:focus, .navbar .nav-link:hover {
+    .navbar .nav-link.active, .navbar .nav-link:focus {
+      color: var(--primary-green) !important;
+    }
+
+    .navbar .nav-link,
+    .navbar .btn,
+    .navbar .btn.position-relative,
+    .navbar .navbar-brand,
+    .navbar .dropdown > a {
+      transition: all 0.3s ease;
+    }
+    .navbar .nav-link:hover,
+    .navbar .btn:hover,
+    .navbar .btn.position-relative:hover,
+    .navbar .navbar-brand:hover,
+    .navbar .dropdown > a:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(1, 152, 99, 0.4);
+      z-index: 2;
       color: var(--primary-green) !important;
     }
 
@@ -580,6 +598,129 @@
         padding: 6px 8px;
       }
     }
+
+    /* Modern hover effect for all links and buttons in navbar, footer, and page */
+    .navbar .nav-link,
+    .navbar .btn,
+    .navbar .btn.position-relative,
+    .navbar .navbar-brand,
+    .navbar .dropdown > a,
+    footer a,
+    .footer-modern a,
+    .footer-modern .btn,
+    .btn,
+    a.btn {
+      transition: all 0.3s cubic-bezier(.4,0,.2,1);
+    }
+    .navbar .nav-link:hover,
+    .navbar .btn:hover,
+    .navbar .btn.position-relative:hover,
+    .navbar .navbar-brand:hover,
+    .navbar .dropdown > a:hover,
+    footer a:hover,
+    .footer-modern a:hover,
+    .footer-modern .btn:hover,
+    .btn:hover,
+    a.btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 4px 16px 0 rgba(1,152,99,0.18);
+      z-index: 2;
+      color: var(--primary-green) !important;
+      text-decoration: none;
+    }
+
+    /* Button color schemes for login and sign up */
+    .btn-signup {
+      background: var(--primary-green);
+      color: #fff;
+      border: none;
+      font-weight: 600;
+      transition: background 0.3s, color 0.3s;
+    }
+    .btn-signup:hover {
+      background: #017a4f;
+      color: #fff;
+    }
+    .btn-login {
+      background: #fff;
+      color: var(--primary-green);
+      border: 2px solid var(--primary-green);
+      font-weight: 600;
+      transition: background 0.3s, color 0.3s, border 0.3s, box-shadow 0.3s;
+      box-shadow: 0 2px 12px 0 rgba(1, 152, 99, 0.08);
+    }
+    .btn-login:hover, .btn-login:focus {
+      background: var(--primary-green);
+      color: #fff;
+      border-color: var(--primary-green);
+      box-shadow: 0 4px 18px 0 rgba(1, 152, 99, 0.18);
+    }
+    .btn-signup {
+      background: var(--primary-green);
+      color: #fff;
+      border: 2px solid var(--primary-green);
+      font-weight: 700;
+      transition: background 0.3s, color 0.3s, border 0.3s, box-shadow 0.3s;
+      box-shadow: 0 2px 12px 0 rgba(1, 152, 99, 0.10);
+    }
+    .btn-signup:hover, .btn-signup:focus {
+      background: var(--accent-gold);
+      color: #181c1f;
+      border-color: var(--accent-gold);
+      box-shadow: 0 4px 18px 0 rgba(161, 130, 73, 0.15);
+    }
+    body.dark-mode .btn-login {
+      background: #23272f;
+      color: var(--primary-green);
+      border: 2px solid var(--primary-green);
+    }
+    body.dark-mode .btn-login:hover, body.dark-mode .btn-login:focus {
+      background: var(--primary-green);
+      color: #181c1f;
+      border-color: var(--primary-green);
+    }
+    body.dark-mode .btn-signup {
+      background: var(--primary-green);
+      color: #181c1f;
+      border: 2px solid var(--primary-green);
+    }
+    body.dark-mode .btn-signup:hover, body.dark-mode .btn-signup:focus {
+      background: var(--accent-gold);
+      color: #181c1f;
+      border-color: var(--accent-gold);
+    }
+
+    /* Modern hover effect for all nav/footer links and all buttons */
+    .navbar .nav-link, .navbar .btn, .navbar .btn.position-relative, .navbar .navbar-brand, .navbar .dropdown > a,
+    .footer-quicklinks a, .btn, button, input[type="submit"], input[type="button"] {
+      transition: all 0.3s cubic-bezier(.4,2,.3,1);
+    }
+    .navbar .nav-link:hover, .navbar .btn:hover, .navbar .btn.position-relative:hover, .navbar .navbar-brand:hover, .navbar .dropdown > a:hover,
+    .footer-quicklinks a:hover, .btn:hover, button:hover, input[type="submit"]:hover, input[type="button"]:hover {
+      transform: scale(1.07);
+      box-shadow: 0 4px 16px rgba(1, 152, 99, 0.18);
+      z-index: 2;
+      color: var(--primary-green) !important;
+    }
+    .footer-quicklinks a:hover {
+      background: var(--primary-green);
+      color: #181c1f !important;
+    }
+    body.dark-mode .footer-quicklinks a:hover {
+      background: var(--accent-gold);
+      color: #181c1f !important;
+    }
+    /* Ensure all .btn, .btn-login, .btn-signup, .button-2, and .btn-success get the same hover effect */
+    .btn, .btn-login, .btn-signup, .button-2, .btn-success {
+      border-radius: 999px !important;
+      font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;
+      font-size: 1.08rem;
+      letter-spacing: 0.01em;
+    }
+    /* Remove box-shadow from .btn-light (Log In) in dark mode for clarity */
+    body.dark-mode .btn-light, body.dark-mode .button-2 {
+      box-shadow: none !important;
+    }
   </style>
 </head>
 
@@ -601,12 +742,12 @@
           <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
           <li class="nav-item">
             <a href="/login">
-              <button class="btn btn-outline-success rounded-pill px-4 ms-2 button-2">Log In</button>
+              <button class="btn btn-login rounded-pill px-4 ms-2 button-2">Log In</button>
             </a>
           </li>
           <li class="nav-item">
             <a href="/register">
-              <button class="btn btn-success rounded-pill px-4">Sign Up</button>
+              <button class="btn btn-signup rounded-pill px-4">Sign Up</button>
             </a>
           </li>
           <li class="nav-item">
@@ -632,9 +773,9 @@
             art, and life
             with classmates.</p>
           <div class="d-flex gap-3">
-            <a href="/register"><button class="btn btn-success rounded-pill px-4 py-2">Sign Up</button>
+            <a href="/register"><button class="btn btn-signup rounded-pill px-4 py-2">Sign Up</button>
             </a>
-            <a href="/login"> <button class="btn btn-light rounded-pill px-4 py-2 button-2">Log In</button>
+            <a href="/login"> <button class="btn btn-login rounded-pill px-4 py-2 button-2">Log In</button>
             </a>
           </div>
         </div>

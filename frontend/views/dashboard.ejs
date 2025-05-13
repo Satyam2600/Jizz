@@ -43,6 +43,18 @@
         height: 56px;
         z-index: 1030;
       }
+      .navbar .nav-link,
+      .navbar .btn.position-relative,
+      .navbar .dropdown > a {
+        transition: all 0.3s ease;
+      }
+      .navbar .nav-link:hover,
+      .navbar .btn.position-relative:hover,
+      .navbar .dropdown > a:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(1, 152, 99, 0.4);
+        z-index: 2;
+      }
       .main-section {
         padding: 0;
         margin: 0;
@@ -85,9 +97,8 @@
         padding: 8px 12px;
         border-radius: 8px;
       }
-      .nav-link:hover {
-        background-color: var(--secondary-bg);
-      }
+    
+
       .nav-link i {
         font-size: 18px;
         width: 24px;
@@ -709,9 +720,10 @@
             <i class="bi bi-bell fs-5"></i>
             <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size:0.7em;">0</span>
           </a>
-          <a class="nav-link position-relative" href="/chat" id="chatNavLink">
-            <i class="bi bi-messenger"></i> Messages
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger chat-badge d-none" style="font-size:0.7em;">0</span>
+          <a class="btn position-relative" href="/chat" id="chatButton" style="background: none; border: none;">
+            <i class="bi bi-messenger fs-5"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger chat-badge" style="font-size:0.7em; display:none;"></span>
+            <span class="ms-2">Messages</span>
           </a>
           <div class="dropdown">
             <a href="/chat">

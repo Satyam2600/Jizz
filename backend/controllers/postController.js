@@ -25,6 +25,7 @@ exports.getAllPosts = async (req, res) => {
       userObj.isFollowing = userObj.followers && currentUserId
         ? userObj.followers.some(f => f.equals(currentUserId))
         : false;
+      userObj.isCurrentUser = currentUserId && userObj._id && userObj._id.equals(currentUserId);
       post.user = userObj;
       return post;
     });

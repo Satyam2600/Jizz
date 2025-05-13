@@ -56,17 +56,15 @@ function updateChatNavbarBadge() {
     return;
   }
   let badge = chatNav.querySelector('.chat-badge');
-  if (!badge && chatUnread > 0) {
+  if (!badge) {
     badge = document.createElement('span');
     badge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger chat-badge';
     badge.style.fontSize = '0.7em';
     chatNav.appendChild(badge);
   }
-  if (badge) {
-    badge.textContent = chatUnread > 0 ? chatUnread : '';
-    badge.style.display = chatUnread > 0 ? '' : 'none';
-    console.log('[CHAT BADGE] Badge updated. chatUnread:', chatUnread, 'badge:', badge.textContent);
-  }
+  badge.textContent = chatUnread > 0 ? chatUnread : '';
+  badge.style.display = chatUnread > 0 ? 'inline-flex' : 'none';
+  console.log('[CHAT BADGE] Badge updated. chatUnread:', chatUnread, 'badge:', badge.textContent);
 }
 
 // Reset badge when visiting chat page
