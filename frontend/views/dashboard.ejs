@@ -648,6 +648,17 @@
       [data-bs-theme="dark"] .bi-bell {
         color: #ffffff; /* Set bell icon color to white in dark mode */
       }
+
+      .chat-badge {
+        min-width: 1.3em;
+        min-height: 1.3em;
+        padding: 0 0.4em;
+        font-size: 0.75em;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+      }
     </style>
   </head>
   <body>
@@ -697,6 +708,10 @@
             <a class="btn position-relative" href="/notifications" id="notificationBell" style="background: none; border: none;">
             <i class="bi bi-bell fs-5"></i>
             <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size:0.7em;">0</span>
+          </a>
+          <a class="nav-link position-relative" href="/chat" id="chatNavLink">
+            <i class="bi bi-messenger"></i> Messages
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger chat-badge d-none" style="font-size:0.7em;">0</span>
           </a>
           <div class="dropdown">
             <a href="/chat">
@@ -915,6 +930,7 @@
     </script>
 
     <script src="/assets/js/dashboard.js"></script>
+    <script src="/assets/js/globalChatBadge.js"></script>
 
     <!-- Add theme toggle script -->
     <script>

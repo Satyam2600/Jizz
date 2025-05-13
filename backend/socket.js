@@ -7,7 +7,8 @@ module.exports = (io) => {
     // Register userId with socketId
     socket.on("register", (userId) => {
       userSocketMap[userId] = socket.id;
-      console.log(`Registered user ${userId} with socket ${socket.id}`);
+      console.log(`[SOCKET] Registered user ${userId} with socket ${socket.id}`);
+      console.log("[SOCKET] Current userSocketMap:", userSocketMap);
     });
 
     // Send notification to a specific user
@@ -21,14 +22,18 @@ module.exports = (io) => {
     // Real-time private messaging
     socket.on('sendMessage', (data) => {
       // data: { sender, receiver, content }
-      // Emit to receiver if online
+      console.log(`[SOCKET] sendMessage event:`, data);
       const targetSocketId = userSocketMap[data.receiver];
       if (targetSocketId) {
+        console.log(`[SOCKET] Emitting receiveMessage to receiver ${data.receiver} (socket ${targetSocketId})`);
         io.to(targetSocketId).emit('receiveMessage', data);
+      } else {
+        console.log(`[SOCKET] Receiver ${data.receiver} not online.`);
       }
       // Optionally, emit to sender for instant feedback
       const senderSocketId = userSocketMap[data.sender];
       if (senderSocketId && senderSocketId !== targetSocketId) {
+        console.log(`[SOCKET] Emitting receiveMessage to sender ${data.sender} (socket ${senderSocketId})`);
         io.to(senderSocketId).emit('receiveMessage', data);
       }
     });
@@ -50,10 +55,12 @@ module.exports = (io) => {
       for (const [userId, sockId] of Object.entries(userSocketMap)) {
         if (sockId === socket.id) {
           delete userSocketMap[userId];
+          console.log(`[SOCKET] User ${userId} disconnected and removed from userSocketMap.`);
           break;
         }
       }
       console.log(`🔴 User Disconnected: ${socket.id}`);
+      console.log("[SOCKET] Current userSocketMap:", userSocketMap);
     });
   });
 };

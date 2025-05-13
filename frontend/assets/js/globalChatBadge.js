@@ -14,9 +14,47 @@ if (!document.getElementById('globalNotificationContainer')) {
   document.body.appendChild(notifDiv);
 }
 
+console.log('[CHAT BADGE] Script loaded');
+
+function getCurrentUserId() {
+  // Try localStorage first
+  let userId = localStorage.getItem('userId');
+  if (userId) return userId;
+  // Try to extract from token if not present
+  const token = localStorage.getItem('token');
+  if (token) {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      userId = payload.id || payload.userId || payload._id;
+      if (userId) {
+        localStorage.setItem('userId', userId);
+        return userId;
+      }
+    } catch (e) {
+      console.error('[CHAT BADGE] Failed to parse userId from token:', e);
+    }
+  }
+  // Try to get from window/global user object if available
+  if (window.user && window.user._id) {
+    localStorage.setItem('userId', window.user._id);
+    return window.user._id;
+  }
+  return null;
+}
+
+chatSocket.on('connect', () => {
+  console.log('[SOCKET][CLIENT][GLOBAL] Connected to socket.io:', chatSocket.id);
+  const userId = getCurrentUserId();
+  console.log('[SOCKET][CLIENT][GLOBAL] Registering userId:', userId);
+  if (userId) chatSocket.emit('register', userId);
+});
+
 function updateChatNavbarBadge() {
   let chatNav = document.querySelector('a[href="/chat"]');
-  if (!chatNav) return;
+  if (!chatNav) {
+    console.log('[CHAT BADGE] No chat nav link found');
+    return;
+  }
   let badge = chatNav.querySelector('.chat-badge');
   if (!badge && chatUnread > 0) {
     badge = document.createElement('span');
@@ -27,7 +65,15 @@ function updateChatNavbarBadge() {
   if (badge) {
     badge.textContent = chatUnread > 0 ? chatUnread : '';
     badge.style.display = chatUnread > 0 ? '' : 'none';
+    console.log('[CHAT BADGE] Badge updated. chatUnread:', chatUnread, 'badge:', badge.textContent);
   }
+}
+
+// Reset badge when visiting chat page
+if (window.location.pathname.startsWith('/chat')) {
+  chatUnread = 0;
+  updateChatNavbarBadge();
+  // Optionally, you can also call fetchChatUnread() here to sync
 }
 
 async function fetchChatUnread() {
@@ -36,15 +82,31 @@ async function fetchChatUnread() {
   const res = await fetch('/api/messages/unread-counts', { headers: { 'Authorization': `Bearer ${token}` } });
   if (res.ok) {
     const unreadChats = await res.json();
+    console.log('[CHAT BADGE] API unreadChats:', unreadChats); // Debug log
     chatUnread = Object.values(unreadChats).reduce((a, b) => a + b, 0);
     updateChatNavbarBadge();
   }
 }
 
+// Fetch all users and cache for sender name resolution
+async function fetchAllChatUsers() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  try {
+    const res = await fetch('/api/users/all', { headers: { 'Authorization': `Bearer ${token}` } });
+    if (res.ok) {
+      const users = await res.json();
+      users.forEach(u => { chatUsers[u._id] = u; });
+      console.log('[CHAT BADGE] Cached users:', chatUsers);
+    }
+  } catch (e) {
+    console.error('[CHAT BADGE] Failed to fetch users:', e);
+  }
+}
+
 function showGlobalChatNotification(data) {
-  // Optionally fetch user name if not present
-  let senderName = data.senderName || 'Someone';
-  if (chatUsers[data.sender]) senderName = chatUsers[data.sender].fullName;
+  // Always resolve sender name from chatUsers
+  let senderName = (chatUsers[data.sender] && chatUsers[data.sender].fullName) || data.senderName || 'Someone';
   const notif = document.createElement('div');
   notif.className = 'alert alert-success shadow fade show d-flex align-items-center';
   notif.style.minWidth = '280px';
@@ -64,8 +126,12 @@ function showGlobalChatNotification(data) {
 }
 
 chatSocket.on('receiveMessage', data => {
+  console.log('[SOCKET][CLIENT][GLOBAL] receiveMessage event:', data);
   fetchChatUnread();
   showGlobalChatNotification(data);
 });
 
-document.addEventListener('DOMContentLoaded', fetchChatUnread);
+document.addEventListener('DOMContentLoaded', () => {
+  fetchAllChatUsers();
+  fetchChatUnread();
+});

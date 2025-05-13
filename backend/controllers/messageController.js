@@ -5,7 +5,8 @@ exports.sendMessage = async (req, res) => {
     const { receiver, content } = req.body;
     const sender = req.user.id || req.user._id;
     if (!receiver || !content) return res.status(400).json({ message: 'Receiver and content required' });
-    const message = new Message({ sender, receiver, content });
+    // Always set read: false for new messages
+    const message = new Message({ sender, receiver, content, read: false });
     await message.save();
     res.status(201).json(message);
   } catch (err) {

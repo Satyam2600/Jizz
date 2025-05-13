@@ -409,6 +409,7 @@
 
     // Listen for real-time messages
     socket.on('receiveMessage', data => {
+      console.log('[SOCKET][CLIENT] receiveMessage event:', data);
       // Only append if the message is from the other user (not self)
       if (data.sender !== userId && currentChatUser && (data.sender === currentChatUser._id || data.receiver === currentChatUser._id)) {
         appendMessageToChat(data);
