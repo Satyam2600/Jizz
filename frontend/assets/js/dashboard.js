@@ -1000,3 +1000,74 @@ const handleImageUpload = async (file) => {
         throw error;
     }
 };
+
+// --- Real-time notification badge logic ---
+const notificationSocket = window.io ? io() : null;
+let notificationUnreadCount = 0;
+
+function updateNotificationBadge() {
+  const badge = document.getElementById('notificationBadge');
+  if (badge) {
+    badge.textContent = notificationUnreadCount;
+    badge.classList.toggle('d-none', notificationUnreadCount === 0);
+  }
+}
+
+async function fetchNotificationCount() {
+  try {
+    const res = await fetch('/api/notifications', { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
+    if (!res.ok) return;
+    const notifications = await res.json();
+    notificationUnreadCount = notifications.filter(n => !n.isRead).length;
+    updateNotificationBadge();
+  } catch {}
+}
+
+if (notificationSocket && userId) {
+  notificationSocket.emit('register', userId);
+  notificationSocket.on('notification', function(notification) {
+    notificationUnreadCount++;
+    updateNotificationBadge();
+    // Optionally, show a toast or popup for new notification
+  });
+}
+fetchNotificationCount();
+
+// --- Real-time comment update logic ---
+if (notificationSocket && userId) {
+  notificationSocket.on('notification', function(notification) {
+    if (notification.type === 'comment' && notification.post) {
+      // Find the post card and update comments section if visible
+      const postCard = document.querySelector(`.post-card[data-post-id="${notification.post}"]`);
+      if (postCard) {
+        const commentsSection = postCard.querySelector('.comments-section');
+        if (commentsSection && commentsSection.style.display === 'block') {
+          // Fetch latest comments for this post and re-render
+          fetch(`/api/posts/${notification.post}`)
+            .then(res => res.json())
+            .then(data => {
+              if (data && data.comments) {
+                // Re-render comments section (implement as needed)
+                // For now, just reload the page or show a toast
+                // location.reload();
+              }
+            });
+        }
+      }
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const themeToggle = document.getElementById("themeToggle");
+    if (themeToggle) {
+        themeToggle.addEventListener("click", function () {
+            const body = document.body;
+            const isDark = body.getAttribute("data-bs-theme") === "dark";
+            const newTheme = isDark ? "light" : "dark";
+            body.setAttribute("data-bs-theme", newTheme);
+            localStorage.setItem("theme", newTheme);
+            themeToggle.innerHTML = isDark ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon"></i>';
+        });
+    }
+});

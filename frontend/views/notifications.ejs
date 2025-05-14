@@ -122,13 +122,31 @@
       }
     }
 
+    // Mark all notifications as read when page loads
+    async function markAllNotificationsAsRead() {
+      await fetch('/api/notifications/mark-all-read', {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      // Update notification badge in navbar (if present)
+      window.dispatchEvent(new CustomEvent('notifications-read'));
+    }
+
     // Initial load
-    fetchNotifications().then(renderNotifications);
+    fetchNotifications().then(renderNotifications).then(markAllNotificationsAsRead);
 
     // Listen for real-time notifications
     socket.on('notification', function(notification) {
-      // Optionally, fetch all notifications again or prepend new one
       fetchNotifications().then(renderNotifications);
+    });
+
+    // Listen for notifications-read event to clear badge
+    window.addEventListener('notifications-read', function() {
+      const badge = document.getElementById('notificationBadge');
+      if (badge) {
+        badge.textContent = '0';
+        badge.classList.add('d-none');
+      }
     });
   </script>
 </body>

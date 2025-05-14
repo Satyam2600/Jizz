@@ -6,20 +6,42 @@ exports.addComment = async (req, res) => {
     const { postId, content } = req.body;
     const userId = req.user.id;
 
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId).populate('user', 'fullName username avatar');
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    const comment = new Comment({
+    const newComment = new Comment({
       content,
       post: postId,
       user: userId
     });
+    await newComment.save();
+    const populatedComment = await Comment.findById(newComment._id)
+      .populate("user", "username avatar fullName");
 
-    await comment.save();
-    const populatedComment = await Comment.findById(comment._id)
-      .populate("user", "username avatar");
+    // Notification logic for comment
+    if (post.user._id.toString() !== userId.toString()) {
+      const Notification = require('../models/Notification');
+      const notification = await Notification.create({
+        user: post.user._id,
+        type: 'comment',
+        message: `${req.user.fullName || 'Someone'} commented on your post: \"${content}\"`,
+        fromUser: userId,
+        post: post._id,
+        isRead: false
+      });
+      // Emit socket notification
+      if (req.app && req.app.get && req.app.get('io')) {
+        req.app.get('io').to(post.user._id.toString()).emit('notification', {
+          type: 'comment',
+          message: notification.message,
+          fromUser: userId,
+          post: post._id,
+          createdAt: notification.createdAt
+        });
+      }
+    }
 
     res.status(201).json(populatedComment);
   } catch (err) {
@@ -84,4 +106,4 @@ exports.deleteComment = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-}; 
+};

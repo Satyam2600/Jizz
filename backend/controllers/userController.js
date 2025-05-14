@@ -85,13 +85,34 @@ exports.followUser = async (req, res) => {
     const currentUser = await User.findById(req.user.id);
     if (!userToFollow || !currentUser) return res.status(404).json({ message: 'User not found' });
     if (userToFollow._id.equals(currentUser._id)) return res.status(400).json({ message: 'Cannot follow yourself' });
+    let followed = false;
     if (!userToFollow.followers.includes(currentUser._id)) {
       userToFollow.followers.push(currentUser._id);
       await userToFollow.save();
+      followed = true;
     }
     if (!currentUser.following.includes(userToFollow._id)) {
       currentUser.following.push(userToFollow._id);
       await currentUser.save();
+    }
+    // Notification logic for follow
+    if (followed) {
+      const Notification = require('../models/Notification');
+      const notification = await Notification.create({
+        user: userToFollow._id,
+        type: 'follow',
+        message: `${currentUser.fullName || 'Someone'} followed you`,
+        fromUser: currentUser._id
+      });
+      // Emit socket notification
+      if (req.app.get('io')) {
+        req.app.get('io').to(userToFollow._id.toString()).emit('notification', {
+          type: 'follow',
+          message: notification.message,
+          fromUser: currentUser._id,
+          createdAt: notification.createdAt
+        });
+      }
     }
     res.json({ success: true, followersCount: userToFollow.followers.length });
   } catch (err) {

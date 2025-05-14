@@ -165,7 +165,7 @@ exports.addComment = async (req, res) => {
       return res.status(400).json({ message: "Comment content is required" });
     }
 
-    const post = await Post.findById(req.params.id);
+    const post = await Post.findById(req.params.id).populate('user', 'fullName username avatar');
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
@@ -176,6 +176,29 @@ exports.addComment = async (req, res) => {
     });
 
     await post.save();
+
+    // Notification logic for comment
+    if (post.user._id.toString() !== userId.toString()) {
+      const Notification = require('../models/Notification');
+      const notification = await Notification.create({
+        user: post.user._id,
+        type: 'comment',
+        message: `${req.user.fullName || 'Someone'} commented on your post`,
+        fromUser: userId,
+        post: post._id,
+        isRead: false
+      });
+      // Emit socket notification
+      if (req.app.get('io')) {
+        req.app.get('io').to(post.user._id.toString()).emit('notification', {
+          type: 'comment',
+          message: notification.message,
+          fromUser: userId,
+          post: post._id,
+          createdAt: notification.createdAt
+        });
+      }
+    }
 
     const populatedPost = await Post.findById(post._id)
       .populate("user", "fullName username avatar department")

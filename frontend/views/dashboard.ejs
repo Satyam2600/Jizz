@@ -939,6 +939,11 @@
         });
       }
       fetchNotifications();
+
+      window.addEventListener('notifications-read', function() {
+        unreadCount = 0;
+        updateNotificationBell();
+      });
     </script>
 
     <script src="/assets/js/dashboard.js"></script>
