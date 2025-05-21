@@ -1,8 +1,23 @@
+const dotenv = require("dotenv");
+const path = require("path");
+
+// Configure dotenv with explicit path and debug mode
+const envPath = path.join(__dirname, '.env');
+const result = dotenv.config({ path: envPath, debug: true });
+
+// Debug logging
+console.log('Environment file path:', envPath);
+if (result.error) {
+    console.error('Error loading .env file:', result.error);
+}
+console.log('Loaded env vars:', process.env.MONGO_URI ? 'MONGO_URI is set' : 'MONGO_URI is missing',
+    process.env.JWT_SECRET ? ', JWT_SECRET is set' : ', JWT_SECRET is missing');
+console.log('Current directory:', __dirname);
+
 const http = require("http");
 const { Server } = require("socket.io");
 const app = require("./index"); // Import Express app
 const setupSocket = require("./socket"); // Import WebSocket setup
-const path = require("path");
 const express = require("express");
 const Event = require("./models/Event");
 const authMiddleware = require('./middleware/authMiddleware');

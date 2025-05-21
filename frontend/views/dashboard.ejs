@@ -36,6 +36,12 @@
         background-color: var(--primary-bg);
         color: var(--text-primary);
         padding-top: 56px;
+        overflow-x: hidden;
+      }
+      .container-fluid {
+        padding-left: 0;
+        padding-right: 0;
+        max-width: 100%;
       }
       .navbar {
         background-color: var(--primary-bg) !important;
@@ -181,6 +187,14 @@
         .col-lg-6 {
           border: none;
           padding: 16px;
+          max-width: 100%;
+          flex: 0 0 100%;
+        }
+        .container-fluid.main-section {
+          padding: 0;
+        }
+        .row {
+          margin: 0;
         }
       }
       .main-feed {
@@ -393,10 +407,10 @@
       .post-creation-action-btn {
         background-color: transparent;
         border: none;
-        color: var(--text-secondary);
+        color: var (--text-secondary);
         padding: 0.5rem;
         border-radius: 50%;
-        transition: all var(--transition-speed) ease;
+        transition: all var (--transition-speed) ease;
         display: flex;
         align-items: center;
         justify-content: center;

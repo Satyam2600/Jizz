@@ -3,12 +3,10 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
 const session = require("express-session");
-const connectDB = require("./config/db");
 const User = require("./models/User");
 const Community = require('./models/Community');
 
-dotenv.config();
-connectDB();
+// Remove dotenv.config() and connectDB(); from here
 
 const app = express();
 
@@ -166,8 +164,13 @@ app.get('/profile/:rollNumber', async (req, res) => {
 
     // Affiliation check by email (from env)
     const affiliatedEmails = (process.env.AFFILIATED_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+    console.log('Affiliated Emails from env:', process.env.AFFILIATED_EMAILS);
+    console.log('Processed affiliated emails:', affiliatedEmails);
+    console.log('User email:', user.email);
+    
     user.affiliatedWithJizz = false;
     if (affiliatedEmails.length && user.email && affiliatedEmails.includes(user.email.toLowerCase())) {
+      console.log('User is affiliated!');
       user.affiliatedWithJizz = true;
     }
 
