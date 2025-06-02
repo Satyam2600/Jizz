@@ -254,6 +254,23 @@
             themeIcon.style.color = "#222";
           }
         }
+        // Password visibility toggle for register page
+        const passwordInput = document.getElementById('password');
+        const passwordToggle = document.querySelector('.password-toggle');
+        if (passwordInput && passwordToggle) {
+          passwordToggle.addEventListener('click', function () {
+            const icon = passwordToggle.querySelector('i');
+            if (passwordInput.type === 'password') {
+              passwordInput.type = 'text';
+              icon.classList.remove('bi-eye');
+              icon.classList.add('bi-eye-slash');
+            } else {
+              passwordInput.type = 'password';
+              icon.classList.remove('bi-eye-slash');
+              icon.classList.add('bi-eye');
+            }
+          });
+        }
       });
     </script>
     <!-- Graffiti Text -->
