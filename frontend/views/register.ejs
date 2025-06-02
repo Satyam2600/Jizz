@@ -10,13 +10,13 @@
       body {
         font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;
         min-height: 100vh;
-        background: linear-gradient(120deg, #1a1a1a 0%, #019863 100%), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1500&q=80') center/cover no-repeat;
-        background-blend-mode: overlay;
+        background: var(--primary-bg);
         position: relative;
         overflow-x: hidden;
+        color: var(--text-primary);
       }
       .rect-card {
-        background: rgba(30, 30, 30, 0.88);
+        background: #fff;
         border-radius: 1.2rem;
         box-shadow: 0 8px 32px 0 rgba(1, 152, 99, 0.18);
         backdrop-filter: blur(8px);
@@ -32,7 +32,7 @@
       .rect-card .brand {
         font-size: 2.2rem;
         font-weight: 800;
-        color: #fff;
+        color: #adb5bd;
         letter-spacing: 2px;
         text-shadow: 0 2px 12px #01986344;
         margin-bottom: 0.5rem;
@@ -43,14 +43,14 @@
         margin-bottom: 1.5rem;
       }
       .rect-card .form-label {
-        color: #fff;
+        color: #adb5bd;
         font-weight: 600;
         margin-bottom: 0.4rem;
       }
       .rect-card .form-control {
         background: rgba(255,255,255,0.08);
         border: 1.5px solid #01986344;
-        color: #fff;
+        color: #adb5bd;
         border-radius: 0.7rem;
         padding: 1rem;
         font-size: 1.08rem;
@@ -60,7 +60,7 @@
         border-color: #019863;
         box-shadow: 0 0 0 2px #01986333;
         background: rgba(255,255,255,0.13);
-        color: #fff;
+        color: #adb5bd;
       }
       .rect-card .input-group-text, .rect-card .password-toggle {
         background: transparent;
@@ -89,30 +89,100 @@
         margin-top: 1.5rem;
       }
       .rect-card .register-link a {
-        color: #fff;
+        color: #adb5bd;
         text-decoration: underline;
         font-weight: 600;
       }
       .rect-card .register-link a:hover {
         color: #019863;
       }
+      .graffiti {
+        position: absolute;
+        font-size: 40px;
+        font-weight: bold;
+        font-family: "Permanent Marker", cursive;
+        color: rgba(0, 0, 0, 0.07);
+        user-select: none;
+        pointer-events: none;
+      }
+      .g1 { top: 5%; left: 5%; transform: rotate(-20deg); }
+      .g2 { top: 5%; right: 10%; transform: rotate(15deg); }
+      .g3 { top: 20%; left: 15%; transform: rotate(-10deg); }
+      .g4 { top: 20%; right: 5%; transform: rotate(10deg); }
+      .g5 { top: 35%; left: 2%; transform: rotate(5deg); }
+      .g6 { top: 35%; right: 15%; transform: rotate(-15deg); }
+      .g7 { top: 50%; left: 20%; transform: rotate(-5deg); }
+      .g8 { top: 50%; right: 25%; transform: rotate(10deg); }
+      .g9 { top: 65%; left: 10%; transform: rotate(15deg); }
+      .g10 { top: 65%; right: 5%; transform: rotate(-10deg); }
+      .g11 { top: 80%; left: 5%; transform: rotate(20deg); }
+      .g12 { top: 80%; right: 20%; transform: rotate(-15deg); }
+      .g13 { bottom: 10%; left: 15%; transform: rotate(5deg); }
+      .g14 { bottom: 10%; right: 5%; transform: rotate(-10deg); }
+      .g15 { bottom: 25%; left: 25%; transform: rotate(10deg); }
+      .g16 { bottom: 25%; right: 10%; transform: rotate(-15deg); }
+      /* Dark mode support */
+      [data-bs-theme="dark"] body {
+        background: #181a1b !important;
+        color: #f4f4f4 !important;
+      }
+      [data-bs-theme="dark"] .rect-card {
+        background: #23272f !important;
+        color: #f4f4f4 !important;
+        box-shadow: 0 8px 32px 0 rgba(1, 152, 99, 0.28) !important;
+        border: 1.5px solid rgba(1,152,99,0.10);
+      }
+      [data-bs-theme="dark"] .rect-card .form-label,
+      [data-bs-theme="dark"] .rect-card .register-link,
+      [data-bs-theme="dark"] .rect-card .register-link a {
+        color: #f4f4f4 !important;
+      }
+      [data-bs-theme="dark"] .rect-card .form-control {
+        background: #23272f !important;
+        color: #f4f4f4 !important;
+        border: 1.5px solid #01986344;
+      }
+      [data-bs-theme="dark"] .rect-card .form-control:focus {
+        border-color: #019863;
+        box-shadow: 0 0 0 2px #01986333;
+        background: #23272f;
+        color: #f4f4f4;
+      }
+      [data-bs-theme="dark"] .rect-card .input-group-text, [data-bs-theme="dark"] .rect-card .password-toggle {
+        color: #adb5bd;
+      }
+      [data-bs-theme="dark"] .navbar {
+        background-color: #181a1b !important;
+      }
+      [data-bs-theme="dark"] .navbar .navbar-brand,
+      [data-bs-theme="dark"] .navbar .nav-link {
+        color: #f4f4f4 !important;
+      }
+      .center-flex-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        position: relative;
+      }
     </style>
   </head>
   <body>
     <!-- Navbar (same as login page) -->
-    <nav class="navbar navbar-expand-lg fixed-top border-bottom">
+    <nav class="navbar navbar-expand-lg fixed-top border-bottom bg-white">
       <div class="container-fluid px-4">
-        <a class="navbar-brand fw-bold" href="/">Jizz</a>
+        <a class="navbar-brand fw-bold text-dark" href="/">Jizz</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
-              <a class="nav-link" href="/login"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a>
+              <a class="nav-link text-dark" href="/login"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/register"><i class="bi bi-person-plus me-2"></i>Register</a>
+              <a class="nav-link text-dark" href="/register"><i class="bi bi-person-plus me-2"></i>Register</a>
             </li>
           </ul>
           <div class="d-flex align-items-center gap-3">
@@ -123,7 +193,7 @@
         </div>
       </div>
     </nav>
-    <div class="container-fluid min-vh-100 d-flex flex-column justify-content-center align-items-center" style="background: none;">
+    <div class="center-flex-container">
       <div class="rect-card">
         <div class="brand text-center mb-2">JIZZ</div>
         <div class="subtitle text-center mb-4">Create your account and join the campus network</div>
@@ -159,27 +229,49 @@
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const themeToggle = document.getElementById("themeToggle");
-        const body = document.body;
+        const themeIcon = themeToggle.querySelector("i");
+        const html = document.documentElement;
         // Load saved theme from localStorage
-        const savedTheme = localStorage.getItem("theme");
-        if (savedTheme) {
-          body.setAttribute("data-bs-theme", savedTheme);
-          themeToggle.innerHTML =
-            savedTheme === "dark"
-              ? '<i class="bi bi-sun"></i>'
-              : '<i class="bi bi-moon"></i>';
-        }
+        const savedTheme = localStorage.getItem("theme") || "light";
+        html.setAttribute("data-bs-theme", savedTheme);
+        updateThemeIcon(savedTheme);
         // Toggle theme on click
         themeToggle.addEventListener("click", function () {
-          const isDark = body.getAttribute("data-bs-theme") === "dark";
-          const newTheme = isDark ? "light" : "dark";
-          body.setAttribute("data-bs-theme", newTheme);
+          const currentTheme = html.getAttribute("data-bs-theme");
+          const newTheme = currentTheme === "dark" ? "light" : "dark";
+          html.setAttribute("data-bs-theme", newTheme);
           localStorage.setItem("theme", newTheme);
-          this.innerHTML = isDark
-            ? '<i class="bi bi-moon"></i>'
-            : '<i class="bi bi-sun"></i>';
+          updateThemeIcon(newTheme);
         });
+        function updateThemeIcon(theme) {
+          if (theme === "dark") {
+            themeIcon.classList.remove("bi-moon");
+            themeIcon.classList.add("bi-sun");
+            themeIcon.style.color = "#fff";
+          } else {
+            themeIcon.classList.remove("bi-sun");
+            themeIcon.classList.add("bi-moon");
+            themeIcon.style.color = "#222";
+          }
+        }
       });
     </script>
+    <!-- Graffiti Text -->
+    <div class="graffiti g1">JIZZ</div>
+    <div class="graffiti g2">JIZZ</div>
+    <div class="graffiti g3">JIZZ</div>
+    <div class="graffiti g4">JIZZ</div>
+    <div class="graffiti g5">JIZZ</div>
+    <div class="graffiti g6">JIZZ</div>
+    <div class="graffiti g7">JIZZ</div>
+    <div class="graffiti g8">JIZZ</div>
+    <div class="graffiti g9">JIZZ</div>
+    <div class="graffiti g10">JIZZ</div>
+    <div class="graffiti g11">JIZZ</div>
+    <div class="graffiti g12">JIZZ</div>
+    <div class="graffiti g13">JIZZ</div>
+    <div class="graffiti g14">JIZZ</div>
+    <div class="graffiti g15">JIZZ</div>
+    <div class="graffiti g16">JIZZ</div>
   </body>
 </html>
