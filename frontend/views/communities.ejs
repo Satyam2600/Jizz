@@ -217,6 +217,31 @@
       background-color: #018555;
       transform: scale(1.1);
     }
+
+    .theme-toggle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      /* Remove any background color */
+      background: none !important;
+      box-shadow: none !important;
+      border: none !important;
+    }
+    .theme-toggle i,
+    #notificationBell i {
+      color: var(--text-primary) !important;
+      background: none !important;
+    }
+    #notificationBell {
+      background: none !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
   </style>
 </head>
 <body>
@@ -263,11 +288,10 @@
           <div class="theme-toggle" id="themeToggle">
             <i class="bi bi-moon"></i>
           </div>
-            <a class="btn position-relative" href="/notifications" id="notificationBell" style="background: none; border: none;">
+          <a class="btn position-relative" href="/notifications" id="notificationBell" style="background: none; border: none;">
             <i class="bi bi-bell fs-5"></i>
             <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size:0.7em;">0</span>
           </a>
-          <!-- Removed green chat icon and related chat button UI elements from navbar -->
           <div class="dropdown">
             <a href="/chat">
               <button class="btn rounded-circle border-0" id="chatButton" style="width: 40px; height: 40px; background-color: var(--accent-color); color: white; box-shadow: 0 2px 8px rgba(1, 152, 99, 0.3);">
