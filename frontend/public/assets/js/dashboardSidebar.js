@@ -1,7 +1,7 @@
 // Function to fetch and display upcoming events
 async function loadUpcomingEvents() {
     try {
-        const response = await fetch('/api/events?status=upcoming&limit=1', {
+        const response = await fetch('/api/events', {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -9,35 +9,46 @@ async function loadUpcomingEvents() {
         
         if (!response.ok) throw new Error('Failed to fetch events');
         
-        const events = await response.json();
+        const data = await response.json();
+        const events = data.success ? data.data : [];
         const eventsContainer = document.querySelector('.sidebar .card:first-child .card-body');
         
         if (events && events.length > 0) {
-            const event = events[0];
-            const eventDate = new Date(event.date);
-            const formattedDate = eventDate.toLocaleDateString('en-US', { 
-                month: 'long', 
-                day: 'numeric' 
-            });
-            const formattedTime = eventDate.toLocaleTimeString('en-US', { 
-                hour: 'numeric', 
-                minute: '2-digit' 
-            });
-            
-            eventsContainer.innerHTML = `
-                <div class="d-flex gap-3 align-items-start mb-3">
-                    <div class="bg-success rounded-2 p-2 text-white">
-                        <i class="bi bi-calendar-event fs-4"></i>
+            // Use eventStatusUtils to get the nearest upcoming event
+            const upcomingEvents = window.eventStatusUtils.getUpcomingEvents(events, 1);
+            if (upcomingEvents.length > 0) {
+                const event = upcomingEvents[0];
+                const eventDate = new Date(event.date + 'T' + event.time);
+                const formattedDate = eventDate.toLocaleDateString('en-US', { 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                const formattedTime = eventDate.toLocaleTimeString('en-US', { 
+                    hour: 'numeric', 
+                    minute: '2-digit' 
+                });
+                eventsContainer.innerHTML = `
+                    <div class="d-flex gap-3 align-items-start mb-3">
+                        <div class="bg-success rounded-2 p-2 text-white">
+                            <i class="bi bi-calendar-event fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1 fw-semibold">${event.title}</h6>
+                            <small class="text-muted">${formattedDate} · ${formattedTime}</small>
+                        </div>
                     </div>
-                    <div>
-                        <h6 class="mb-1 fw-semibold">${event.title}</h6>
-                        <small class="text-muted">${formattedDate} · ${formattedTime}</small>
+                    <button class="btn btn-outline-success w-100 rounded-pill" onclick="window.location.href='/events'">
+                        RSVP Now
+                    </button>
+                `;
+            } else {
+                eventsContainer.innerHTML = `
+                    <div class="text-center text-muted py-3">
+                        <i class="bi bi-calendar-event fs-4 mb-2"></i>
+                        <p class="mb-0">No upcoming events</p>
                     </div>
-                </div>
-                <button class="btn btn-outline-success w-100 rounded-pill" onclick="window.location.href='/events'">
-                    RSVP Now
-                </button>
-            `;
+                `;
+            }
         } else {
             eventsContainer.innerHTML = `
                 <div class="text-center text-muted py-3">
@@ -100,4 +111,4 @@ async function loadTrendingCommunities() {
 document.addEventListener('DOMContentLoaded', () => {
     loadUpcomingEvents();
     loadTrendingCommunities();
-}); 
+});

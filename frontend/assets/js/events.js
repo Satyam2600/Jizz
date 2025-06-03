@@ -33,16 +33,19 @@ document.addEventListener('click', (e) => {
 });
 
 // Handle cover image upload preview
-document.getElementById('eventCover').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('coverPreview').src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-});
+const eventCoverInput = document.getElementById('eventCover');
+if (eventCoverInput) {
+    eventCoverInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('coverPreview').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
 
 // Store current tab and search state
 let currentTab = 'all';
@@ -90,6 +93,18 @@ async function loadEvents() {
             );
         }
 
+        // Apply category filter
+        const categoryFilter = document.getElementById('categoryFilter');
+        if (categoryFilter && categoryFilter.value) {
+            events = events.filter(event => event.category === categoryFilter.value);
+        }
+
+        // Apply status filter using eventStatusUtils
+        const statusFilter = document.getElementById('statusFilter');
+        if (statusFilter && statusFilter.value) {
+            events = window.eventStatusUtils.filterEventsByStatus(events, statusFilter.value);
+        }
+
         const container = document.getElementById('eventsContainer');
         container.innerHTML = '';
 
@@ -131,105 +146,137 @@ document.querySelectorAll('.nav-tabs .nav-link').forEach(tab => {
 });
 
 // Handle search
-document.querySelector('.search-input').addEventListener('input', function(e) {
-    currentSearch = e.target.value;
-    loadEvents();
-});
+const searchInput = document.querySelector('.search-input');
+if (searchInput) {
+    searchInput.addEventListener('input', function(e) {
+        currentSearch = e.target.value;
+        loadEvents();
+    });
+}
 
 // Handle category filter
-document.getElementById('categoryFilter').addEventListener('change', function(e) {
-    currentSearch = e.target.value;
-    loadEvents();
-});
+const categoryFilter = document.getElementById('categoryFilter');
+if (categoryFilter) {
+    categoryFilter.addEventListener('change', function(e) {
+        loadEvents();
+    });
+}
 
 // Handle status filter
-document.getElementById('statusFilter').addEventListener('change', function(e) {
-    currentSearch = e.target.value;
-    loadEvents();
+const statusFilter = document.getElementById('statusFilter');
+if (statusFilter) {
+    statusFilter.addEventListener('change', function(e) {
+        loadEvents();
+    });
+}
+
+// Load event status utilities
+document.addEventListener('DOMContentLoaded', function() {
+    // Start periodic status updates
+    if (window.eventStatusUtils) {
+        window.eventStatusUtils.startEventStatusUpdates();
+    }
+
+    // Handle status filter changes
+    const statusFilter = document.getElementById('statusFilter');
+    if (statusFilter) {
+        statusFilter.addEventListener('change', function() {
+            const selectedStatus = this.value;
+            const eventCards = document.querySelectorAll('.event-card');
+            
+            eventCards.forEach(card => {
+                const eventDate = card.dataset.date;
+                const eventTime = card.dataset.time;
+                const eventDuration = parseInt(card.dataset.duration);
+                
+                if (eventDate && eventTime && eventDuration) {
+                    const status = window.eventStatusUtils.getEventStatus(eventDate, eventTime, eventDuration);
+                    card.style.display = !selectedStatus || status === selectedStatus ? 'block' : 'none';
+                }
+            });
+        });
+    }
+
+    // Add status badge to event cards
+    const eventCards = document.querySelectorAll('.event-card');
+    eventCards.forEach(card => {
+        const eventDate = card.dataset.date;
+        const eventTime = card.dataset.time;
+        const eventDuration = parseInt(card.dataset.duration);
+        
+        if (eventDate && eventTime && eventDuration) {
+            const status = window.eventStatusUtils.getEventStatus(eventDate, eventTime, eventDuration);
+            const statusBadge = document.createElement('span');
+            statusBadge.className = 'event-status badge';
+            card.querySelector('.event-details').prepend(statusBadge);
+            window.eventStatusUtils.updateEventStatusUI(card, status);
+        }
+    });
 });
 
-// Function to create event card
+// Function to create event card HTML
 function createEventCard(event) {
-    const col = document.createElement('div');
-    col.className = 'col-md-6 col-lg-4 mb-4';
-    
-    // Check if user is already a participant
-    const isParticipant = event.participants.some(p => p._id === currentUserId);
-    const isFull = event.participants.length >= event.maxParticipants;
-    const isCreator = event.createdBy._id === currentUserId;
-    
-    col.innerHTML = `
-        <div class="event-card">
-            <img src="${event.coverImage || 'https://via.placeholder.com/500x300?text=No+Image'}" 
+    return `
+        <div class="event-card" data-date="${event.date}" data-time="${event.time}" data-duration="${event.duration}">
+            <img src="${event.coverImage || 'https://via.placeholder.com/500x300?text=Event+Cover'}" 
                  class="event-image" alt="${event.title}">
             <div class="event-details">
+                <span class="event-status badge"></span>
                 <h3 class="event-title">${event.title}</h3>
                 <div class="event-meta">
                     <span class="event-meta-item">
-                        <i class="bi bi-geo-alt"></i>${event.location}
+                        <i class="bi bi-calendar"></i>
+                        ${new Date(event.date).toLocaleDateString()}
                     </span>
                     <span class="event-meta-item">
-                        <i class="bi bi-calendar"></i>${new Date(event.date).toLocaleDateString()}
+                        <i class="bi bi-clock"></i>
+                        ${event.time}
                     </span>
                     <span class="event-meta-item">
-                        <i class="bi bi-clock"></i>${event.time}
+                        <i class="bi bi-geo-alt"></i>
+                        ${event.location}
                     </span>
                 </div>
                 <p class="event-description">${event.description}</p>
                 <div class="event-actions">
                     <div class="event-participants">
-                        <i class="bi bi-people"></i>
-                        <span>${event.participants.length}/${event.maxParticipants}</span>
+                        <div class="participant-avatars">
+                            ${event.participants?.slice(0, 3).map(p => `
+                                <img src="${p.avatar || '/assets/images/default-avatar.png'}" 
+                                     class="participant-avatar" 
+                                     alt="${p.name}">
+                            `).join('') || ''}
+                        </div>
+                        <span>${event.participants?.length || 0} participants</span>
                     </div>
-                    ${isCreator ? 
-                        `<button class="btn btn-info btn-sm" disabled>Event Creator</button>` :
-                        isParticipant ?
-                            `<button class="btn btn-danger btn-sm" onclick="leaveEvent('${event._id}')">Leave Event</button>` :
-                            `<button class="btn ${isFull ? 'btn-secondary' : 'btn-primary'} btn-sm" 
-                                    onclick="joinEvent('${event._id}')"
-                                    ${isFull ? 'disabled' : ''}>
-                                ${isFull ? 'Event Full' : 'Join Event'}
-                            </button>`
-                    }
+                    <button class="btn btn-primary" onclick="joinEvent('${event._id}')">
+                        Join Event
+                    </button>
                 </div>
             </div>
         </div>
     `;
-    
-    return col;
 }
 
 // Function to join an event
 async function joinEvent(eventId) {
     try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            alert('Please login to join events');
-            window.location.href = '/login';
-            return;
-        }
-
         const response = await fetch(`/api/events/${eventId}/join`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${token}`
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || 'Failed to join event');
-        }
-
-        // Show success message
-        alert(data.message);
         
-        // Reload events to update the UI
-        loadEvents();
+        if (response.ok) {
+            // Refresh events to show updated participant count
+            loadEvents();
+        } else {
+            console.error('Failed to join event');
+        }
     } catch (error) {
         console.error('Error joining event:', error);
-        alert(error.message || 'Failed to join event. Please try again.');
     }
 }
 
@@ -326,8 +373,11 @@ document.getElementById('createEventButton').addEventListener('click', async fun
         const result = await response.json();
         
         // Close the modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('createEventModal'));
-        modal.hide();
+        const modalElement = document.getElementById('createEventModal');
+        if (modalElement) {
+            const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+            modal.hide();
+        }
 
         // Reset the form
         form.reset();

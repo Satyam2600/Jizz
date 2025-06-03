@@ -1071,3 +1071,70 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
+// Function to load upcoming events for dashboard
+async function loadUpcomingEvents() {
+    try {
+        const response = await fetch('/api/events');
+        if (!response.ok) {
+            throw new Error('Failed to fetch events');
+        }
+        const data = await response.json();
+        
+        if (!data.success || !Array.isArray(data.data)) {
+            throw new Error('Invalid response format');
+        }
+
+        // Get upcoming events using our utility function
+        const upcomingEvents = window.eventStatusUtils.getUpcomingEvents(data.data, 3);
+        
+        // Update the events section in the dashboard
+        const eventsContainer = document.querySelector('.right-sidebar .card:first-child .card-body');
+        if (eventsContainer) {
+            if (upcomingEvents.length > 0) {
+                eventsContainer.innerHTML = upcomingEvents.map(event => `
+                    <div class="upcoming-event mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <img src="${event.coverImage || '/assets/images/default-event.png'}" 
+                                 class="rounded" 
+                                 style="width: 48px; height: 48px; object-fit: cover;"
+                                 alt="${event.title}">
+                            <div>
+                                <h6 class="mb-1">${event.title}</h6>
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar me-1"></i>
+                                    ${new Date(event.date).toLocaleDateString()}
+                                    <i class="bi bi-clock ms-2 me-1"></i>
+                                    ${event.time}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                eventsContainer.innerHTML = `
+                    <div class="text-center text-muted py-3">
+                        <p class="mb-0">No upcoming events</p>
+                    </div>
+                `;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading upcoming events:', error);
+        const eventsContainer = document.querySelector('.right-sidebar .card:first-child .card-body');
+        if (eventsContainer) {
+            eventsContainer.innerHTML = `
+                <div class="text-center text-muted py-3">
+                    <p class="mb-0">Error loading events</p>
+                </div>
+            `;
+        }
+    }
+}
+
+// Load upcoming events when the dashboard loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadUpcomingEvents();
+    // Refresh upcoming events every 5 minutes
+    setInterval(loadUpcomingEvents, 300000);
+});
