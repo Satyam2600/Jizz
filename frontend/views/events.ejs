@@ -40,7 +40,7 @@
       background-color: var(--primary-bg) !important;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       height: 56px;
-      z-index: 1030;
+      z-index: 1030;
     }     
     .hero-section {
       background: linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://cdn.usegalileo.ai/sdxl10/5fe346f1-0a76-441c-85c5-d527041023d0.png");
@@ -253,7 +253,7 @@
     }
     .nav-link i {
     font-size: 18px;
-    width: 24px;
+    width: 24px;
   }
     .btn-primary {
       background-color: var(--accent-color);
@@ -284,6 +284,16 @@
       width: 3rem;
       height: 3rem;
     }
+    .chat-badge {
+      min-width: 1.3em;
+      min-height: 1.3em;
+      padding: 0 0.4em;
+      font-size: 0.75em;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -291,22 +301,32 @@
   <nav class="navbar navbar-expand-lg fixed-top border-bottom">
     <div class="container-fluid px-4">
       <a class="navbar-brand fw-bold" href="#">Jizz</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+      >
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link active" href="/dashboard"><i class="bi bi-house-door me-2"></i>Home</a>
+            <a class="nav-link active" href="/dashboard"
+              ><i class="bi bi-house-door me-2"></i>Home</a
+            >
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/communities"><i class="bi bi-people me-2"></i>Communities</a>
+            <a class="nav-link" href="/communities"
+              ><i class="bi bi-people me-2"></i>Communities</a
+            >
           </li>
-          
-        
-            <li class="nav-item">
-              <a class="nav-link" href="/events"><i class="bi bi-calendar-event me-2"></i>Events</a>
-            </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="/events"
+              ><i class="bi bi-calendar-event me-2"></i>Events</a
+            >
+          </li>
           <li class="nav-item">
             <a class="nav-link" href="/confessions"><i class="bi bi-chat-quote me-2"></i>Confessions</a>
           </li>
@@ -320,30 +340,16 @@
           <div class="theme-toggle" id="themeToggle">
             <i class="bi bi-moon"></i>
           </div>
+            <a class="btn position-relative" href="/notifications" id="notificationBell" style="background: none; border: none;">
+            <i class="bi bi-bell fs-5"></i>
+            <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size:0.7em;">0</span>
+          </a>
           <div class="dropdown">
-            <button class="btn btn-link text-dark position-relative" type="button" data-bs-toggle="dropdown">
-              <i class="bi bi-bell"></i>
-              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
-            </button>
-            <div class="dropdown-menu dropdown-menu-end p-2" style="min-width: 300px;">
-              <h6 class="dropdown-header">Notifications</h6>
-              <div class="list-group border-0">
-                <a href="#" class="list-group-item list-group-item-action border-0">
-                  <div class="d-flex align-items-center">
-                    <i class="bi bi-person-check fs-5 me-3"></i>
-                    <div>
-                      <p class="mb-0 small">New connection request</p>
-                      <small class="text-muted">2m ago</small>
-                    </div>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div class="dropdown">
-            <button class="btn rounded-circle border-0" id="chatButton" style="width: 40px; height: 40px; background-color: var(--accent-color); color: white; box-shadow: 0 2px 8px rgba(1, 152, 99, 0.3);">
-              <i class="bi bi-chat-dots-fill fs-5"></i>
-            </button>
+            <a href="/chat">
+              <button class="btn rounded-circle border-0" id="chatButton" style="width: 40px; height: 40px; background-color: var(--accent-color); color: white; box-shadow: 0 2px 8px rgba(1, 152, 99, 0.3);">
+                <i class="bi bi-chat-dots-fill fs-5"></i>
+              </button>
+            </a>
             <div class="dropdown-menu dropdown-menu-end">
               <a class="dropdown-item" href="/chat"><i class="bi bi-chat-dots me-2"></i>Messages</a>
               <a class="dropdown-item" href="/chat/groups"><i class="bi bi-people me-2"></i>Group Chats</a>
@@ -354,8 +360,8 @@
           </div>
         </div>
       </div>
-    </div>
-  </nav>
+    </div>
+  </nav>
 
   <!-- Main Content -->
   <div class="container py-5">
@@ -536,6 +542,42 @@
     </div>
   </div>
   <script src="/assets/js/events.js"></script>
+  <script src="/assets/js/logout.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const userId = localStorage.getItem('userId') || '<%= user && user._id ? user._id : "" %>';
+    const socket = window.io ? io() : null;
+    let unreadCount = 0;
+
+    function updateNotificationBell() {
+      const badge = document.getElementById('notificationBadge');
+      badge.textContent = unreadCount;
+      badge.classList.toggle('d-none', unreadCount === 0);
+    }
+
+    async function fetchNotifications() {
+      try {
+        const res = await fetch('/api/notifications', { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } });
+        if (!res.ok) return;
+        const notifications = await res.json();
+        unreadCount = notifications.filter(n => !n.isRead).length;
+        updateNotificationBell();
+      } catch {}
+    }
+
+    if (socket && userId) {
+      socket.emit('register', userId);
+      socket.on('notification', function(notification) {
+        fetchNotifications();
+      });
+    }
+    fetchNotifications();
+
+    window.addEventListener('notifications-read', function() {
+      unreadCount = 0;
+      updateNotificationBell();
+    });
+  </script>
 </body>
 </html>
     
