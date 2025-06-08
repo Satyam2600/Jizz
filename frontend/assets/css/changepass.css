@@ -1,0 +1,149 @@
+        :root {
+            --primary-color: #1c160c; /* Black text */
+            --secondary-color: #a18249;
+            --background-light: #f4efe6;
+            --success-color: #019863;
+            --border-color: #e9dfce;
+            --input-bg-light: #f4efe6; /* Light mode input background */
+            --input-bg-dark: #2d2d2d; /* Dark mode input background */
+            --input-text-light: #1c160c; /* Light mode input text color */
+            --input-text-dark: #f4efe6; /* Dark mode input text color */
+        }
+
+        [data-bs-theme="dark"] {
+            --primary-color: #f4efe6; /* White text for navbar in dark mode */
+            --background-light: #1c160c;
+            --success-color: #019863;
+            --border-color: #343a40;
+            --input-bg-dark: #2d2d2d; /* Dark mode input background */
+            --input-text-dark: #f4efe6; /* Dark mode input text color */
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;
+            background-color: var(--background-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--primary-color); /* Default text color */
+        }
+
+        .navbar {
+            background-color: var(--background-light);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-link {
+            color: var(--primary-color);
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--secondary-color);
+        }
+
+        [data-bs-theme="dark"] .nav-link {
+            color: var(--primary-color); /* White text in dark mode */
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            color: var(--primary-color);
+            transition: color 0.3s ease;
+        }
+
+        [data-bs-theme="dark"] .theme-toggle {
+            color: var(--primary-color); /* White icon in dark mode */
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            margin-top: 80px; /* Add margin to separate the form from the navbar */
+        }
+
+        .password-card {
+            background: var(--input-bg-light); /* Light mode background */
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 480px;
+            padding: 2rem;
+            color: var(--primary-color); /* Ensure card text is black */
+        }
+
+        [data-bs-theme="dark"] .password-card {
+            background: var(--input-bg-dark); /* Dark mode background */
+            color: var (--input-text-dark); /* White text in dark mode */
+        }
+
+        .form-control {
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            background-color: var(--input-bg-light); /* Default input background for light mode */
+            color: var(--input-text-light); /* Input text color for light mode */
+        }
+
+        [data-bs-theme="dark"] .form-control {
+            background-color: var(--input-bg-dark); /* Dark mode input background */
+            color: var(--input-text-dark); /* Dark mode input text color */
+        }
+
+        .form-control:focus {
+            border-color: var(--success-color);
+            box-shadow: 0 0 0 0.2rem rgba(1, 152, 99, 0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #018555;
+            border-color: #018555;
+        }
+
+        .btn-outline-secondary {
+            border-color: var(--border-color);
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: var(--background-light);
+            border-color: var(--border-color);
+            color: var(--primary-color);
+        }
+
+        [data-bs-theme="dark"] .btn-outline-secondary {
+            color: var(--input-text-dark); /* White text in dark mode */
+            border-color: var(--border-color);
+        }
+
+        [data-bs-theme="dark"] .btn-outline-secondary:hover {
+            background-color: var(--border-color);
+            color: var(--background-light); /* Light background for hover in dark mode */
+        }
+
+        .position-relative {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--secondary-color);
+        }
