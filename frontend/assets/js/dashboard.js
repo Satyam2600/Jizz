@@ -1074,6 +1074,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Function to load upcoming events for dashboard
 async function loadUpcomingEvents() {
+    const eventsContainer = document.getElementById('upcomingEventsCardBody');
+    if (!eventsContainer) return; // Exit if container not found
+
+    // Show loading state initially
+    eventsContainer.innerHTML = `
+        <div class="text-center text-muted py-3">
+            <div class="spinner-border spinner-border-sm" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mb-0 mt-2">Loading events...</p>
+        </div>
+    `;
+
     try {
         const response = await fetch('/api/events');
         if (!response.ok) {
@@ -1086,46 +1099,67 @@ async function loadUpcomingEvents() {
         }
 
         // Get upcoming events using our utility function
-        const upcomingEvents = window.eventStatusUtils.getUpcomingEvents(data.data, 3);
+        const upcomingEvents = window.eventStatusUtils.getUpcomingEvents(data.data, 1); // Get only the most upcoming event
         
         // Update the events section in the dashboard
-        const eventsContainer = document.querySelector('.right-sidebar .card:first-child .card-body');
-        if (eventsContainer) {
-            if (upcomingEvents.length > 0) {
-                eventsContainer.innerHTML = upcomingEvents.map(event => `
-                    <div class="upcoming-event mb-3">
+        if (upcomingEvents.length > 0) {
+            const event = upcomingEvents[0];
+            const eventDate = new Date(`${event.date}T${event.time}`);
+            const timeUntilEvent = eventDate - new Date();
+            const daysUntilEvent = Math.floor(timeUntilEvent / (1000 * 60 * 60 * 24));
+            const hoursUntilEvent = Math.floor((timeUntilEvent % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            
+            eventsContainer.innerHTML = `
+                <div class="upcoming-event">
+                    <img src="${event.coverImage || '/assets/images/default-event.png'}" 
+                         class="img-fluid rounded mb-3" 
+                         style="width: 100%; height: 160px; object-fit: cover;"
+                         alt="${event.title}">
+                    <h5 class="mb-2">${event.title}</h5>
+                    <div class="event-meta mb-2">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-calendar text-primary"></i>
+                            <span>${new Date(event.date).toLocaleDateString()}</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-clock text-primary"></i>
+                            <span>${event.time}</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-geo-alt text-primary"></i>
+                            <span>${event.location}</span>
+                        </div>
                         <div class="d-flex align-items-center gap-2">
-                            <img src="${event.coverImage || '/assets/images/default-event.png'}" 
-                                 class="rounded" 
-                                 style="width: 48px; height: 48px; object-fit: cover;"
-                                 alt="${event.title}">
-                            <div>
-                                <h6 class="mb-1">${event.title}</h6>
-                                <small class="text-muted">
-                                    <i class="bi bi-calendar me-1"></i>
-                                    ${new Date(event.date).toLocaleDateString()}
-                                    <i class="bi bi-clock ms-2 me-1"></i>
-                                    ${event.time}
-                                </small>
-                            </div>
+                            <i class="bi bi-people text-primary"></i>
+                            <span>${event.participants?.length || 0} participants</span>
                         </div>
                     </div>
-                `).join('');
-            } else {
-                eventsContainer.innerHTML = `
-                    <div class="text-center text-muted py-3">
-                        <p class="mb-0">No upcoming events</p>
+                    <p class="text-muted small mb-3">${event.description.substring(0, 100)}${event.description.length > 100 ? '...' : ''}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-primary">
+                            ${daysUntilEvent > 0 ? `${daysUntilEvent}d ${hoursUntilEvent}h` : `${hoursUntilEvent}h`} until event
+                        </span>
+                        <a href="/events" class="btn btn-sm btn-outline-primary">View All Events</a>
                     </div>
-                `;
-            }
+                </div>
+            `;
+        } else {
+            eventsContainer.innerHTML = `
+                <div class="text-center text-muted py-3">
+                    <i class="bi bi-calendar-x display-4 mb-3"></i>
+                    <p class="mb-0">No upcoming events</p>
+                    <a href="/events" class="btn btn-sm btn-outline-primary mt-3">Browse Events</a>
+                </div>
+            `;
         }
     } catch (error) {
         console.error('Error loading upcoming events:', error);
-        const eventsContainer = document.querySelector('.right-sidebar .card:first-child .card-body');
         if (eventsContainer) {
             eventsContainer.innerHTML = `
                 <div class="text-center text-muted py-3">
+                    <i class="bi bi-exclamation-circle display-4 mb-3"></i>
                     <p class="mb-0">Error loading events</p>
+                    <a href="/events" class="btn btn-sm btn-outline-primary mt-3">Browse Events</a>
                 </div>
             `;
         }

@@ -2,7 +2,6 @@
 let currentTab = 'all';
 let currentFilters = {
   category: '',
-  status: '',
   search: ''
 };
 
@@ -84,15 +83,6 @@ function setupEventListeners() {
     });
   }
 
-  // Status filter
-  const statusFilter = document.getElementById('statusFilter');
-  if (statusFilter) {
-    statusFilter.addEventListener('change', (e) => {
-      currentFilters.status = e.target.value;
-      loadEvents();
-    });
-  }
-
   // Filter button
   const filterButton = document.querySelector('.filter-button');
   if (filterButton) {
@@ -112,12 +102,10 @@ function setupEventListeners() {
       currentFilters = {
         search: '',
         category: '',
-        status: ''
       };
       // Reset form inputs
       if (searchInput) searchInput.value = '';
       if (categoryFilter) categoryFilter.value = '';
-      if (statusFilter) statusFilter.value = '';
       loadEvents();
     });
   });
@@ -160,11 +148,6 @@ async function loadEvents() {
     // Add category filter if exists
     if (currentFilters.category) {
       queryParams.append('category', currentFilters.category);
-    }
-    
-    // Add status filter if exists
-    if (currentFilters.status) {
-      queryParams.append('status', currentFilters.status);
     }
 
     const token = localStorage.getItem('token');

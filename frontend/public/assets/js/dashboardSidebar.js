@@ -11,22 +11,40 @@ async function loadUpcomingEvents() {
         
         const data = await response.json();
         const events = data.success ? data.data : [];
-        const eventsContainer = document.querySelector('.sidebar .card:first-child .card-body');
+        console.log('Fetched events:', events); // Debug log
+        
+        // Find the right sidebar (second .sidebar on the page)
+        const sidebars = document.querySelectorAll('.sidebar');
+        const eventsContainer = sidebars.length > 1 ? sidebars[1].querySelector('.card .card-body') : null;
+        
+        if (!eventsContainer) {
+            console.error('Upcoming Events container not found in the right sidebar.');
+            return;
+        }
         
         if (events && events.length > 0) {
-            // Use eventStatusUtils to get the nearest upcoming event
-            const upcomingEvents = window.eventStatusUtils.getUpcomingEvents(events, 1);
+            // Filter upcoming events manually to ensure correct date comparison
+            const now = new Date();
+            const upcomingEvents = events
+                .filter(event => {
+                    const eventDateTime = new Date(event.date);
+                    console.log('Comparing event:', event.title, 'Date:', eventDateTime, 'Now:', now); // Debug log
+                    return eventDateTime >= now;
+                })
+                .sort((a, b) => new Date(a.date) - new Date(b.date))
+                .slice(0, 1);
+
             if (upcomingEvents.length > 0) {
                 const event = upcomingEvents[0];
-                const eventDate = new Date(event.date + 'T' + event.time);
+                console.log('Selected upcoming event:', event); // Debug log
+                
+                const eventDate = new Date(event.date);
                 const formattedDate = eventDate.toLocaleDateString('en-US', { 
                     month: 'long', 
                     day: 'numeric' 
                 });
-                const formattedTime = eventDate.toLocaleTimeString('en-US', { 
-                    hour: 'numeric', 
-                    minute: '2-digit' 
-                });
+                const formattedTime = event.time;
+                
                 eventsContainer.innerHTML = `
                     <div class="d-flex gap-3 align-items-start mb-3">
                         <div class="bg-success rounded-2 p-2 text-white">
@@ -42,6 +60,7 @@ async function loadUpcomingEvents() {
                     </button>
                 `;
             } else {
+                console.log('No upcoming events found after filtering'); // Debug log
                 eventsContainer.innerHTML = `
                     <div class="text-center text-muted py-3">
                         <i class="bi bi-calendar-event fs-4 mb-2"></i>
@@ -50,6 +69,7 @@ async function loadUpcomingEvents() {
                 `;
             }
         } else {
+            console.log('No events received from API'); // Debug log
             eventsContainer.innerHTML = `
                 <div class="text-center text-muted py-3">
                     <i class="bi bi-calendar-event fs-4 mb-2"></i>
@@ -59,6 +79,10 @@ async function loadUpcomingEvents() {
         }
     } catch (error) {
         console.error('Error loading upcoming events:', error);
+        const eventsContainer = sidebars.length > 1 ? sidebars[1].querySelector('.card .card-body') : null;
+        if (eventsContainer) {
+            eventsContainer.innerHTML = `<div class='text-center text-danger py-3'><p class='mb-0'>Error loading events</p></div>`;
+        }
     }
 }
 
