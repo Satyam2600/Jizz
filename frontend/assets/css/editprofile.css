@@ -1,0 +1,108 @@
+ :root {
+        --primary-bg: #ffffff;
+        --secondary-bg: #f8f9fa;
+        --text-primary: #1c160c;
+        --text-secondary: #6c757d;
+        --accent-color: #019863;
+        --border-color: #e9ecef;
+        --card-radius: 1rem;
+        --hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        --transition-speed: 0.3s;
+      }
+
+      [data-bs-theme="dark"] {
+        --primary-bg: #1a1a1a;
+        --secondary-bg: #2d2d2d;
+        --text-primary: #ffffff;
+        --text-secondary: #adb5bd;
+        --border-color: #343a40;
+        --hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      }
+
+      [data-bs-theme="dark"] .bi-bell {
+        color: #ffffff; /* Set bell icon color to white in dark mode */
+      }
+
+      body {
+        background-color: var(--primary-bg);
+        color: var(--text-primary);
+        font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;
+        padding-top: 56px;
+        transition: background-color var(--transition-speed),
+          color var(--transition-speed);
+      }
+
+      .navbar {
+        background-color: var(--primary-bg) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        height: 56px;
+        z-index: 1030;
+      }
+
+      .nav-link {
+        color: var(--text-primary);
+        font-size: 14px;
+        padding: 8px 12px;
+        border-radius: 8px;
+      }
+
+      .nav-link:hover {
+        background-color: var(--secondary-bg);
+      }
+
+      .nav-link i {
+        font-size: 18px;
+        width: 24px;
+      }
+
+      .theme-toggle {
+        cursor: pointer; /* Add pointer cursor for the dark mode button */
+      }
+
+      .form-control-custom {
+        background-color: var(--secondary-bg);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        height: 56px;
+        padding: 15px;
+        transition: background-color var(--transition-speed),
+          color var(--transition-speed);
+      }
+
+      .form-control-custom:focus {
+        background-color: var(--primary-bg);
+        border-color: var(--accent-color);
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(1, 152, 99, 0.25);
+      }
+
+      .form-control-custom::placeholder {
+        color: var(--text-secondary);
+      }
+
+      .btn-light-custom {
+        background-color: var(--secondary-bg);
+        color: var(--text-primary);
+      }
+
+      .btn-success-custom {
+        background-color: var(--accent-color);
+        color: white;
+      }
+
+      .cover-photo-container {
+        height: 218px;
+        border-radius: 12px;
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .cover-photo-container span {
+        font-size: 18px;
+        color: var(--text-secondary);
+      }

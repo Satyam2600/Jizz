@@ -1,0 +1,125 @@
+ :root {
+        --primary-bg: #ffffff;
+        --secondary-bg: #f8f9fa;
+        --text-primary: #1c160c;
+        --text-secondary: #6c757d;
+        --accent-color: #019863;
+        --border-color: #e9ecef;
+        --card-radius: 1rem;
+        --hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        --transition-speed: 0.3s;
+      }
+
+      [data-bs-theme="dark"] {
+        --primary-bg: #1a1a1a;
+        --secondary-bg: #2d2d2d;
+        --text-primary: #ffffff;
+        --text-secondary: #adb5bd;
+        --border-color: #343a40;
+        --hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      }
+
+      body {
+        background-color: var(--primary-bg);
+        color: var(--text-primary);
+        font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;
+        padding-top: 56px;
+        transition: background-color var(--transition-speed),
+          color var(--transition-speed);
+      }
+
+      .navbar {
+        background-color: var(--primary-bg) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        height: 56px;
+        z-index: 1030;
+      }
+
+      .nav-link {
+        color: var(--text-primary);
+        font-size: 14px;
+        padding: 8px 12px;
+        border-radius: 8px;
+      }
+
+      .nav-link:hover {
+        background-color: var(--secondary-bg);
+      }
+
+      .nav-link i {
+        font-size: 18px;
+        width: 24px;
+      }
+
+      .card {
+        border-radius: var(--card-radius);
+        box-shadow: var(--hover-shadow);
+        overflow: hidden;
+        max-width: 500px; /* Increased width for better proportions */
+        margin: 0 auto; /* Center the card */
+        background-color: var(--secondary-bg);
+      }
+
+      .card-header {
+        color: var(--text-primary);
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .card-header h2 {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0;
+      }
+
+      .card-body {
+        padding: 2rem;
+      }
+
+      .btn-primary {
+        background-color: var(
+          --accent-color
+        ) !important; /* Green button with !important */
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary:hover {
+        background-color: #018555 !important; /* Darker green on hover with !important */
+        box-shadow: 0 5px 15px rgba(1, 152, 99, 0.4) !important; /* Green hover effect */
+      }
+
+      .btn-primary:focus {
+        background-color: #018555 !important; /* Keep the darker green on focus */
+        box-shadow: 0 0 0 0.2rem rgba(1, 152, 99, 0.25) !important; /* Green outline */
+        border: none !important;
+      }
+
+      .form-control {
+        border-radius: var(--card-radius);
+        border: 1px solid var(--border-color);
+      }
+
+      .form-control:focus {
+        box-shadow: none;
+        border-color: var(--accent-color);
+      }
+
+      .alert-success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+        border-radius: 10px;
+        padding: 1rem;
+      }
+
+      .text-center a {
+        color: var(--accent-color);
+        font-weight: 600;
+      }
+
+      .text-center a:hover {
+        text-decoration: underline;
+      }

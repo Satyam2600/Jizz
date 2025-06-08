@@ -83,10 +83,8 @@ exports.addComment = async (req, res) => {
     
     if (!confession) {
       return res.status(404).json({ message: "Confession not found" });
-    }
-
-    const comment = {
-      user: req.user.userId,
+    }    const comment = {
+      user: req.user._id,
       content
     };
 
