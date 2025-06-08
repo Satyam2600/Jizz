@@ -239,6 +239,16 @@ function createEventCard(event) {
   // Check if event is saved by current user
   const isSaved = event.savedBy && event.savedBy.includes(getCurrentUserId());
 
+  const userId = localStorage.getItem('userId');
+  const isParticipant = event.participants && event.participants.some(p => p._id === userId);
+
+  let actionBtn = '';
+  if (isParticipant) {
+    actionBtn = `<button class="btn btn-outline-danger" onclick="leaveEvent('${event._id}')">Leave Event</button>`;
+  } else {
+    actionBtn = `<button class="btn btn-primary" onclick="joinEvent('${event._id}')">Join Event</button>`;
+  }
+
   col.innerHTML = `
     <div class="event-card">
       <img src="${event.coverImage || 'https://via.placeholder.com/500x300?text=No+Image'}" 
@@ -278,9 +288,7 @@ function createEventCard(event) {
             <button class="btn btn-outline-primary" onclick="saveEvent('${event._id}')">
               <i class="bi ${isSaved ? 'bi-bookmark-fill' : 'bi-bookmark'}"></i>
             </button>
-            <button class="btn btn-primary" onclick="joinEvent('${event._id}')">
-              Join Event
-            </button>
+            ${actionBtn}
           </div>
         </div>
       </div>
@@ -354,7 +362,6 @@ async function createEvent() {
 // Join event
 async function joinEvent(eventId) {
   if (!checkAuth()) return;
-
   try {
     const token = localStorage.getItem('token');
     const response = await fetch(`/api/events/${eventId}/join`, {
@@ -364,23 +371,52 @@ async function joinEvent(eventId) {
         'Content-Type': 'application/json'
       }
     });
-
     if (response.status === 401) {
-      // Token expired or invalid
       localStorage.removeItem('token');
       window.location.href = '/login';
       return;
     }
-
+    const data = await response.json();
     if (!response.ok) {
-      throw new Error('Failed to join event');
+      showToast(data.message || 'Failed to join event', 'danger');
+      throw new Error(data.message || 'Failed to join event');
     }
-
-    // Reload events
+    showToast('Successfully joined the event!', 'success');
     loadEvents();
   } catch (error) {
     console.error('Error joining event:', error);
-    showError('Failed to join event. Please try again.');
+    showToast('Failed to join event. Please try again.', 'danger');
+  }
+}
+
+// Leave event
+async function leaveEvent(eventId) {
+  if (!checkAuth()) return;
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`/api/events/${eventId}/leave`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    const data = await response.json();
+    if (response.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+      return;
+    }
+    if (!response.ok) {
+      showToast(data.message || 'Failed to leave event', 'danger');
+      throw new Error(data.message || 'Failed to leave event');
+    }
+    showToast(data.message || 'Successfully left the event!', 'success');
+    loadEvents();
+  } catch (error) {
+    // Always show the error message in the toast
+    showToast(error.message || 'Failed to leave event. Please try again.', 'danger');
+    console.error('Error leaving event:', error);
   }
 }
 
@@ -440,4 +476,26 @@ function showError(message) {
   `;
   document.querySelector('.container').insertBefore(alert, document.querySelector('.hero-section'));
   setTimeout(() => alert.remove(), 5000);
+}
+
+// Toast utility
+function showToast(message, type = 'success') {
+  let toast = document.getElementById('event-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'event-toast';
+    toast.className = 'toast align-items-center text-bg-' + (type === 'success' ? 'success' : 'danger') + ' border-0 position-fixed bottom-0 end-0 m-4';
+    toast.style.zIndex = 9999;
+    toast.innerHTML = `
+      <div class="d-flex">
+        <div class="toast-body"></div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    `;
+    document.body.appendChild(toast);
+  }
+  toast.querySelector('.toast-body').textContent = message;
+  toast.className = 'toast align-items-center text-bg-' + (type === 'success' ? 'success' : 'danger') + ' border-0 position-fixed bottom-0 end-0 m-4';
+  const bsToast = new bootstrap.Toast(toast);
+  bsToast.show();
 } 

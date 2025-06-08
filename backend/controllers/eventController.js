@@ -35,7 +35,7 @@ const upload = multer({
 // Fetch all events
 const getAllEvents = async (req, res) => {
   try {
-    const { search, category, status } = req.query;
+    const { search, category } = req.query;
     let query = {};
 
     // Add search filter
@@ -46,11 +46,6 @@ const getAllEvents = async (req, res) => {
     // Add category filter
     if (category) {
       query.category = category;
-    }
-
-    // Add status filter
-    if (status) {
-      query.status = status;
     }
 
     const events = await Event.find(query)
@@ -67,7 +62,7 @@ const getAllEvents = async (req, res) => {
 // Fetch events created by the user
 const getYourEvents = async (req, res) => {
   try {
-    const { search, category, status } = req.query;
+    const { search, category } = req.query;
     let query = {
       $or: [
         { createdBy: req.user._id },
@@ -83,11 +78,6 @@ const getYourEvents = async (req, res) => {
     // Add category filter
     if (category) {
       query.category = category;
-    }
-
-    // Add status filter
-    if (status) {
-      query.status = status;
     }
 
     const events = await Event.find(query)
