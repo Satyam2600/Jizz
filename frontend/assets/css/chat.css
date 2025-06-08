@@ -1,0 +1,213 @@
+:root {
+      --primary-bg: #ffffff;
+      --secondary-bg: #f8f9fa;
+      --text-primary: #1c160c;
+      --text-secondary: #6c757d;
+      --accent-color: #019863;
+      --border-color: #e9ecef;
+      --card-radius: 1rem;
+      --hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      --transition-speed: 0.3s;
+    }
+    [data-bs-theme="dark"] {
+      --primary-bg: #1a1a1a;
+      --secondary-bg: #2d2d2d;
+      --text-primary: #ffffff;
+      --text-secondary: #adb5bd;
+      --border-color: #343a40;
+      --hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+    body {
+      background-color: var(--primary-bg);
+      color: var(--text-primary);
+      padding-top: 56px;
+      font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;
+    }
+    .navbar {
+      background-color: var(--primary-bg) !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      height: 56px;
+      z-index: 1030;
+    }
+    .main-section {
+      padding: 0;
+      margin: 0;
+      width: 100%;
+    }
+    .chat-card {
+      background: var(--primary-bg);
+      border-radius: var(--card-radius);
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+      width: 100%;
+      max-width: 1350px; /* was 1100px */
+      min-height: 80vh;   /* was 70vh */
+      display: flex;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+    .chat-main-section {
+      min-height: 95vh;
+      padding: 3.5rem 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .user-list {
+      width: 380px; /* was 340px */
+      border-right: 1px solid var(--border-color);
+      background: var(--secondary-bg);
+      overflow-y: auto;
+      padding: 2rem 1rem 2rem 2rem;
+    }
+    .user-item {
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    .user-item.active, .user-item:hover {
+      background: #e8f5e9;
+    }
+    .user-item .fw-bold {
+      transition: color 0.2s, font-weight 0.2s;
+    }
+    .user-item:hover .fw-bold, .user-item.active .fw-bold {
+      color: #017a4f; /* A strong green for visibility */
+      font-weight: 700;
+    }
+    .user-avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--primary-bg);
+      border: 2px solid var(--border-color);
+    }
+    .chat-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: var(--primary-bg);
+    }
+    .chat-header {
+      padding: 2rem 2.5rem; /* was 1.5rem 2rem */
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      background: var(--primary-bg);
+      min-height: 80px;
+    }
+    .chat-messages {
+      flex: 1;
+      padding: 2.5rem 2.5rem 2rem 2.5rem; /* was 2rem 2rem 1.5rem 2rem */
+      overflow-y: auto;
+      background: var(--secondary-bg);
+      min-height: 400px;
+    }
+    .message {
+      display: flex;
+      margin-bottom: 1.2rem;
+      align-items: flex-end;
+    }
+    .message.sent {
+      justify-content: flex-end;
+    }
+    .message.received {
+      justify-content: flex-start;
+    }
+    .msg-bubble {
+      max-width: 70%;
+      border-radius: 1.2rem;
+      padding: 0.8em 1.2em;
+      box-shadow: 0 2px 8px rgba(1,152,99,0.04);
+      word-break: break-word;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    .msg-bubble.sent {
+      background: #019863;
+      color: #fff;
+      align-items: flex-end;
+    }
+    .msg-bubble.received {
+      background: #e8f5e9;
+      color: var(--text-primary);
+      align-items: flex-start;
+    }
+    .msg-time {
+      font-size: 0.85em;
+      color: #888;
+      margin-top: 0.3em;
+      align-self: flex-end;
+    }
+    .chat-input {
+      border-top: 1px solid var(--border-color);
+      background: var(--primary-bg);
+      padding: 1.5rem 2.5rem; /* was 1.2rem 2rem */
+      display: flex;
+      gap: 0.7rem;
+      align-items: center;
+    }
+    .chat-input input {
+      flex: 1;
+      border-radius: 2rem;
+      border: 1px solid var(--border-color);
+      padding: 0.9rem 1.5rem;
+      font-size: 1.15rem;
+      background: var(--secondary-bg);
+      color: var(--text-primary);
+      transition: border-color 0.2s;
+    }
+    .chat-input input:focus {
+      border-color: var(--accent-color);
+      outline: none;
+    }
+    .chat-input button {
+      border-radius: 2rem;
+      padding: 0.9rem 2rem;
+      background: var(--accent-color);
+      color: #fff;
+      border: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+      transition: background 0.2s;
+    }
+    .chat-input button:hover {
+      background: #018555;
+    }
+    .chat-empty {
+      color: var(--text-secondary);
+      text-align: center;
+      margin-top: 30%;
+      font-size: 1.2rem;
+    }
+    @media (max-width: 1200px) {
+      .chat-card { max-width: 100%; }
+      .user-list { width: 220px; padding-left: 0.5rem; }
+      .chat-header, .chat-messages, .chat-input { padding-left: 1rem; padding-right: 1rem; }
+    }
+    @media (max-width: 900px) {
+      .chat-main-section { padding: 0.5rem; }
+      .chat-card { flex-direction: column; min-height: 80vh; }
+      .user-list { width: 100%; height: 180px; border-right: none; border-bottom: 1px solid var(--border-color); display: flex; flex-direction: row; overflow-x: auto; padding: 1rem; }
+      .user-list .user-item { min-width: 180px; border-bottom: none; border-right: 1px solid var(--border-color); }
+      .chat-main { flex: 1; }
+    }
+    [data-bs-theme="dark"] .chat-card, [data-bs-theme="dark"] .chat-main, [data-bs-theme="dark"] .chat-header {
+      background: var(--primary-bg);
+      color: var(--text-primary);
+    }
+    [data-bs-theme="dark"] .chat-messages {
+      background: var(--secondary-bg);
+    }
+    [data-bs-theme="dark"] .user-list {
+      background: var(--secondary-bg);
+      border-color: #343a40;
+    }
