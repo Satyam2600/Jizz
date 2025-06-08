@@ -67,7 +67,7 @@
     }
 
     .navbar .nav-link, .navbar .navbar-brand, .navbar .btn {
-      color: var(--navbar-text) !important;
+      
       transition: color 0.4s;
     }
 
@@ -81,6 +81,7 @@
     .navbar .navbar-brand,
     .navbar .dropdown > a {
       transition: all 0.3s ease;
+      color: var(--navbar-text) !important;
     }
     .navbar .nav-link:hover,
     .navbar .btn:hover,
@@ -629,65 +630,55 @@
       text-decoration: none;
     }
 
-    /* Button color schemes for login and sign up */
-    .btn-signup {
-      background: var(--primary-green);
-      color: #fff;
-      border: none;
-      font-weight: 600;
-      transition: background 0.3s, color 0.3s;
-    }
-    .btn-signup:hover {
-      background: #017a4f;
-      color: #fff;
-    }
+    /* Button color schemes for login and sign up (updated for professional look) */
     .btn-login {
-      background: #fff;
-      color: var(--primary-green);
-      border: 2px solid var(--primary-green);
-      font-weight: 600;
-      transition: background 0.3s, color 0.3s, border 0.3s, box-shadow 0.3s;
-      box-shadow: 0 2px 12px 0 rgba(1, 152, 99, 0.08);
+      background: #019863;
+      color: white !important;
+      border: none;
+      font-weight: 500 !important;
+      border-radius: 999px !important;
+      box-shadow: 0 2px 6px 0 rgba(1, 152, 99, 0.08);
+      transition: background 0.2s, color 0.2s;
     }
     .btn-login:hover, .btn-login:focus {
-      background: var(--primary-green);
-      color: #fff;
-      border-color: var(--primary-green);
-      box-shadow: 0 4px 18px 0 rgba(1, 152, 99, 0.18);
+      background: #017a4f;
+      color: white !important;
     }
     .btn-signup {
-      background: var(--primary-green);
-      color: #fff;
-      border: 2px solid var(--primary-green);
-      font-weight: 700;
-      transition: background 0.3s, color 0.3s, border 0.3s, box-shadow 0.3s;
-      box-shadow: 0 2px 12px 0 rgba(1, 152, 99, 0.10);
+      background: #f4efe6;
+      color: #1C160C;
+      border: none;
+      font-weight: 500 !important;
+      border-radius: 999px !important;
+      box-shadow: 0 2px 6px 0 rgba(161, 130, 73, 0.08);
+      transition: background 0.2s, color 0.2s;
     }
     .btn-signup:hover, .btn-signup:focus {
-      background: var(--accent-gold);
-      color: #181c1f;
-      border-color: var(--accent-gold);
-      box-shadow: 0 4px 18px 0 rgba(161, 130, 73, 0.15);
+      background: #e5dfd0;
+      color: #1C160C;
     }
     body.dark-mode .btn-login {
-      background: #23272f;
-      color: var(--primary-green);
-      border: 2px solid var(--primary-green);
+      background: #14624a;
+      color: #fff;
+      border: none;
     }
     body.dark-mode .btn-login:hover, body.dark-mode .btn-login:focus {
-      background: var(--primary-green);
-      color: #181c1f;
-      border-color: var(--primary-green);
+      background: #019863;
+      color:white !important;
     }
     body.dark-mode .btn-signup {
-      background: var(--primary-green);
-      color: #181c1f;
-      border: 2px solid var(--primary-green);
+      background: #23272f;
+      color: #f4efe6;
+      border: none;
     }
     body.dark-mode .btn-signup:hover, body.dark-mode .btn-signup:focus {
-      background: var(--accent-gold);
-      color: #181c1f;
-      border-color: var(--accent-gold);
+      background: #353a42;
+      color: #f4efe6;
+    }
+    /* Remove scaling and heavy shadow on hover for these buttons */
+    .btn-login:hover, .btn-signup:hover {
+      transform: none !important;
+      box-shadow: none !important;
     }
 
     /* Modern hover effect for all nav/footer links and all buttons */
@@ -742,7 +733,7 @@
           <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
           <li class="nav-item">
             <a href="/login">
-              <button class="btn btn-login rounded-pill px-4 ms-2 button-2">Log In</button>
+              <button class="btn btn-login rounded-pill px-4 ms-2">Log In</button>
             </a>
           </li>
           <li class="nav-item">
@@ -775,7 +766,7 @@
           <div class="d-flex gap-3">
             <a href="/register"><button class="btn btn-signup rounded-pill px-4 py-2">Sign Up</button>
             </a>
-            <a href="/login"> <button class="btn btn-login rounded-pill px-4 py-2 button-2">Log In</button>
+            <a href="/login"> <button class="btn btn-login rounded-pill px-4 py-2">Log In</button>
             </a>
           </div>
         </div>
