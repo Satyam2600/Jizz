@@ -79,25 +79,27 @@ exports.likeConfession = async (req, res) => {
 exports.addComment = async (req, res) => {
   try {
     const { content } = req.body;
+    
+    if (!content) {
+      return res.status(400).json({ message: "Comment content is required" });
+    }
+
     const confession = await Confession.findById(req.params.id);
     
     if (!confession) {
       return res.status(404).json({ message: "Confession not found" });
-    }    const comment = {
+    }
+
+    const comment = {
       user: req.user._id,
-      content
+      content: content.trim(),
+      createdAt: new Date()
     };
 
     confession.comments.push(comment);
     await confession.save();
 
-    // Populate the comment user details
-    const populatedComment = await Confession.populate(confession.comments[confession.comments.length - 1], {
-      path: "user",
-      select: "name avatar"
-    });
-
-    // Remove user information from the confession
+    // Remove user information from the confession to maintain anonymity
     const confessionObj = confession.toObject();
     delete confessionObj.user;
     
