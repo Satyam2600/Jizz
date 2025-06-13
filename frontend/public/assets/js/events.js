@@ -1,11 +1,11 @@
-// Event loading and management
+// Event management and UI state
 let currentTab = 'all';
 let currentFilters = {
   category: '',
   search: ''
 };
 
-// Check authentication
+// Authentication and Theme Management
 function checkAuth() {
   const token = localStorage.getItem('token');
   if (!token) {
@@ -15,7 +15,6 @@ function checkAuth() {
   return true;
 }
 
-// Theme management
 function initTheme() {
   const savedTheme = localStorage.getItem('theme') || 'light';
   document.documentElement.setAttribute('data-bs-theme', savedTheme);
@@ -44,16 +43,7 @@ function updateThemeIcon(theme) {
   }
 }
 
-// Load events when page loads
-document.addEventListener('DOMContentLoaded', () => {
-  if (checkAuth()) {
-    initTheme();
-    loadEvents();
-    setupEventListeners();
-  }
-});
-
-// Setup event listeners
+// Event Listeners Setup
 function setupEventListeners() {
   // Theme toggle
   const themeToggle = document.getElementById('themeToggle');
@@ -111,41 +101,48 @@ function setupEventListeners() {
   });
 
   // Cover image preview
-  document.getElementById('eventCover').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        document.getElementById('coverPreview').src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  });
+  const eventCoverInput = document.getElementById('eventCover');
+  if (eventCoverInput) {
+    eventCoverInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          document.getElementById('coverPreview').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
 
   // Create event button
-  document.getElementById('createEventButton').addEventListener('click', createEvent);
+  const createEventButton = document.getElementById('createEventButton');
+  if (createEventButton) {
+    createEventButton.addEventListener('click', createEvent);
+  }
 
   // Logout button
-  document.getElementById('logoutButton').addEventListener('click', (e) => {
-    e.preventDefault();
-    localStorage.removeItem('token');
-    window.location.href = '/login';
-  });
+  const logoutButton = document.getElementById('logoutButton');
+  if (logoutButton) {
+    logoutButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    });
+  }
 }
 
-// Load events from server
+// Event Loading and Display
 async function loadEvents() {
   if (!checkAuth()) return;
 
   try {
     const queryParams = new URLSearchParams();
     
-    // Add search term if exists
     if (currentFilters.search) {
       queryParams.append('search', currentFilters.search);
     }
     
-    // Add category filter if exists
     if (currentFilters.category) {
       queryParams.append('category', currentFilters.category);
     }
@@ -153,7 +150,6 @@ async function loadEvents() {
     const token = localStorage.getItem('token');
     let url = '/api/events';
     
-    // Change endpoint based on current tab
     if (currentTab === 'your-events') {
       url = '/api/events/your-events';
     } else if (currentTab === 'saved-events') {
@@ -168,7 +164,6 @@ async function loadEvents() {
     });
 
     if (response.status === 401) {
-      // Token expired or invalid
       localStorage.removeItem('token');
       window.location.href = '/login';
       return;
@@ -191,9 +186,10 @@ async function loadEvents() {
   }
 }
 
-// Display events in the container
 function displayEvents(events) {
   const container = document.getElementById('eventsContainer');
+  if (!container) return;
+  
   container.innerHTML = '';
 
   if (events.length === 0) {
@@ -207,7 +203,6 @@ function displayEvents(events) {
   });
 }
 
-// Create event card element
 function createEventCard(event) {
   const col = document.createElement('div');
   col.className = 'col-md-6 col-lg-4';
@@ -219,18 +214,13 @@ function createEventCard(event) {
     day: 'numeric'
   });
 
-  // Check if event is saved by current user
   const isSaved = event.savedBy && event.savedBy.includes(getCurrentUserId());
-
-  const userId = localStorage.getItem('userId');
+  const userId = getCurrentUserId();
   const isParticipant = event.participants && event.participants.some(p => p._id === userId);
 
-  let actionBtn = '';
-  if (isParticipant) {
-    actionBtn = `<button class="btn btn-outline-danger" onclick="leaveEvent('${event._id}')">Leave Event</button>`;
-  } else {
-    actionBtn = `<button class="btn btn-primary" onclick="joinEvent('${event._id}')">Join Event</button>`;
-  }
+  let actionBtn = isParticipant
+    ? `<button class="btn btn-outline-danger" onclick="leaveEvent('${event._id}')">Leave Event</button>`
+    : `<button class="btn btn-primary" onclick="joinEvent('${event._id}')">Join Event</button>`;
 
   col.innerHTML = `
     <div class="event-card">
@@ -281,25 +271,47 @@ function createEventCard(event) {
   return col;
 }
 
-// Create new event
+// Event Actions (Create, Join, Leave, Save)
 async function createEvent() {
   if (!checkAuth()) return;
 
   try {
     const form = document.getElementById('createEventForm');
-    const formData = new FormData();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
 
+    const formData = new FormData();
+    
     // Add form fields
-    formData.append('title', document.getElementById('eventTitle').value);
-    formData.append('description', document.getElementById('eventDescription').value);
-    formData.append('location', document.getElementById('eventLocation').value);
-    formData.append('date', document.getElementById('eventDate').value);
-    formData.append('time', document.getElementById('eventTime').value);
-    formData.append('duration', document.getElementById('eventDuration').value);
-    formData.append('category', document.getElementById('eventCategory').value);
-    formData.append('maxParticipants', document.getElementById('maxParticipants').value);
-    formData.append('tags', document.getElementById('eventTags').value);
-    formData.append('requirements', document.getElementById('eventRequirements').value);
+    const formFields = {
+      title: document.getElementById('eventTitle').value,
+      description: document.getElementById('eventDescription').value,
+      location: document.getElementById('eventLocation').value,
+      date: document.getElementById('eventDate').value,
+      time: document.getElementById('eventTime').value,
+      duration: document.getElementById('eventDuration').value,
+      category: document.getElementById('eventCategory').value,
+      maxParticipants: document.getElementById('maxParticipants').value,
+      tags: document.getElementById('eventTags').value,
+      requirements: document.getElementById('eventRequirements').value
+    };
+
+    // Validate required fields
+    const requiredFields = ['title', 'location', 'date', 'time', 'duration', 'category', 'description', 'maxParticipants'];
+    const missingFields = requiredFields.filter(field => !formFields[field]);
+    
+    if (missingFields.length > 0) {
+      throw new Error(`Please fill in all required fields: ${missingFields.join(', ')}`);
+    }
+
+    // Append each field to FormData
+    Object.entries(formFields).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        formData.append(key, value);
+      }
+    });
 
     // Add cover image if selected
     const coverImage = document.getElementById('eventCover').files[0];
@@ -317,34 +329,37 @@ async function createEvent() {
     });
 
     if (response.status === 401) {
-      // Token expired or invalid
       localStorage.removeItem('token');
       window.location.href = '/login';
       return;
     }
 
     if (!response.ok) {
-      throw new Error('Failed to create event');
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to create event');
     }
 
-    const event = await response.json();
-    
     // Close modal and reset form
-    bootstrap.Modal.getInstance(document.getElementById('createEventModal')).hide();
+    const modalElement = document.getElementById('createEventModal');
+    if (modalElement) {
+      const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+      modal.hide();
+    }
+    
     form.reset();
     document.getElementById('coverPreview').src = 'https://via.placeholder.com/500x300?text=Upload+Cover+Image';
 
-    // Reload events
+    showToast('Event created successfully!', 'success');
     loadEvents();
   } catch (error) {
     console.error('Error creating event:', error);
-    showError('Failed to create event. Please try again.');
+    showToast(error.message || 'Failed to create event. Please try again.', 'danger');
   }
 }
 
-// Join event
 async function joinEvent(eventId) {
   if (!checkAuth()) return;
+  
   try {
     const token = localStorage.getItem('token');
     const response = await fetch(`/api/events/${eventId}/join`, {
@@ -354,27 +369,29 @@ async function joinEvent(eventId) {
         'Content-Type': 'application/json'
       }
     });
+
     if (response.status === 401) {
       localStorage.removeItem('token');
       window.location.href = '/login';
       return;
     }
+
     const data = await response.json();
     if (!response.ok) {
-      showToast(data.message || 'Failed to join event', 'danger');
       throw new Error(data.message || 'Failed to join event');
     }
+
     showToast('Successfully joined the event!', 'success');
     loadEvents();
   } catch (error) {
     console.error('Error joining event:', error);
-    showToast('Failed to join event. Please try again.', 'danger');
+    showToast(error.message || 'Failed to join event. Please try again.', 'danger');
   }
 }
 
-// Leave event
 async function leaveEvent(eventId) {
   if (!checkAuth()) return;
+  
   try {
     const token = localStorage.getItem('token');
     const response = await fetch(`/api/events/${eventId}/leave`, {
@@ -384,26 +401,26 @@ async function leaveEvent(eventId) {
         'Content-Type': 'application/json'
       }
     });
-    const data = await response.json();
+
     if (response.status === 401) {
       localStorage.removeItem('token');
       window.location.href = '/login';
       return;
     }
+
+    const data = await response.json();
     if (!response.ok) {
-      showToast(data.message || 'Failed to leave event', 'danger');
       throw new Error(data.message || 'Failed to leave event');
     }
+
     showToast(data.message || 'Successfully left the event!', 'success');
     loadEvents();
   } catch (error) {
-    // Always show the error message in the toast
-    showToast(error.message || 'Failed to leave event. Please try again.', 'danger');
     console.error('Error leaving event:', error);
+    showToast(error.message || 'Failed to leave event. Please try again.', 'danger');
   }
 }
 
-// Save event
 async function saveEvent(eventId) {
   if (!checkAuth()) return;
 
@@ -427,15 +444,15 @@ async function saveEvent(eventId) {
       throw new Error('Failed to save event');
     }
 
-    // Reload events to update the UI
+    showToast('Event saved successfully!', 'success');
     loadEvents();
   } catch (error) {
     console.error('Error saving event:', error);
-    showError('Failed to save event. Please try again.');
+    showToast('Failed to save event. Please try again.', 'danger');
   }
 }
 
-// Get current user ID
+// Utility Functions
 function getCurrentUserId() {
   const token = localStorage.getItem('token');
   if (!token) return null;
@@ -449,7 +466,6 @@ function getCurrentUserId() {
   }
 }
 
-// Show error message
 function showError(message) {
   const alert = document.createElement('div');
   alert.className = 'alert alert-danger alert-dismissible fade show';
@@ -461,7 +477,6 @@ function showError(message) {
   setTimeout(() => alert.remove(), 5000);
 }
 
-// Toast utility
 function showToast(message, type = 'success') {
   let toast = document.getElementById('event-toast');
   if (!toast) {
@@ -481,4 +496,13 @@ function showToast(message, type = 'success') {
   toast.className = 'toast align-items-center text-bg-' + (type === 'success' ? 'success' : 'danger') + ' border-0 position-fixed bottom-0 end-0 m-4';
   const bsToast = new bootstrap.Toast(toast);
   bsToast.show();
-} 
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', () => {
+  if (checkAuth()) {
+    initTheme();
+    loadEvents();
+    setupEventListeners();
+  }
+}); 
