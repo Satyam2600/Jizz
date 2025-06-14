@@ -6,8 +6,27 @@
   <title>Jizz - Events</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="/assets/css/events.css">
-  <style>
+  <link rel="stylesheet" href="/assets/css/events.css">  <style>
+    :root {
+      --accent-gradient: linear-gradient(135deg, #019863 0%, #018555 100%);
+    }
+
+    [data-bs-theme="dark"] {
+      --content-bg: #1c160c;
+      --text-primary: #f4efe6;
+      --text-secondary: #e9dfce;
+      --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      --icon-glow: 0 0 20px rgba(1, 152, 99, 0.4);
+    }
+
+    [data-bs-theme="light"] {
+      --content-bg: #ffffff;
+      --text-primary: #1c160c;
+      --text-secondary: #6c757d;
+      --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      --icon-glow: none;
+    }
+
     .coming-soon-container {
       min-height: 80vh;
       display: flex;
@@ -15,32 +34,93 @@
       justify-content: center;
       text-align: center;
       padding: 2rem;
+      background: var(--content-bg);
     }
+
     .coming-soon-content {
       max-width: 600px;
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
     }
+
+    .coming-soon-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--accent-gradient);
+      opacity: 0.1;
+      z-index: -1;
+      transform: scale(1.05);
+      filter: blur(20px);
+    }
+
     .coming-soon-icon {
       font-size: 5rem;
-      color: #0d6efd;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
       margin-bottom: 1.5rem;
+      display: inline-block;
+      box-shadow: var(--icon-glow);
+      animation: pulse 2s infinite;
     }
+
     .coming-soon-title {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-      color: #212529;
+      font-size: 2.8rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
+
     .coming-soon-text {
-      font-size: 1.1rem;
-      color: #6c757d;
-      margin-bottom: 2rem;
-      line-height: 1.6;
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      margin-bottom: 2.5rem;
+      line-height: 1.8;
     }
+
     .gradient-bg {
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      border-radius: 1rem;
-      padding: 3rem;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      background: var(--content-bg);
+      border-radius: 1.5rem;
+      padding: 3.5rem;
+      box-shadow: var(--card-shadow);
+      border: 1px solid rgba(1, 152, 99, 0.1);
+      backdrop-filter: blur(10px);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .gradient-bg:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--card-shadow), 0 15px 35px rgba(1, 152, 99, 0.2);
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .btn-primary {
+      background: var(--accent-gradient);
+      border: none;
+      padding: 1rem 2rem;
+      font-weight: 600;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(1, 152, 99, 0.3);
+      background: linear-gradient(135deg, #018555 0%, #019863 100%);
     }
   </style>
 </head>
@@ -110,18 +190,19 @@
     </div>
   </nav>
 
-  <!-- Main Content -->
-  <div class="container py-5">
+  <!-- Main Content -->  <div class="container-fluid p-0">
     <div class="coming-soon-container">
       <div class="coming-soon-content gradient-bg">
-        <i class="bi bi-calendar-check coming-soon-icon"></i>
-        <h1 class="coming-soon-title">Events Coming Soon!</h1>
+        <i class="bi bi-calendar-stars coming-soon-icon"></i>
+        <h1 class="coming-soon-title">Amazing Events Coming Soon!</h1>
         <p class="coming-soon-text">
-          We're working hard to bring you an amazing events platform where you can discover, create, and join exciting campus events. Stay tuned for our upcoming release where you'll be able to connect with your community through engaging events and activities.
+          Get ready for  the incredible events on the  platform that will transform your campus experience! Soon you'll be able to discover trending events, create unforgettable gatherings, and connect with your community like never before. We're adding the finishing touches to bring you something truly special.
         </p>
-        <a href="/dashboard" class="btn btn-primary btn-lg rounded-pill px-4">
-          <i class="bi bi-house-door me-2"></i>Return to Dashboard
-        </a>
+        <div class="d-flex justify-content-center gap-3">
+          <a href="/dashboard" class="btn btn-primary btn-lg rounded-pill px-4">
+            <i class="bi bi-house-heart me-2"></i>Back to Home
+          </a>
+        </div>
       </div>
     </div>
   </div>
