@@ -10,7 +10,7 @@ exports.getAllPosts = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const posts = await Post.find()
-      .populate("user", "fullName username avatar department followers") // include followers
+      .populate("user", "fullName username avatar department followers rollNumber") // include rollNumber
       .populate("comments.user", "fullName username avatar")
       .sort({ createdAt: -1 })
       .skip(skip)

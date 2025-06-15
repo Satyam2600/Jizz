@@ -74,27 +74,54 @@ function renderPost(post) {
         `;
     }
 
+    // Build profile link only if rollNumber exists
+    const profileLink = user.rollNumber ? `/profile/${user.rollNumber}` : null;
+    // Debug log for profile link and user
+    console.log('Post author user object:', user);
+    console.log('Generated profile link:', profileLink);
     return `
         <div class="card mb-4 post-card" data-post-id="${post._id}">
             <div class="card-body p-4">
                 <!-- Post Header -->
-                <div class="d-flex align-items-center mb-3">
+                <div class="d-flex align-items-center mb-3 justify-content-between">
+                  <div class="d-flex align-items-center">
+                    ${profileLink ? `
+                    <a href="${profileLink}" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:1rem;">
+                        <img src="${userAvatar}" 
+                             alt="Avatar" 
+                             class="rounded-circle" 
+                             style="width: 48px; height: 48px; object-fit: cover;">
+                        <div class="ms-2">
+                            <h6 class="mb-0 fw-bold">${user.fullName || 'Unknown User'}</h6>
+                            <div class="d-flex align-items-center gap-2">
+                              <div class="text-muted small">@${user.username || user.rollNumber || 'unknown'}</div>
+                              <span class="text-muted" style="font-size:0.95em;">•</span>
+                              <small class="text-muted post-time">${new Date(post.createdAt).toLocaleString()}</small>
+                            </div>
+                        </div>
+                    </a>
+                    ` : `
                     <img src="${userAvatar}" 
                          alt="Avatar" 
                          class="rounded-circle me-3" 
                          style="width: 48px; height: 48px; object-fit: cover;">
-                    <div>
+                    <div class="ms-2">
                         <h6 class="mb-0 fw-bold">${user.fullName || 'Unknown User'}</h6>
-                        <small class="text-muted">
-                            @${user.username || user.rollNumber || 'unknown'} • 
-                            <span class="post-time">${new Date(post.createdAt).toLocaleString()}</span>
-                        </small>
+                        <div class="d-flex align-items-center gap-2">
+                          <div class="text-muted small">@${user.username || user.rollNumber || 'unknown'}</div>
+                          <span class="text-muted" style="font-size:0.95em;">•</span>
+                          <small class="text-muted post-time">${new Date(post.createdAt).toLocaleString()}</small>
+                        </div>
                     </div>
-                    ${!isCurrentUser ? `<button class="btn btn-sm ms-3 btn-follow-user ${isFollowing ? 'btn-success' : 'btn-outline-primary'}" 
+                    `}
+                  </div>
+                  <div class="text-end ms-3">
+                    ${!isCurrentUser ? `<button class="btn btn-sm ms-2 btn-follow-user ${isFollowing ? 'btn-success' : 'btn-outline-primary'}" 
                         data-user-id="${user._id}" 
                         data-following="${isFollowing}">
                         <span class="follow-btn-text">${isFollowing ? 'Following' : 'Follow'}</span>
                     </button>` : ''}
+                  </div>
                 </div>
 
                 <!-- Post Content -->
