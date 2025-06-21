@@ -537,11 +537,11 @@
 
           if (file) {
             const formData = new FormData();
-            formData.append("coverPhoto", file);
+            formData.append("banner", file);
 
             try {
               console.log("Uploading cover photo...");
-              const response = await fetch("/api/uploads/cover-photo", {
+              const response = await fetch("/api/uploads/banner", {
                 method: "POST",
                 headers: {
                   Authorization: `Bearer ${token}`,

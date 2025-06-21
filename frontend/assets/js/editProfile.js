@@ -112,8 +112,6 @@ if (profileForm) {
         // Add form fields
         const fullNameInput = document.getElementById('fullName');
         const usernameInput = document.getElementById('username');
-        const emailInput = document.getElementById('email');
-        const rollNumberInput = document.getElementById('rollNumber');
         const departmentSelect = document.getElementById('department');
         const yearSelect = document.getElementById('year');
         const semesterSelect = document.getElementById('semester');
@@ -121,18 +119,11 @@ if (profileForm) {
         const skillsInput = document.getElementById('skills');
         const interestsInput = document.getElementById('interests');
         const portfolioInput = document.getElementById('portfolio');
-        const phoneNumberInput = document.getElementById('phoneNumber');
-        const isPublicInput = document.getElementById('isPublic');
         const linkedinInput = document.getElementById('linkedin');
-        const githubInput = document.getElementById('github');
-        const twitterInput = document.getElementById('twitter');
-        const instagramInput = document.getElementById('instagram');
         
         // Add all form fields to formData
         if (fullNameInput) formData.append('fullName', fullNameInput.value);
         if (usernameInput) formData.append('username', usernameInput.value);
-        if (emailInput) formData.append('email', emailInput.value);
-        if (rollNumberInput) formData.append('rollNumber', rollNumberInput.value);
         if (departmentSelect) formData.append('department', departmentSelect.value);
         if (yearSelect) formData.append('year', yearSelect.value);
         if (semesterSelect) formData.append('semester', semesterSelect.value);
@@ -140,12 +131,7 @@ if (profileForm) {
         if (skillsInput) formData.append('skills', skillsInput.value);
         if (interestsInput) formData.append('interests', interestsInput.value);
         if (portfolioInput) formData.append('portfolio', portfolioInput.value);
-        if (phoneNumberInput) formData.append('phoneNumber', phoneNumberInput.value);
-        if (isPublicInput) formData.append('isPublic', isPublicInput.checked);
         if (linkedinInput) formData.append('linkedin', linkedinInput.value);
-        if (githubInput) formData.append('github', githubInput.value);
-        if (twitterInput) formData.append('twitter', twitterInput.value);
-        if (instagramInput) formData.append('instagram', instagramInput.value);
         
         // Add files if selected
         const profilePhotoInput = document.getElementById('profilePhotoInput');

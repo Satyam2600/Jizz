@@ -42,9 +42,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         maxlength: [500, 'Bio cannot be more than 500 characters']
     },
-    interests: [{
-        type: String
-    }],
+    interests: {
+        type: [String],
+        default: []
+    },
     createdAt: {
         type: Date,
         default: Date.now
@@ -68,8 +69,8 @@ const userSchema = new mongoose.Schema({
         trim: true
     },
     skills: {
-        type: String,
-        trim: true
+        type: [String],
+        default: []
     },
     portfolio: {
         type: String,
@@ -78,6 +79,26 @@ const userSchema = new mongoose.Schema({
     linkedin: {
         type: String,
         trim: true
+    },
+    phoneNumber: {
+        type: String,
+        trim: true
+    },
+    github: {
+        type: String,
+        trim: true
+    },
+    twitter: {
+        type: String,
+        trim: true
+    },
+    instagram: {
+        type: String,
+        trim: true
+    },
+    isPublic: {
+        type: Boolean,
+        default: true
     },
     banner: {
         type: String,

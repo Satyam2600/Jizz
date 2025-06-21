@@ -38,13 +38,9 @@ function renderPost(post) {
     let mediaHtml = '';
     if (post.image) {
         console.log('Rendering image:', post.image); // Debug log
-        // Fix image path handling
-        const imagePath = post.image.startsWith('/') || post.image.startsWith('http') 
-            ? post.image 
-            : `/uploads/${post.image}`;
         mediaHtml = `
             <div class="post-media mb-3">
-                <img src="${imagePath}" 
+                <img src="${post.image}" 
                      class="img-fluid w-100 rounded" 
                      alt="Post Image"
                      style="max-height: 400px; object-fit: cover;">
@@ -52,10 +48,6 @@ function renderPost(post) {
         `;
     } else if (post.video) {
         console.log('Rendering video:', post.video); // Debug log
-        // Fix video path handling
-        const videoPath = post.video.startsWith('/') || post.video.startsWith('http') 
-            ? post.video 
-            : `/uploads/${post.video}`;
         mediaHtml = `
             <div class="post-media mb-3">
                 <video class="w-100 rounded" 
@@ -65,9 +57,9 @@ function renderPost(post) {
                        muted
                        loop
                        playsinline>
-                    <source src="${videoPath}" type="video/mp4">
-                    <source src="${videoPath}" type="video/webm">
-                    <source src="${videoPath}" type="video/quicktime">
+                    <source src="${post.video}" type="video/mp4">
+                    <source src="${post.video}" type="video/webm">
+                    <source src="${post.video}" type="video/quicktime">
                     Your browser does not support the video tag.
                 </video>
             </div>
@@ -908,7 +900,7 @@ if (createPostForm) {
             const formData = new FormData();
             formData.append('content', content);
             if (currentMediaFile) {
-                formData.append(currentMediaType, currentMediaFile);
+                formData.append('media', currentMediaFile);
             }
 
             const response = await fetch('/api/posts', {

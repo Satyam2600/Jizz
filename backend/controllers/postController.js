@@ -69,15 +69,24 @@ exports.createPost = async (req, res) => {
   }
 
   try {
-    const { content, image, video } = req.body;
+    const { content } = req.body;
     const userId = req.user._id;
+
+    // Get media URL from Cloudinary upload
+    let mediaUrl = null;
+    let mediaType = null;
+    
+    if (req.cloudinaryResult) {
+      mediaUrl = req.cloudinaryResult.url;
+      mediaType = req.cloudinaryResult.resource_type; // 'image' or 'video'
+    }
 
     // Create post with media
     const newPost = new Post({
       user: userId,
       content: content || '',
-      image: image || null,
-      video: video || null,
+      image: mediaType === 'image' ? mediaUrl : null,
+      video: mediaType === 'video' ? mediaUrl : null,
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
     });
 

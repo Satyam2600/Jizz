@@ -1,36 +1,5 @@
 const Event = require('../models/Event');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const uploadPath = path.join(__dirname, '../../frontend/assets/uploads');
-        if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, { recursive: true });
-        }
-        cb(null, uploadPath);
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
-    }
-});
-
-const upload = multer({
-    storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
-    fileFilter: function (req, file, cb) {
-        const allowedTypes = /jpeg|jpg|png|gif/;
-        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = allowedTypes.test(file.mimetype);
-        if (extname && mimetype) {
-            return cb(null, true);
-        }
-        cb(new Error('Only image files are allowed!'));
-    }
-}).single('coverImage');
+const { uploadEvent, uploadToCloudinary } = require('../middleware/uploadMiddleware');
 
 // Fetch all events
 const getAllEvents = async (req, res) => {
@@ -101,74 +70,45 @@ const getSavedEvents = async (req, res) => {
   }
 };
 
-// Create a new event
+// Create a new event with Cloudinary upload
 const createEvent = async (req, res) => {
-    upload(req, res, async function(err) {
-        if (err) {
-            return res.status(400).json({ success: false, message: err.message });
-        }
+  try {
+    const { title, description, date, time, location, category, maxParticipants } = req.body;
+    
+    // Get cover image URL from Cloudinary upload
+    let coverImageUrl = null;
+    if (req.cloudinaryResult) {
+      coverImageUrl = req.cloudinaryResult.url;
+    }
 
-        try {
-            const {
-                title,
-                location,
-                date,
-                time,
-                duration,
-                category,
-                description,
-                maxParticipants,
-                tags,
-                requirements
-            } = req.body;
-
-            // Validate required fields
-            if (!title || !location || !date || !time || !duration || !category || !description || !maxParticipants) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'All required fields must be provided'
-                });
-            }
-
-            // Create event object
-            const eventData = {
-                title,
-                location,
-                date: new Date(date),
-                time,
-                duration: parseInt(duration),
-                category,
-                description,
-                maxParticipants: parseInt(maxParticipants),
-                createdBy: req.user._id,
-                participants: [req.user._id] // Add creator as first participant
-            };
-
-            // Add optional fields if provided
-            if (tags) eventData.tags = tags.split(',').map(tag => tag.trim());
-            if (requirements) eventData.requirements = requirements;
-            if (req.file) eventData.coverImage = `/assets/uploads/${req.file.filename}`;
-
-            const event = new Event(eventData);
-            await event.save();
-
-            res.status(201).json({
-                success: true,
-                message: 'Event created successfully',
-                data: event
-            });
-        } catch (error) {
-            // If there's an error and a file was uploaded, delete it
-            if (req.file) {
-                fs.unlinkSync(req.file.path);
-            }
-            res.status(500).json({
-                success: false,
-                message: 'Failed to create event',
-                error: error.message
-            });
-        }
+    const event = new Event({
+      title,
+      description,
+      date,
+      time,
+      location,
+      category,
+      maxParticipants: maxParticipants || null,
+      coverImage: coverImageUrl,
+      createdBy: req.user._id,
+      participants: [req.user._id] // Creator is automatically a participant
     });
+
+    await event.save();
+
+    const populatedEvent = await Event.findById(event._id)
+      .populate('createdBy', 'name avatar')
+      .populate('participants', 'name avatar');
+
+    res.status(201).json({
+      success: true,
+      message: 'Event created successfully',
+      event: populatedEvent
+    });
+  } catch (error) {
+    console.error('Error creating event:', error);
+    res.status(500).json({ success: false, message: 'Failed to create event', error: error.message });
+  }
 };
 
 // Join an event

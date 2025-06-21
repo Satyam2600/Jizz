@@ -4,21 +4,8 @@ const { authenticate } = require("../middleware/authMiddleware");
 const User = require("../models/User");
 const userController = require("../controllers/userController");
 const bcrypt = require("bcryptjs");
-const multer = require("multer");
-const path = require("path");
+const { uploadProfile, uploadToCloudinary } = require("../middleware/uploadMiddleware");
 const jwt = require('jsonwebtoken');
-
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
-
-const upload = multer({ storage: storage });
 
 // Get user profile (for edit profile page, protected)
 router.get('/profile', authenticate, async (req, res) => {
@@ -51,10 +38,15 @@ router.get("/profile/:rollNumber", async (req, res) => {
       year: user.year,
       semester: user.semester,
       bio: user.bio,
-      skills: Array.isArray(user.skills) ? user.skills : (user.skills ? user.skills.split(',').map(s => s.trim()) : []),
-      interests: Array.isArray(user.interests) ? user.interests : (user.interests ? user.interests.split(',').map(i => i.trim()) : []),
+      skills: Array.isArray(user.skills) ? user.skills : (user.skills ? user.skills.split(',').map(s => s.trim()).filter(s => s.length > 0) : []),
+      interests: Array.isArray(user.interests) ? user.interests : (user.interests ? user.interests.split(',').map(i => i.trim()).filter(i => i.length > 0) : []),
       portfolio: user.portfolio || '',
       linkedin: user.linkedin || '',
+      phoneNumber: user.phoneNumber || '',
+      github: user.github || '',
+      twitter: user.twitter || '',
+      instagram: user.instagram || '',
+      isPublic: user.isPublic !== undefined ? user.isPublic : true,
       avatar: user.avatar || '/assets/images/default-avatar.png',
       banner: user.banner || '/assets/images/default-banner.jpg',
     });
@@ -101,7 +93,7 @@ router.post('/login', async (req, res) => {
 
         // Generate JWT token
         const token = jwt.sign(
-            { id: user._id, rollNumber: user.rollNumber },
+            { userId: user._id, rollNumber: user.rollNumber },
             process.env.JWT_SECRET,
             { expiresIn: '24h' }
         );
@@ -146,10 +138,15 @@ router.get('/my-profile', authenticate, async (req, res) => {
       year: user.year,
       semester: user.semester,
       bio: user.bio,
-      skills: Array.isArray(user.skills) ? user.skills : (user.skills ? user.skills.split(',').map(s => s.trim()) : []),
-      interests: Array.isArray(user.interests) ? user.interests : (user.interests ? user.interests.split(',').map(i => i.trim()) : []),
+      skills: Array.isArray(user.skills) ? user.skills : (user.skills ? user.skills.split(',').map(s => s.trim()).filter(s => s.length > 0) : []),
+      interests: Array.isArray(user.interests) ? user.interests : (user.interests ? user.interests.split(',').map(i => i.trim()).filter(i => i.length > 0) : []),
       portfolio: user.portfolio || '',
       linkedin: user.linkedin || '',
+      phoneNumber: user.phoneNumber || '',
+      github: user.github || '',
+      twitter: user.twitter || '',
+      instagram: user.instagram || '',
+      isPublic: user.isPublic !== undefined ? user.isPublic : true,
       avatar: user.avatar || '/assets/images/default-avatar.png',
       banner: user.banner || '/assets/images/default-banner.jpg',
     });
@@ -158,62 +155,153 @@ router.get('/my-profile', authenticate, async (req, res) => {
   }
 });
 
-// Update user profile (edit profile form submission, used by editProfile.js)
-router.post('/update-profile', authenticate, upload.fields([
-  { name: 'avatar', maxCount: 1 },
-  { name: 'banner', maxCount: 1 }
-]), async (req, res) => {
+// Update user profile with Cloudinary upload
+router.put('/profile', authenticate, uploadProfile, uploadToCloudinary, async (req, res) => {
   try {
-    const data = req.body;
-    const user = await User.findById(req.user.id);
+    const { fullName, username, email, department, bio, phone } = req.body;
+    
+    // Get avatar URL from Cloudinary upload
+    let avatarUrl = null;
+    if (req.cloudinaryResult) {
+      avatarUrl = req.cloudinaryResult.url;
+    }
+
+    const updateData = {
+      fullName,
+      username,
+      email,
+      department,
+      bio,
+      phone
+    };
+
+    // Only update avatar if a new one was uploaded
+    if (avatarUrl) {
+      updateData.avatar = avatarUrl;
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      updateData,
+      { new: true, runValidators: true }
+    ).select('-password');
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    user.fullName = data.fullName || user.fullName;
-    user.username = data.username || user.username;
-    user.email = data.email || user.email;
-    user.rollNumber = data.rollNumber || user.rollNumber;
-    user.department = data.department || user.department;
-    user.year = data.year || user.year;
-    user.semester = data.semester || user.semester;
-    user.bio = data.bio || user.bio;
-    // Accept both comma-separated string and array for skills/interests
-    if (data.skills) {
-      user.skills = Array.isArray(data.skills) ? data.skills.join(', ') : data.skills;
-    }
-    if (data.interests) {
-      user.interests = Array.isArray(data.interests) ? data.interests.join(', ') : data.interests;
-    }
-    user.portfolio = data.portfolio || user.portfolio;
-    user.linkedin = data.linkedin || user.linkedin;
-    if (req.files && req.files.avatar && req.files.avatar[0]) {
-      user.avatar = `/uploads/${req.files.avatar[0].filename}`;
-    }
-    if (req.files && req.files.banner && req.files.banner[0]) {
-      user.banner = `/uploads/${req.files.banner[0].filename}`;
-    }
-    await user.save();
+
     res.json({
+      success: true,
       message: 'Profile updated successfully',
-      user: {
-        fullName: user.fullName,
-        username: user.username,
-        email: user.email,
-        rollNumber: user.rollNumber,
-        department: user.department,
-        year: user.year,
-        semester: user.semester,
-        bio: user.bio,
-        skills: Array.isArray(user.skills) ? user.skills : (user.skills ? user.skills.split(',').map(s => s.trim()) : []),
-        interests: Array.isArray(user.interests) ? user.interests : (user.interests ? user.interests.split(',').map(i => i.trim()) : []),
-        portfolio: user.portfolio || '',
-        linkedin: user.linkedin || '',
-        avatar: user.avatar || '/assets/images/default-avatar.png',
-        banner: user.banner || '/assets/images/default-banner.jpg',
-      }
+      user
     });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error updating profile:', error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Update user profile (POST route for frontend compatibility)
+router.post('/update-profile', authenticate, uploadProfile, uploadToCloudinary, async (req, res) => {
+  try {
+    const { 
+      fullName, 
+      username, 
+      email, 
+      rollNumber, 
+      department, 
+      year, 
+      semester, 
+      bio, 
+      skills, 
+      interests, 
+      portfolio, 
+      linkedin, 
+      phoneNumber, 
+      isPublic,
+      github,
+      twitter,
+      instagram
+    } = req.body;
+    
+    // Get avatar and banner URLs from Cloudinary upload
+    let avatarUrl = null;
+    let bannerUrl = null;
+    
+    // Handle single file upload (backward compatibility)
+    if (req.cloudinaryResult) {
+      avatarUrl = req.cloudinaryResult.url;
+    }
+    
+    // Handle multiple files upload
+    if (req.cloudinaryResults) {
+      if (req.cloudinaryResults.avatar) {
+        avatarUrl = req.cloudinaryResults.avatar.url;
+      }
+      if (req.cloudinaryResults.banner) {
+        bannerUrl = req.cloudinaryResults.banner.url;
+      }
+    }
+
+    const updateData = {
+      fullName,
+      username,
+      email,
+      rollNumber,
+      department,
+      year,
+      semester,
+      bio,
+      skills: skills ? (Array.isArray(skills) ? skills : skills.split(',').map(s => s.trim()).filter(s => s.length > 0)) : undefined,
+      interests: interests ? (Array.isArray(interests) ? interests : interests.split(',').map(i => i.trim()).filter(i => i.length > 0)) : undefined,
+      portfolio,
+      linkedin,
+      phoneNumber,
+      github,
+      twitter,
+      instagram
+    };
+
+    // Only update isPublic if it's provided
+    if (typeof isPublic !== 'undefined') {
+      updateData.isPublic = isPublic;
+    }
+
+    // Only update avatar if a new one was uploaded
+    if (avatarUrl) {
+      updateData.avatar = avatarUrl;
+    }
+    
+    // Only update banner if a new one was uploaded
+    if (bannerUrl) {
+      updateData.banner = bannerUrl;
+    }
+
+    // Remove undefined values
+    Object.keys(updateData).forEach(key => {
+      if (updateData[key] === undefined) {
+        delete updateData[key];
+      }
+    });
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      updateData,
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      user
+    });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ message: error.message });
   }
 });
 

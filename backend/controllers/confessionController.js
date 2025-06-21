@@ -6,9 +6,16 @@ exports.createConfession = async (req, res) => {
   try {
     const { content } = req.body;
 
+    // Get image URL from Cloudinary upload
+    let imageUrl = null;
+    if (req.cloudinaryResult) {
+      imageUrl = req.cloudinaryResult.url;
+    }
+
     const confession = new Confession({
       user: req.user._id,
-      content
+      content,
+      image: imageUrl
     });
 
     await confession.save();
